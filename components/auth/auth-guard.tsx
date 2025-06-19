@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import { useAuthContext } from './auth-provider';
 import { Loader2 } from 'lucide-react';
 
@@ -12,12 +12,23 @@ interface AuthGuardProps {
 export function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuthContext();
   const router = useRouter();
+  const pathname = usePathname();
+  console.log('AuthGuard:', { user, loading, pathname });
 
   useEffect(() => {
-    if (!loading && !user) {
-      router.push('/login');
+    if (loading) return;
+
+    if (!user) {
+      if (!pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
+        router.push('/login');
+      }
+      return;
     }
-  }, [user, loading, router]);
+
+    if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
+      router.push('/');
+    }
+  }, [user, loading, router, pathname]);
 
   if (loading) {
     return (
@@ -25,10 +36,6 @@ export function AuthGuard({ children }: AuthGuardProps) {
         <Loader2 className="h-8 w-8 animate-spin" />
       </div>
     );
-  }
-
-  if (!user) {
-    return null;
   }
 
   return <>{children}</>;
