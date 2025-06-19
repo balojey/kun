@@ -1,4 +1,4 @@
-import { AudioLines, MessageSquareQuote, MessagesSquare, Sparkles } from 'lucide-react';
+import { AudioLines, MessageSquareQuote, MessagesSquare, Sparkles, Settings } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 type Demo = {
@@ -36,6 +36,17 @@ export const demos: { name: string; items: Demo[] }[] = [
         icon: MessagesSquare,
         slug: 'conversational-ai',
         description: 'Build life-like conversational agents.',
+      },
+    ],
+  },
+  {
+    name: 'Integrations',
+    items: [
+      {
+        name: 'Connected Tools',
+        icon: Settings,
+        slug: 'connections',
+        description: 'Manage your connected tools and integrations.',
       },
     ],
   },

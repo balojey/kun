@@ -7,6 +7,7 @@ export const env = createEnv({
     IRON_SESSION_SECRET_KEY: z
       .string()
       .min(32, 'Session secret key should be at least 32 characters long'),
+    PICA_SANDBOX_API_KEY: z.string().optional(),
   },
   client: {
     NEXT_PUBLIC_SUPABASE_URL: z.string().url(),
@@ -15,6 +16,7 @@ export const env = createEnv({
   runtimeEnv: {
     ELEVENLABS_API_KEY: process.env.ELEVENLABS_API_KEY,
     IRON_SESSION_SECRET_KEY: process.env.IRON_SESSION_SECRET_KEY,
+    PICA_SANDBOX_API_KEY: process.env.PICA_SANDBOX_API_KEY,
     NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
     NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
   },
