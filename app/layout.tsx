@@ -3,6 +3,8 @@ import type { Metadata } from 'next';
 import { getApiKey } from '@/app/actions/manage-api-key';
 import { ApiKeyBanner } from '@/components/api-key-banner';
 import { AppSidebar } from '@/components/app-sidebar';
+import { AuthProvider } from '@/components/auth/auth-provider';
+import { AuthGuard } from '@/components/auth/auth-guard';
 import { Byline } from '@/components/by-line';
 import { KeyProvider } from '@/components/key-provider';
 import { ThemeProvider } from '@/components/theme-provider';
@@ -43,25 +45,29 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           forcedTheme="dark"
           disableTransitionOnChange
         >
-          <KeyProvider apiKey={apiKey}>
-            <SidebarProvider>
-              <AppSidebar />
-              <SidebarInset className="background">
-                <header className="relative flex h-[60px] shrink-0 items-center justify-between px-3">
-                  <SidebarTrigger />
-                  <ApiKeyBanner />
-                </header>
-                <div className="p-4">
-                  <div className="mx-auto max-w-4xl space-y-3 px-2 pt-20 lg:px-8 lg:py-8">
-                    <Byline />
-                    <Card className="border-gradient rounded-lg p-px shadow-lg">
-                      <div className="bg-card rounded-lg">{children}</div>
-                    </Card>
-                  </div>
-                </div>
-              </SidebarInset>
-            </SidebarProvider>
-          </KeyProvider>
+          <AuthProvider>
+            <KeyProvider apiKey={apiKey}>
+              <AuthGuard>
+                <SidebarProvider>
+                  <AppSidebar />
+                  <SidebarInset className="background">
+                    <header className="relative flex h-[60px] shrink-0 items-center justify-between px-3">
+                      <SidebarTrigger />
+                      <ApiKeyBanner />
+                    </header>
+                    <div className="p-4">
+                      <div className="mx-auto max-w-4xl space-y-3 px-2 pt-20 lg:px-8 lg:py-8">
+                        <Byline />
+                        <Card className="border-gradient rounded-lg p-px shadow-lg">
+                          <div className="bg-card rounded-lg">{children}</div>
+                        </Card>
+                      </div>
+                    </div>
+                  </SidebarInset>
+                </SidebarProvider>
+              </AuthGuard>
+            </KeyProvider>
+          </AuthProvider>
           <Toaster />
         </ThemeProvider>
       </body>

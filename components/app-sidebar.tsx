@@ -5,6 +5,7 @@ import { usePathname } from 'next/navigation';
 import * as React from 'react';
 
 import { ApiKeyBanner } from '@/components/api-key-banner';
+import { UserMenu } from '@/components/auth/user-menu';
 import { Logo } from '@/components/logo';
 import {
   Sidebar,
@@ -30,6 +31,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           <Link href="/">
             <Logo className="dark:text-white" height={16} />
           </Link>
+          <UserMenu />
         </div>
       </SidebarHeader>
       <SidebarContent>
