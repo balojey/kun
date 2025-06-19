@@ -10,8 +10,14 @@ export async function middleware(request: NextRequest) {
   const supabase = createClient(
     env.NEXT_PUBLIC_SUPABASE_URL,
     env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
-    // No custom cookies property; use default Supabase client options
-    {}
+    {
+      auth: {
+        flowType: 'pkce',
+        autoRefreshToken: false,
+        persistSession: false,
+        detectSessionInUrl: false,
+      },
+    }
   );
 
   // IMPORTANT: Avoid writing any logic between createClient and
