@@ -4,6 +4,7 @@ import { useEffect } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
 import { useAuthContext } from './auth-provider';
 import { Loader2 } from 'lucide-react';
+import { useAuth } from '@/hooks/use-auth';
 
 interface AuthGuardProps {
   children: React.ReactNode;
@@ -20,13 +21,14 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     if (!user) {
       if (!pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
-        router.push('/login');
+        router.push('/');
       }
       return;
     }
 
     if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
-      router.push('/');
+      console.log('Redirecting to home from auth page');
+      router.replace('/');
     }
   }, [user, loading, router, pathname]);
 
