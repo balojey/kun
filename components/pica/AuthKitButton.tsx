@@ -5,8 +5,8 @@ import { toast } from 'sonner';
 import { useAuthContext } from '@/components/auth/auth-provider';
 import { Button } from '@/components/ui/button';
 import { Loader2, Plus } from 'lucide-react';
-import { supabase } from '@/lib/supabase/client';
-import { generateAuthKitToken } from '@/lib/pica';
+import { createClient } from '@/lib/supabase/client';
+import { useAuthKit } from "@picahq/authkit";
 
 interface AuthKitButtonProps {
   onSuccess?: () => void;
@@ -23,6 +23,7 @@ export function AuthKitButton({
 }: AuthKitButtonProps) {
   const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
+  const supabase = createClient();
 
   const handleConnect = async () => {
     if (!user) {
@@ -33,26 +34,17 @@ export function AuthKitButton({
     setIsLoading(true);
 
     try {
-      // Generate AuthKit token
-      const token = await generateAuthKitToken(user.id);
-
-      // For now, we'll simulate the AuthKit flow since we don't have the actual SDK
-      // In a real implementation, you would use @picahq/authkit here
-      
-      // TODO: Replace with actual PicaOS AuthKit integration
-      // const { AuthKit } = require('@picahq/authkit');
-      // const authKit = new AuthKit({
-      //   token,
-      //   onSuccess: handleAuthKitSuccess,
-      //   onError: handleAuthKitError,
-      //   onClose: handleAuthKitClose,
-      // });
-      // authKit.open();
-
-      // Simulate successful connection for demo purposes
-      setTimeout(() => {
-        handleAuthKitSuccess('mock_connection_123', 'gmail');
-      }, 2000);
+      const { open } = useAuthKit({
+        token: {
+          url: "http://localhost:3000/api/authkit-token",
+          headers: {},
+        },
+        onSuccess: (connection) => {handleAuthKitSuccess(connection.key, connection.platform);},
+        onError: (error) => {handleAuthKitError(error);},
+        onClose: () => {handleAuthKitClose()},
+        appTheme: 'dark',
+      });
+      open()
 
     } catch (error) {
       console.error('AuthKit error:', error);
@@ -62,6 +54,7 @@ export function AuthKitButton({
   };
 
   const handleAuthKitSuccess = async (connectionId: string, provider: string) => {
+    console.log('Connection successful:', connectionId, provider);
     try {
       // Store the connection in Supabase
       const { error } = await supabase

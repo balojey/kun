@@ -1,65 +1,34 @@
-import { NextRequest, NextResponse } from 'next/server';
-import { createServerSupabaseClient } from '@/lib/supabase/server';
-import { env } from '@/env.mjs';
+import { NextRequest, NextResponse } from "next/server";
+import { AuthKitToken } from "@picahq/authkit-node";
+import { createClient } from "@/lib/supabase/server";
+import { v4 as uuidv4 } from "uuid";
 
-// Handle CORS preflight requests
-export async function OPTIONS() {
-  return new NextResponse(null, {
-    status: 200,
-    headers: {
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-    },
-  });
+const corsHeaders = {
+    "Access-Control-Allow-Origin": "*",
+    "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
+    "Access-Control-Allow-Headers": "Content-Type",
+};
+
+// Handle OPTIONS requests
+export async function OPTIONS(req: NextRequest) {
+    console.log("CORS preflight request received");
+    return NextResponse.json({}, { headers: corsHeaders });
 }
 
-export async function POST(request: NextRequest) {
-  try {
-    // Check if PicaOS API key is configured
-    if (!env.PICA_SANDBOX_API_KEY) {
-      return NextResponse.json(
-        { error: 'PicaOS API key not configured' },
-        { status: 500 }
-      );
-    }
+export async function POST(req: NextRequest) {
+    const authKitToken = new AuthKitToken(process.env.PICA_SECRET_KEY as string);
+    const supabase = await createClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    console.log("User from Supabase:", user);
 
-    // Get the authenticated user from Supabase
-    const supabase = await createServerSupabaseClient();
-    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    const identity = user?.id || uuidv4();
+    const token = await authKitToken.create({
+        identity,
+        identityType: "user"
+    });
 
-    if (authError || !user) {
-      return NextResponse.json(
-        { error: 'Unauthorized' },
-        { status: 401 }
-      );
-    }
-
-    // For now, we'll simulate token generation since we don't have the actual PicaOS SDK
-    // In a real implementation, you would use @picahq/authkit-node here
-    const mockToken = `pica_token_${user.id}_${Date.now()}`;
-
-    // TODO: Replace with actual PicaOS AuthKit token generation
-    // const { AuthKit } = require('@picahq/authkit-node');
-    // const authKit = new AuthKit({ apiKey: env.PICA_SANDBOX_API_KEY });
-    // const token = await authKit.generateToken({ userId: user.id });
-
-    return NextResponse.json(
-      { token: mockToken },
-      {
-        status: 200,
-        headers: {
-          'Access-Control-Allow-Origin': '*',
-          'Access-Control-Allow-Methods': 'POST, OPTIONS',
-          'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-        },
-      }
-    );
-  } catch (error) {
-    console.error('AuthKit token generation error:', error);
-    return NextResponse.json(
-      { error: 'Failed to generate token' },
-      { status: 500 }
-    );
-  }
+    // Add CORS headers to the response
+    return NextResponse.json(token, {
+        headers: corsHeaders,
+    });
 }

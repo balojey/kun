@@ -7,12 +7,13 @@ import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { login } from './action';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -24,6 +25,7 @@ type LoginForm = z.infer<typeof loginSchema>;
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
+  const supabase = createClient();
 
   const {
     register,
@@ -37,18 +39,22 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
-        email: data.email,
-        password: data.password,
-      });
+      // const { error } = await supabase.auth.signInWithPassword({
+      //   email: data.email,
+      //   password: data.password,
+      // });
+      const formData = new FormData();
+      formData.append('email', data.email);
+      formData.append('password', data.password);
+      await login(formData);
 
-      if (error) {
-        toast.error(error.message);
-        return;
-      }
+      // if (error) {
+      //   toast.error(error.message);
+      //   return;
+      // }
 
-      toast.success('Successfully signed in!');
-      router.push('/');
+      // toast.success('Successfully signed in!');
+      // router.push('/');
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {

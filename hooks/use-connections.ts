@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabase/client';
+import { createClient } from '@/lib/supabase/client';
 import { useAuthContext } from '@/components/auth/auth-provider';
-import { PicaConnection, revokeConnection } from '@/lib/pica';
+import { PicaConnection } from '@/lib/pica';
 import { toast } from 'sonner';
 
 export function useConnections() {
@@ -11,6 +11,7 @@ export function useConnections() {
   const [connections, setConnections] = useState<PicaConnection[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const supabase = createClient();
 
   const fetchConnections = async () => {
     if (!user) {
@@ -45,15 +46,8 @@ export function useConnections() {
 
   const disconnectTool = async (connection: PicaConnection) => {
     try {
-      // First, try to revoke the connection with PicaOS
-      const revoked = await revokeConnection(connection.connection_id);
-      
-      if (!revoked) {
-        toast.error('Failed to revoke connection with PicaOS');
-        return false;
-      }
 
-      // Then remove from our database
+      // remove from our database
       const { error } = await supabase
         .from('connections')
         .delete()

@@ -35,32 +35,3 @@ export function getProviderInfo(provider: string) {
     icon: '🔗'
   };
 }
-
-export async function generateAuthKitToken(userId: string): Promise<string> {
-  const response = await fetch('/api/authkit-token', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ userId }),
-  });
-
-  if (!response.ok) {
-    throw new Error('Failed to generate AuthKit token');
-  }
-
-  const data = await response.json();
-  return data.token;
-}
-
-export async function revokeConnection(connectionId: string): Promise<boolean> {
-  try {
-    // In a real implementation, you would call PicaOS API to revoke the connection
-    // For now, we'll just return true to indicate success
-    console.log(`Revoking connection: ${connectionId}`);
-    return true;
-  } catch (error) {
-    console.error('Failed to revoke connection:', error);
-    return false;
-  }
-}
