@@ -1,4 +1,4 @@
-import { AudioLines, MessageSquareQuote, MessagesSquare, Sparkles, Settings } from 'lucide-react';
+import { AudioLines, MessageSquareQuote, MessagesSquare, Sparkles, Settings, Mic } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 type Demo = {
@@ -13,6 +13,12 @@ export const demos: { name: string; items: Demo[] }[] = [
   {
     name: 'Capabilities',
     items: [
+      {
+        name: 'Voice Actions',
+        icon: Mic,
+        slug: 'voice-action',
+        description: 'Control your tools with voice commands.',
+      },
       {
         name: 'Text to speech',
         icon: MessageSquareQuote,
