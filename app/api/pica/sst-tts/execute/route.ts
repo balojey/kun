@@ -3,9 +3,9 @@ import { streamText, CoreMessage } from "ai";
 import { Pica } from "@picahq/ai";
 
 export async function POST(request: Request) {
-  const { transcript, connections } = await request.json();
+  const { transcript, connectionIds } = await request.json();
   console.log("Received transcript:", transcript);
-  console.log("Received connections:", connections);
+  console.log("Received connections:", connectionIds);
   const messages: CoreMessage[] = [{
       role: "user",
       content: transcript
@@ -14,12 +14,12 @@ export async function POST(request: Request) {
   const pica = new Pica(
     process.env.PICA_SECRET_KEY as string,
     {
-      connectors: [...connections.map((c: { connection_id: any; }) => c.connection_id)],
-      headers: {
-        "Access-Control-Allow-Origin": "*",
-        "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
-        "Access-Control-Allow-Headers": "Content-Type",
-      }
+      connectors: connectionIds,
+      // headers: {
+      //   "Access-Control-Allow-Origin": "*",
+      //   "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
+      //   "Access-Control-Allow-Headers": "Content-Type",
+      // }
     },
   );
 

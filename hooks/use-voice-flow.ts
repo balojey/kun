@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { useConnections } from '@/hooks/use-connections';
@@ -34,6 +34,11 @@ export function useVoiceFlow() {
   });
 
   const { connections } = useConnections();
+  const connectionsRef = useRef(connections);
+  useEffect(() => {
+    connectionsRef.current = connections;
+  }, [connections]);
+
   const { speak } = useSpeech();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
@@ -106,20 +111,21 @@ export function useVoiceFlow() {
       // Step 2: Process command with PicaOS
       setState(prev => ({ ...prev, step: 'processing' }));
       
-      console.log('Executing command:', transcript, connections);
+      console.log('Executing command:', transcript, connectionsRef.current);
 
       const res = await fetch('/api/pica/sst-tts/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ transcript, connections }),
+        body: JSON.stringify({ 
+          transcript, 
+          connectionIds: connectionsRef.current.map((c: { connection_id: string }) => c.connection_id) 
+        }),
       });
-      console.log(1)
 
       if (!res.ok) {
         const errorData = await res.json().catch(() => ({}));
         throw new Error(errorData.message || 'Failed to execute command');
       }
-      console.log(2)
 
       const { result: executeResult } = await res.text().then(text => ({ result: text.trim() }));
 
@@ -161,7 +167,7 @@ export function useVoiceFlow() {
       }));
       toast.error(errorMessage);
     }
-  }, [connections, speak]);
+  }, [speak]);
 
   const reset = useCallback(() => {
     setState({
