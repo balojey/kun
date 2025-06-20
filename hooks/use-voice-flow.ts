@@ -2,7 +2,6 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { createTranscription } from '@/app/actions/create-transcription';
-import { PicaClient, PicaExecuteRequest, PicaTool } from '@/lib/pica';
 import { useSpeech } from '@/hooks/use-speech';
 import { useConnections } from '@/hooks/use-connections';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
@@ -38,7 +37,6 @@ export function useVoiceFlow() {
   const { speak } = useSpeech();
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
-  const picaClient = new PicaClient();
 
   const startRecording = useCallback(async () => {
     try {
@@ -108,40 +106,33 @@ export function useVoiceFlow() {
       // Step 2: Process command with PicaOS
       setState(prev => ({ ...prev, step: 'processing' }));
       
-      const tools = await picaClient.getTools();
-      const parsedCommand = await picaClient.parseCommand(transcript, tools);
+      console.log('Executing command:', transcript, connections);
 
-      if (!parsedCommand) {
-        throw new Error('Could not understand the command. Please try rephrasing.');
+      const res = await fetch('/api/pica/sst-tts/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ transcript, connections }),
+      });
+      console.log(1)
+
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to execute command');
       }
+      console.log(2)
 
-      // Find a connection for the required tool
-      const tool = tools.find(t => t.id === parsedCommand.tool_id);
-      const connection = connections.find(c => c.provider === tool?.provider);
+      const { result: executeResult } = await res.text().then(text => ({ result: text.trim() }));
 
-      if (!connection) {
-        throw new Error(`Please connect your ${tool?.provider} account first in the Connections page.`);
-      }
-
-      const executeRequest: PicaExecuteRequest = {
-        ...parsedCommand,
-        connection_id: connection.connection_id,
-      };
-
-      const executeResult = await picaClient.executeAction(executeRequest);
+      console.log('Command execution result:', executeResult);
       
-      if (!executeResult.success) {
-        throw new Error(executeResult.message || 'Failed to execute command');
-      }
-
-      const responseText = executeResult.message || 'Command executed successfully!';
-      setState(prev => ({ ...prev, response: responseText }));
+      setState(prev => ({ ...prev, response: executeResult }));
 
       // Step 3: Convert response to speech
       setState(prev => ({ ...prev, step: 'speaking' }));
+      console.log('Generating speech for response:', executeResult);
       
       const audioUrl = await speak('21m00Tcm4TlvDq8ikWAM', {
-        text: responseText,
+        text: executeResult,
         modelId: TTS_MODELS.FLASH,
         voiceSettings: {
           stability: 0.5,
@@ -170,7 +161,7 @@ export function useVoiceFlow() {
       }));
       toast.error(errorMessage);
     }
-  }, [connections, speak, picaClient]);
+  }, [connections, speak]);
 
   const reset = useCallback(() => {
     setState({
