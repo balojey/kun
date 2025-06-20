@@ -1,4 +1,4 @@
-import { AudioLines, MessageSquareQuote, MessagesSquare, Sparkles, Settings, Mic } from 'lucide-react';
+import { AudioLines, MessageSquareQuote, MessagesSquare, Sparkles, Settings, Mic, Brain } from 'lucide-react';
 import type { ComponentType } from 'react';
 
 type Demo = {
@@ -13,6 +13,12 @@ export const demos: { name: string; items: Demo[] }[] = [
   {
     name: 'Capabilities',
     items: [
+      {
+        name: 'Smart Assistant',
+        icon: Brain,
+        slug: 'smart-assistant',
+        description: 'Conversational AI assistant that controls your connected tools.',
+      },
       {
         name: 'Voice Actions',
         icon: Mic,
