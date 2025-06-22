@@ -5,8 +5,8 @@ import { Mic, MicOff, Loader2, Send } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { AssistantStep } from '@/hooks/use-voice-assistant';
 import { cn } from '@/lib/utils';
+import { AssistantStep } from '@/types/assistantTypes';
 
 interface VoiceInputProps {
   step: AssistantStep;

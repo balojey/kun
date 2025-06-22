@@ -1,17 +1,13 @@
 import type { Metadata } from 'next';
 
-import { getApiKey } from '@/app/actions/manage-api-key';
-import { ApiKeyBanner } from '@/components/api-key-banner';
+
 import { AppSidebar } from '@/components/app-sidebar';
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { AuthGuard } from '@/components/auth/auth-guard';
-import { Byline } from '@/components/by-line';
-import { KeyProvider } from '@/components/key-provider';
 import { ThemeProvider } from '@/components/theme-provider';
 import { Card } from '@/components/ui/card';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
-import SmartAssistantProvider from '@/app/smart-assistant/components/smart-assistant-provider';
 import { getAgents } from '@/app/actions/manage-agents';
 
 import './globals.css';
@@ -57,19 +53,12 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                 <SidebarInset className="background">
                   <header className="relative flex h-[60px] shrink-0 items-center justify-between px-3">
                     <SidebarTrigger />
-                    {/* <ApiKeyBanner /> */}
                   </header>
                   <div className="p-4">
                     <div className="mx-auto max-w-4xl space-y-3 px-2 pt-20 lg:px-8 lg:py-8">
-                      <SmartAssistantProvider
-                        agents={sortedAgents}
-                        error={!agentsResult.ok ? agentsResult.error : null}
-                      >
-                        {/* <Byline /> */}
-                        <Card className="border-gradient rounded-lg p-px shadow-lg">
-                          <div className="bg-card rounded-lg">{children}</div>
-                        </Card>
-                      </SmartAssistantProvider>
+                      <Card className="border-gradient rounded-lg p-px shadow-lg">
+                        <div className="bg-card rounded-lg">{children}</div>
+                      </Card>
                     </div>
                   </div>
                 </SidebarInset>

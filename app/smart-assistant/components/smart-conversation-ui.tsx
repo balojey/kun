@@ -1,14 +1,10 @@
 'use client';
 
-import type { GetAgentResponseModel } from '@elevenlabs/elevenlabs-js/api';
 import { useConversation } from '@elevenlabs/react';
-import { AlertCircle, Info, Loader2, Mic, PhoneOff, Terminal, Type, Send } from 'lucide-react';
-import { useSearchParams } from 'next/navigation';
-import { useCallback, useEffect, useState } from 'react';
+import { Loader2, Mic, PhoneOff, Terminal } from 'lucide-react';
+import { useCallback, useEffect, useState, useRef } from 'react';
 import { toast } from 'sonner';
 
-import { useSmartAssistant } from './smart-assistant-provider';
-import { getAgent, getAgentSignedUrl } from '@/app/actions/manage-agents';
 import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { useConnections } from '@/hooks/use-connections';
@@ -16,50 +12,39 @@ import { useAuthContext } from '@/components/auth/auth-provider';
 import { createClient } from '@/lib/supabase/client';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Separator } from '@/components/ui/separator';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
-
-interface VoiceLog {
-  id: string;
-  user_id: string;
-  input_type: 'voice' | 'text';
-  input_text: string;
-  output_text: string;
-  created_at: string;
-}
+import { VoiceInput } from '@/components/voice-assistant/voice-input';
+import { CurrentInteraction } from '@/components/voice-assistant/current-interaction';
+import { ConversationHistory } from '@/components/voice-assistant/conversation-history';
+import { VoiceLog, AssistantState } from '@/types/assistantTypes';
 
 export default function SmartConversationUI() {
-  const { agents } = useSmartAssistant();
   const { user } = useAuthContext();
   const { connections } = useConnections();
   const { speak } = useSpeech();
   const supabase = createClient();
-  const searchParams = useSearchParams();
-  const agentIdFromUrl = searchParams.get('agent_id');
-
-  const [selectedAgent, setSelectedAgent] = useState<string | null>(
-    agentIdFromUrl || (agents.length > 0 ? agents[0].agentId : null)
-  );
-
-  const [agentDetails, setAgentDetails] = useState<GetAgentResponseModel | null>(null);
-  const [isLoadingDetails, setIsLoadingDetails] = useState(true);
-  const [loadError, setLoadError] = useState<string | null>(null);
-  const [editablePrompt, setEditablePrompt] = useState<string>('');
-  const [editableFirstMessage, setEditableFirstMessage] = useState<string>('');
 
   // Voice/Text input state
-  const [inputMode, setInputMode] = useState<'voice' | 'text'>('voice');
-  const [textInput, setTextInput] = useState('');
-  const [isRecording, setIsRecording] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [currentTranscript, setCurrentTranscript] = useState('');
-  const [currentResponse, setCurrentResponse] = useState('');
   const [conversation1History, setConversation1History] = useState<VoiceLog[]>([]);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const connectionsRef = useRef(connections);
+  const [isLoadingHistory, setIsLoadingHistory] = useState(true);
+  const [state, setState] = useState<AssistantState>({
+    step: 'idle',
+    currentInput: '',
+    currentResponse: '',
+    audioUrl: null,
+    error: null,
+    isRecording: false,
+  });
+
+  useEffect(() => {
+    connectionsRef.current = connections;
+  }, [connections]);
+  
 
   const conversation = useConversation({
     onConnect: () => toast.info('Connected to agent'),
@@ -68,315 +53,289 @@ export default function SmartConversationUI() {
     onError: (error) => toast.error(`Error: ${error}`),
   });
 
-  useEffect(() => {
-    if (agentIdFromUrl) {
-      setSelectedAgent(agentIdFromUrl);
-    }
-  }, [agentIdFromUrl]);
-
-  useEffect(() => {
-    let isMounted = true;
-
-    if (selectedAgent) {
-      setIsLoadingDetails(true);
-      setLoadError(null);
-
-      getAgent(selectedAgent)
-        .then((result) => {
-          if (!isMounted) return;
-
-          if (result.ok) {
-            setAgentDetails(result.value);
-            
-            // Set up PicaOS-aware prompt
-            const basePrompt = result.value.conversationConfig?.agent?.prompt?.prompt || '';
-            const picaPrompt = `${basePrompt}
-
-You are a smart assistant that can help users control their connected tools and services. The user has the following tools connected: ${connections.map(c => c.provider).join(', ')}.
-
-When the user asks you to perform actions with their tools (like sending emails, creating calendar events, adding notes, etc.), you should:
-1. Acknowledge their request
-2. Explain what action you would take
-3. Provide a helpful response
-
-For example:
-- "Send an email to john@example.com" → "I'll send an email to john@example.com for you."
-- "Create a calendar event for tomorrow" → "I'll create a calendar event for tomorrow."
-- "Add this to my notes" → "I'll add that to your notes."
-
-Be conversational, helpful, and act as if you can actually perform these actions.`;
-
-            setEditablePrompt(picaPrompt);
-            setEditableFirstMessage(result.value.conversationConfig?.agent?.firstMessage || 'Hello! I\'m your smart assistant. I can help you control your connected tools through voice or text. What would you like me to do?');
-            setLoadError(null);
-          } else {
-            console.error('Failed to load agent details:', result.error);
-            setLoadError(result.error || 'Failed to load agent details');
-          }
-        })
-        .catch((error) => {
-          if (!isMounted) return;
-          setLoadError('An unexpected error occurred');
-          console.error('Error loading agent:', error);
-        })
-        .finally(() => {
-          if (isMounted) {
-            setIsLoadingDetails(false);
-          }
-        });
-    }
-
-    return () => {
-      isMounted = false;
-    };
-  }, [selectedAgent, connections]);
-
-  // Load conversation history
-  useEffect(() => {
+  const loadConversationHistory = useCallback(async () => {
     if (!user) return;
 
-    const loadHistory = async () => {
-      try {
-        const { data, error } = await supabase
-          .from('voice_logs')
-          .select('*')
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(10);
+    try {
+      setIsLoadingHistory(true);
+      const { data, error } = await supabase
+        .from('voice_logs')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(50);
 
-        if (error) throw error;
-        setConversation1History(data || []);
-      } catch (error) {
-        console.error('Failed to load conversation history:', error);
-      }
-    };
-
-    loadHistory();
+      if (error) throw error;
+      setConversation1History(data || []);
+    } catch (error) {
+      console.error('Failed to load conversation history:', error);
+      toast.error('Failed to load conversation history');
+    } finally {
+      setIsLoadingHistory(false);
+    }
   }, [user, supabase]);
 
-  const handleAgentResponse = async (responseText: string) => {
-    setCurrentResponse(responseText);
-    
-    // Convert to speech if we're in voice mode
-    if (inputMode === 'voice') {
-      try {
-        const audioUrl = await speak('21m00Tcm4TlvDq8ikWAM', {
-          text: responseText,
-          modelId: TTS_MODELS.FLASH,
-          voiceSettings: {
-            stability: 0.5,
-            similarityBoost: 0.75,
-            style: 0,
-            speed: 1.0,
-            useSpeakerBoost: false,
-          },
-        });
-      } catch (error) {
-        console.error('TTS error:', error);
-      }
-    }
+  // Load history on mount
+  useEffect(() => {
+    loadConversationHistory();
+  }, [loadConversationHistory]);
 
-    // Save to database
-    if (user && currentTranscript) {
-      try {
-        const { data, error } = await supabase
-          .from('voice_logs')
-          .insert({
-            user_id: user.id,
-            input_type: inputMode,
-            input_text: currentTranscript,
-            output_text: responseText,
-          })
-          .select()
-          .single();
-
-        if (!error && data) {
-          setConversation1History(prev => [data, ...prev]);
-        }
-      } catch (error) {
-        console.error('Failed to save interaction:', error);
-      }
-    }
-
-    setIsProcessing(false);
-  };
-
-  const startConversation = useCallback(async () => {
-    if (!selectedAgent) return;
+  // Save interaction to database
+  const saveInteraction = useCallback(async (
+    inputType: 'voice' | 'text',
+    inputText: string,
+    outputText: string
+  ) => {
+    if (!user) return;
 
     try {
-      const signedUrlResult = await getAgentSignedUrl({
-        agentId: selectedAgent,
-      });
+      const { data, error } = await supabase
+        .from('voice_logs')
+        .insert({
+          user_id: user.id,
+          input_type: inputType,
+          input_text: inputText,
+          output_text: outputText,
+        })
+        .select()
+        .single();
 
-      if (!signedUrlResult.ok) {
-        console.error('Failed to get signed URL:', signedUrlResult.error);
-        return;
-      }
-      console.log(`Signed URL: ${signedUrlResult.ok ? signedUrlResult.value.signedUrl : 'N/A'}`);
+      if (error) throw error;
 
-      await conversation.startSession({
-        signedUrl: signedUrlResult.value.signedUrl,
-        overrides: {
-          agent: {
-            prompt: {
-              prompt: editablePrompt,
-            },
-            firstMessage: editableFirstMessage,
-          },
-        },
-      });
+      // Add to local state
+      setConversation1History(prev => [data, ...prev]);
     } catch (error) {
-      console.error('Failed to start conversation:', error);
+      console.error('Failed to save interaction:', error);
+      // Don't show error to user as this is background operation
     }
-    console.log('Conversation started with agent:', selectedAgent);
-  }, [conversation, selectedAgent, editablePrompt, editableFirstMessage]);
+  }, [user, supabase]);
 
-  const stopConversation = useCallback(async () => {
-    console.log('Stopping conversation...');
-    await conversation.endSession();
-  }, [conversation]);
-
-  const handleVoiceInput = async () => {
-    if (isRecording) {
-      // Stop recording logic would go here
-      setIsRecording(false);
-      return;
-    }
-
+  // Process input (voice or text)
+  const processInput = useCallback(async (inputText: string, inputType: 'voice' | 'text') => {
     try {
-      setIsRecording(true);
-      setIsProcessing(true);
-      
-      // Get microphone access
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-      const mediaRecorder = new MediaRecorder(stream);
-      const audioChunks: Blob[] = [];
+      setState(prev => ({ 
+        ...prev, 
+        step: 'processing', 
+        currentInput: inputText,
+        error: null 
+      }));
 
-      mediaRecorder.ondataavailable = (event) => {
-        if (event.data.size > 0) {
-          audioChunks.push(event.data);
-        }
-      };
-
-      mediaRecorder.onstop = async () => {
-        const audioBlob = new Blob(audioChunks, { type: 'audio/wav' });
-        
-        try {
-          // Transcribe with ElevenLabs
-          const audioFile = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
-          const transcriptionResult = await createTranscription({
-            file: audioFile,
-            modelId: STT_MODELS.SCRIBE_V1,
-            timestampsGranularity: 'none',
-            tagAudioEvents: false,
-            diarize: false,
-          });
-
-          if (transcriptionResult.ok && transcriptionResult.value.text) {
-            const transcript = transcriptionResult.value.text;
-            setCurrentTranscript(transcript);
-            
-            // Send to conversational AI
-            if (conversation.status === 'connected') {
-              await conversation.sendUserMessage(transcript);
-            } else {
-              // Fallback to PicaOS if conversation not connected
-              await handlePicaOSFallback(transcript);
-            }
-          } else {
-            throw new Error('No speech detected');
-          }
-        } catch (error) {
-          console.error('Transcription error:', error);
-          toast.error('Failed to process voice input');
-          setIsProcessing(false);
-        }
-        
-        // Clean up
-        stream.getTracks().forEach(track => track.stop());
-        setIsRecording(false);
-      };
-
-      mediaRecorder.start();
-      
-      // Auto-stop after 10 seconds
-      setTimeout(() => {
-        if (mediaRecorder.state === 'recording') {
-          mediaRecorder.stop();
-        }
-      }, 10000);
-
-    } catch (error) {
-      console.error('Voice input error:', error);
-      toast.error('Failed to access microphone');
-      setIsRecording(false);
-      setIsProcessing(false);
-    }
-  };
-
-  const handleTextSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!textInput.trim() || isProcessing) return;
-
-    setIsProcessing(true);
-    setCurrentTranscript(textInput);
-    
-    try {
-      if (conversation.status === 'connected') {
-        await conversation.sendUserMessage(textInput);
-      } else {
-        await handlePicaOSFallback(textInput);
-      }
-      setTextInput('');
-    } catch (error) {
-      console.error('Text input error:', error);
-      toast.error('Failed to process text input');
-      setIsProcessing(false);
-    }
-  };
-
-  const handlePicaOSFallback = async (input: string) => {
-    try {
+      // Send to PicaOS
       const res = await fetch('/api/pica/sst-tts/execute', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ 
-          transcript: input, 
-          connectionIds: connections.map(c => c.connection_id) 
+          transcript: inputText, 
+          connectionIds: connectionsRef.current.map(c => c.connection_id) 
         }),
       });
 
       if (!res.ok) {
-        throw new Error('Failed to execute command');
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData.message || 'Failed to execute command');
       }
 
       const responseText = await res.text();
-      await handleAgentResponse(responseText.trim());
+      const cleanResponse = responseText.trim();
+
+      setState(prev => ({ ...prev, currentResponse: cleanResponse }));
+
+      // Convert response to speech
+      setState(prev => ({ ...prev, step: 'speaking' }));
+      
+      const audioUrl = await speak('21m00Tcm4TlvDq8ikWAM', {
+        text: cleanResponse,
+        modelId: TTS_MODELS.FLASH,
+        voiceSettings: {
+          stability: 0.5,
+          similarityBoost: 0.75,
+          style: 0,
+          speed: 1.0,
+          useSpeakerBoost: false,
+        },
+      });
+
+      setState(prev => ({ 
+        ...prev, 
+        step: 'complete', 
+        audioUrl: audioUrl || null 
+      }));
+
+      // Save to database
+      await saveInteraction(inputType, inputText, cleanResponse);
+
+      toast.success('Command completed successfully!');
+
     } catch (error) {
-      console.error('PicaOS fallback error:', error);
-      await handleAgentResponse("I'm sorry, I couldn't process that request right now. Please try again.");
+      console.error('Error processing input:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setState(prev => ({ 
+        ...prev, 
+        step: 'error', 
+        error: errorMessage 
+      }));
+      toast.error(errorMessage);
     }
-  };
+  }, [speak, saveInteraction]);
 
-  if (isLoadingDetails) {
-    return (
-      <div className="flex flex-col items-center justify-center space-y-4 py-8">
-        <Loader2 className="h-8 w-8 animate-spin" />
-        <p className="text-muted-foreground">Loading smart assistant...</p>
-      </div>
-    );
-  }
+  // Handle text input
+  const handleTextInput = useCallback(async (text: string) => {
+    if (!text.trim()) return;
+    await processInput(text.trim(), 'text');
+  }, [processInput]);
 
-  if (loadError && !agentDetails) {
-    return (
-      <Alert variant="destructive" className="my-4">
-        <AlertCircle className="h-4 w-4" />
-        <AlertTitle>Error Loading Assistant</AlertTitle>
-        <AlertDescription>{loadError}</AlertDescription>
-      </Alert>
-    );
-  }
+  // Voice recording functions
+  const startRecording = useCallback(async () => {
+    try {
+      setState(prev => ({ 
+        ...prev, 
+        step: 'recording', 
+        isRecording: true,
+        error: null 
+      }));
+      
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const mediaRecorder = new MediaRecorder(stream);
+      mediaRecorderRef.current = mediaRecorder;
+      audioChunksRef.current = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          audioChunksRef.current.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const audioBlob = new Blob(audioChunksRef.current, { type: 'audio/wav' });
+        await processVoiceInput(audioBlob);
+        
+        // Clean up stream
+        stream.getTracks().forEach(track => track.stop());
+      };
+
+      mediaRecorder.start();
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      setState(prev => ({ 
+        ...prev, 
+        step: 'error',
+        isRecording: false,
+        error: 'Failed to start recording. Please check microphone permissions.' 
+      }));
+    }
+  }, []);
+
+  const stopRecording = useCallback(() => {
+    if (mediaRecorderRef.current && mediaRecorderRef.current.state === 'recording') {
+      setState(prev => ({ ...prev, isRecording: false }));
+      mediaRecorderRef.current.stop();
+    }
+  }, []);
+
+  const processVoiceInput = useCallback(async (audioBlob: Blob) => {
+    try {
+      // Transcribe audio
+      setState(prev => ({ ...prev, step: 'transcribing' }));
+      
+      const audioFile = new File([audioBlob], 'recording.wav', { type: 'audio/wav' });
+      const transcriptionResult = await createTranscription({
+        file: audioFile,
+        modelId: STT_MODELS.SCRIBE_V1,
+        timestampsGranularity: 'none',
+        tagAudioEvents: false,
+        diarize: false,
+      });
+
+      if (!transcriptionResult.ok) {
+        throw new Error(transcriptionResult.error);
+      }
+
+      const transcript = transcriptionResult.value.text || '';
+
+      if (!transcript.trim()) {
+        throw new Error('No speech detected. Please try again.');
+      }
+
+      // Process the transcribed text
+      await processInput(transcript, 'voice');
+
+    } catch (error) {
+      console.error('Error processing voice input:', error);
+      const errorMessage = error instanceof Error ? error.message : 'An unexpected error occurred';
+      setState(prev => ({ 
+        ...prev, 
+        step: 'error', 
+        error: errorMessage 
+      }));
+      toast.error(errorMessage);
+    }
+  }, [processInput]);
+
+  const reset = useCallback(() => {
+    setState({
+      step: 'idle',
+      currentInput: '',
+      currentResponse: '',
+      audioUrl: null,
+      error: null,
+      isRecording: false,
+    });
+  }, []);
+
+  // Set up real-time subscription for new voice logs
+  useEffect(() => {
+    if (!user) return;
+
+    const subscription = supabase
+      .channel('voice_logs_changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'voice_logs',
+          filter: `user_id=eq.${user.id}`,
+        },
+        (payload) => {
+          // Only add if it's not already in our local state (to avoid duplicates)
+          setConversation1History(prev => {
+            const exists = prev.some(log => log.id === payload.new.id);
+            if (!exists) {
+              return [payload.new as VoiceLog, ...prev];
+            }
+            return prev;
+          });
+        }
+      )
+      .subscribe();
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, [user, supabase]);
+
+  const startConversation = useCallback(async () => {
+    try {
+      // Request microphone permission
+      await navigator.mediaDevices.getUserMedia({ audio: true });
+
+      // Start the conversation with your agent
+      const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
+      if (!agentId) {
+        throw new Error('Agent ID is not defined');
+      }
+      await conversation.startSession({
+        agentId,
+      });
+
+    } catch (error) {
+      console.error('Failed to start conversation:', error);
+    }
+  }, [conversation]);
+
+  const stopConversation = useCallback(async () => {
+    await conversation.endSession();
+  }, [conversation]);
 
   return (
     <div className="space-y-6">
@@ -431,152 +390,39 @@ Be conversational, helpful, and act as if you can actually perform these actions
         </CardContent>
       </Card>
 
-      {/* Input Mode Toggle */}
-      <div className="flex justify-center">
-        <div className="flex bg-muted rounded-lg p-1">
-          <Button
-            variant={inputMode === 'voice' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setInputMode('voice')}
-            className="flex items-center gap-2"
-          >
-            <Mic className="h-4 w-4" />
-            Voice
-          </Button>
-          <Button
-            variant={inputMode === 'text' ? 'default' : 'ghost'}
-            size="sm"
-            onClick={() => setInputMode('text')}
-            className="flex items-center gap-2"
-          >
-            <Type className="h-4 w-4" />
-            Text
-          </Button>
-        </div>
-      </div>
-
       {/* Input Interface */}
-      <Card>
-        <CardContent className="pt-6">
-          {inputMode === 'voice' ? (
-            <div className="flex flex-col items-center space-y-4">
-              <Button
-                size="lg"
-                variant={isRecording ? "destructive" : "default"}
-                className={`h-20 w-20 rounded-full transition-all duration-200 ${
-                  isRecording ? 'animate-pulse scale-110' : ''
-                }`}
-                onClick={handleVoiceInput}
-                disabled={isProcessing}
-              >
-                {isProcessing ? (
-                  <Loader2 className="h-8 w-8 animate-spin" />
-                ) : isRecording ? (
-                  <Mic className="h-8 w-8" />
-                ) : (
-                  <Mic className="h-8 w-8" />
-                )}
-              </Button>
-              <p className="text-sm text-muted-foreground text-center">
-                {isRecording 
-                  ? 'Listening... Click to stop' 
-                  : isProcessing
-                  ? 'Processing...'
-                  : 'Click to start voice input'
-                }
-              </p>
-            </div>
-          ) : (
-            <form onSubmit={handleTextSubmit} className="flex gap-2">
-              <Input
-                value={textInput}
-                onChange={(e) => setTextInput(e.target.value)}
-                placeholder="Type your command or question..."
-                disabled={isProcessing}
-                className="flex-1"
-              />
-              <Button
-                type="submit"
-                disabled={!textInput.trim() || isProcessing}
-              >
-                {isProcessing ? (
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                ) : (
-                  <Send className="h-4 w-4" />
-                )}
-              </Button>
-            </form>
-          )}
-          {/* <VoiceInput
-            step={state.step}
-            isRecording={state.isRecording}
-            onStartRecording={startRecording}
-            onStopRecording={stopRecording}
-            onTextSubmit={handleTextInput}
-          /> */}
+      <Card className="mx-auto max-w-2xl">
+          <CardHeader className="text-center">
+            <CardTitle>Voice Command Interface</CardTitle>
+            <CardDescription>
+              Use voice or text to interact with your assistant
+            </CardDescription>
+          </CardHeader>
 
-          {/* Error Display */}
-          {/* {state.error && (
-            <Alert variant="destructive">
-              <AlertDescription>{state.error}</AlertDescription>
-            </Alert>
-          )} */}
+          <CardContent className="space-y-6">
+            {/* Voice/Text Input */}
+            <VoiceInput
+              step={state.step}
+              isRecording={state.isRecording}
+              onStartRecording={startRecording}
+              onStopRecording={stopRecording}
+              onTextSubmit={handleTextInput}
+            />
 
-          {/* Current Interaction */}
-          {/* <CurrentInteraction state={state} onReset={reset} /> */}
-        </CardContent>
-      </Card>
+            {/* Error Display */}
+            {state.error && (
+              <Alert variant="destructive">
+                <AlertDescription>{state.error}</AlertDescription>
+              </Alert>
+            )}
+
+            {/* Current Interaction */}
+            <CurrentInteraction state={state} onReset={reset} />
+          </CardContent>
+        </Card>
 
       {/* Current Interaction */}
-      {(currentTranscript || currentResponse) && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Current Interaction</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {currentTranscript && (
-              <div>
-                <p className="font-medium text-sm mb-1">You said:</p>
-                <p className="text-sm text-muted-foreground">{currentTranscript}</p>
-              </div>
-            )}
-            {currentResponse && (
-              <div>
-                <p className="font-medium text-sm mb-1">Assistant:</p>
-                <p className="text-sm text-muted-foreground">{currentResponse}</p>
-              </div>
-            )}
-          </CardContent>
-        </Card>
-      )}
-
-      {/* Recent Conversations */}
-      {conversation1History.length > 0 && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Recent Conversations</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {conversation1History.slice(0, 5).map((log) => (
-                <div key={log.id} className="border-l-2 border-muted pl-4 space-y-1">
-                  <div className="flex items-center gap-2">
-                    <Badge variant="outline" className="text-xs">
-                      {log.input_type}
-                    </Badge>
-                    <span className="text-xs text-muted-foreground">
-                      {new Date(log.created_at).toLocaleTimeString()}
-                    </span>
-                  </div>
-                  <p className="text-sm">{log.input_text}</p>
-                  <p className="text-sm text-muted-foreground">{log.output_text}</p>
-                </div>
-              ))}
-            </div>
-          </CardContent>
-        </Card>
-      )}
-      {/* <div className="space-y-4">
+      <div className="space-y-4">
         <div className="text-center">
           <h2 className="text-xl font-semibold">Conversation History</h2>
           <p className="text-muted-foreground text-sm">
@@ -585,10 +431,10 @@ Be conversational, helpful, and act as if you can actually perform these actions
         </div>
 
         <ConversationHistory 
-          history={conversationHistory} 
+          history={conversation1History} 
           isLoading={isLoadingHistory} 
         />
-      </div> */}
+      </div>
 
       {/* Instructions */}
       <Alert>

@@ -2,7 +2,7 @@
 
 import { formatDistanceToNow } from 'date-fns';
 import { Mic, Type, User, Bot } from 'lucide-react';
-import { VoiceLog } from '@/hooks/use-voice-assistant';
+import { VoiceLog } from '@/types/assistantTypes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
