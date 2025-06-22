@@ -3,7 +3,7 @@
 import { User, Bot, Volume2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { AudioPlayer } from '@/app/(examples)/text-to-speech/components/audio-player';
+import { AudioPlayer } from './audio-player';
 import { AssistantState } from '@/hooks/use-voice-assistant';
 
 interface CurrentInteractionProps {

@@ -11,6 +11,8 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Card } from '@/components/ui/card';
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar';
 import { Toaster } from '@/components/ui/sonner';
+import SmartAssistantProvider from '@/app/smart-assistant/components/smart-assistant-provider';
+import { getAgents } from '@/app/actions/manage-agents';
 
 import './globals.css';
 
@@ -32,8 +34,11 @@ export const metadata: Metadata = {
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
-  const apiKeyResult = await getApiKey();
-  const apiKey = apiKeyResult.ok ? apiKeyResult.value : null;
+  const agentsResult = await getAgents();
+  
+  const sortedAgents = agentsResult.ok
+    ? [...agentsResult.value.agents].sort((a, b) => b.createdAtUnixSecs - a.createdAtUnixSecs)
+    : [];
 
   return (
     <html lang="en" suppressHydrationWarning className="dark">
@@ -46,27 +51,30 @@ export default async function RootLayout({ children }: { children: React.ReactNo
           disableTransitionOnChange
         >
           <AuthProvider>
-            <KeyProvider apiKey={apiKey}>
-              <AuthGuard>
-                <SidebarProvider>
-                  <AppSidebar />
-                  <SidebarInset className="background">
-                    <header className="relative flex h-[60px] shrink-0 items-center justify-between px-3">
-                      <SidebarTrigger />
-                      <ApiKeyBanner />
-                    </header>
-                    <div className="p-4">
-                      <div className="mx-auto max-w-4xl space-y-3 px-2 pt-20 lg:px-8 lg:py-8">
-                        <Byline />
+            <AuthGuard>
+              <SidebarProvider>
+                <AppSidebar />
+                <SidebarInset className="background">
+                  <header className="relative flex h-[60px] shrink-0 items-center justify-between px-3">
+                    <SidebarTrigger />
+                    {/* <ApiKeyBanner /> */}
+                  </header>
+                  <div className="p-4">
+                    <div className="mx-auto max-w-4xl space-y-3 px-2 pt-20 lg:px-8 lg:py-8">
+                      <SmartAssistantProvider
+                        agents={sortedAgents}
+                        error={!agentsResult.ok ? agentsResult.error : null}
+                      >
+                        {/* <Byline /> */}
                         <Card className="border-gradient rounded-lg p-px shadow-lg">
                           <div className="bg-card rounded-lg">{children}</div>
                         </Card>
-                      </div>
+                      </SmartAssistantProvider>
                     </div>
-                  </SidebarInset>
-                </SidebarProvider>
-              </AuthGuard>
-            </KeyProvider>
+                  </div>
+                </SidebarInset>
+              </SidebarProvider>
+            </AuthGuard>
           </AuthProvider>
           <Toaster />
         </ThemeProvider>

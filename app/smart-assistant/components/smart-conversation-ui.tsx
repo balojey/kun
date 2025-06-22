@@ -7,7 +7,7 @@ import { useSearchParams } from 'next/navigation';
 import { useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
-import { useSmartAssistant } from '@/app/(examples)/smart-assistant/components/smart-assistant-provider';
+import { useSmartAssistant } from './smart-assistant-provider';
 import { getAgent, getAgentSignedUrl } from '@/app/actions/manage-agents';
 import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
@@ -59,15 +59,12 @@ export default function SmartConversationUI() {
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentTranscript, setCurrentTranscript] = useState('');
   const [currentResponse, setCurrentResponse] = useState('');
-  const [conversationHistory, setConversationHistory] = useState<VoiceLog[]>([]);
+  const [conversation1History, setConversation1History] = useState<VoiceLog[]>([]);
 
   const conversation = useConversation({
     onConnect: () => toast.info('Connected to agent'),
     onDisconnect: () => toast.info('Disconnected from agent'),
-    onMessage: (message) => {
-      console.log('Agent message:', message);
-      handleAgentResponse(message.message);
-    },
+    onMessage: (message) => toast.info(`Message: ${message.message}`),
     onError: (error) => toast.error(`Error: ${error}`),
   });
 
@@ -148,7 +145,7 @@ Be conversational, helpful, and act as if you can actually perform these actions
           .limit(10);
 
         if (error) throw error;
-        setConversationHistory(data || []);
+        setConversation1History(data || []);
       } catch (error) {
         console.error('Failed to load conversation history:', error);
       }
@@ -194,7 +191,7 @@ Be conversational, helpful, and act as if you can actually perform these actions
           .single();
 
         if (!error && data) {
-          setConversationHistory(prev => [data, ...prev]);
+          setConversation1History(prev => [data, ...prev]);
         }
       } catch (error) {
         console.error('Failed to save interaction:', error);
@@ -216,6 +213,7 @@ Be conversational, helpful, and act as if you can actually perform these actions
         console.error('Failed to get signed URL:', signedUrlResult.error);
         return;
       }
+      console.log(`Signed URL: ${signedUrlResult.ok ? signedUrlResult.value.signedUrl : 'N/A'}`);
 
       await conversation.startSession({
         signedUrl: signedUrlResult.value.signedUrl,
@@ -231,9 +229,11 @@ Be conversational, helpful, and act as if you can actually perform these actions
     } catch (error) {
       console.error('Failed to start conversation:', error);
     }
+    console.log('Conversation started with agent:', selectedAgent);
   }, [conversation, selectedAgent, editablePrompt, editableFirstMessage]);
 
   const stopConversation = useCallback(async () => {
+    console.log('Stopping conversation...');
     await conversation.endSession();
   }, [conversation]);
 
@@ -279,7 +279,7 @@ Be conversational, helpful, and act as if you can actually perform these actions
             
             // Send to conversational AI
             if (conversation.status === 'connected') {
-              await conversation.sendMessage(transcript);
+              await conversation.sendUserMessage(transcript);
             } else {
               // Fallback to PicaOS if conversation not connected
               await handlePicaOSFallback(transcript);
@@ -324,7 +324,7 @@ Be conversational, helpful, and act as if you can actually perform these actions
     
     try {
       if (conversation.status === 'connected') {
-        await conversation.sendMessage(textInput);
+        await conversation.sendUserMessage(textInput);
       } else {
         await handlePicaOSFallback(textInput);
       }
@@ -507,6 +507,23 @@ Be conversational, helpful, and act as if you can actually perform these actions
               </Button>
             </form>
           )}
+          {/* <VoiceInput
+            step={state.step}
+            isRecording={state.isRecording}
+            onStartRecording={startRecording}
+            onStopRecording={stopRecording}
+            onTextSubmit={handleTextInput}
+          /> */}
+
+          {/* Error Display */}
+          {/* {state.error && (
+            <Alert variant="destructive">
+              <AlertDescription>{state.error}</AlertDescription>
+            </Alert>
+          )} */}
+
+          {/* Current Interaction */}
+          {/* <CurrentInteraction state={state} onReset={reset} /> */}
         </CardContent>
       </Card>
 
@@ -534,14 +551,14 @@ Be conversational, helpful, and act as if you can actually perform these actions
       )}
 
       {/* Recent Conversations */}
-      {conversationHistory.length > 0 && (
+      {conversation1History.length > 0 && (
         <Card>
           <CardHeader>
             <CardTitle>Recent Conversations</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="space-y-3">
-              {conversationHistory.slice(0, 5).map((log) => (
+              {conversation1History.slice(0, 5).map((log) => (
                 <div key={log.id} className="border-l-2 border-muted pl-4 space-y-1">
                   <div className="flex items-center gap-2">
                     <Badge variant="outline" className="text-xs">
@@ -559,6 +576,19 @@ Be conversational, helpful, and act as if you can actually perform these actions
           </CardContent>
         </Card>
       )}
+      {/* <div className="space-y-4">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold">Conversation History</h2>
+          <p className="text-muted-foreground text-sm">
+            Your recent interactions with the assistant
+          </p>
+        </div>
+
+        <ConversationHistory 
+          history={conversationHistory} 
+          isLoading={isLoadingHistory} 
+        />
+      </div> */}
 
       {/* Instructions */}
       <Alert>

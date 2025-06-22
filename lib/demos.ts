@@ -10,47 +10,47 @@ type Demo = {
 };
 
 export const demos: { name: string; items: Demo[] }[] = [
-  {
-    name: 'Capabilities',
-    items: [
-      {
-        name: 'Smart Assistant',
-        icon: Brain,
-        slug: 'smart-assistant',
-        description: 'Conversational AI assistant that controls your connected tools.',
-      },
-      {
-        name: 'Voice Actions',
-        icon: Mic,
-        slug: 'voice-action',
-        description: 'Control your tools with voice commands.',
-      },
-      {
-        name: 'Text to speech',
-        icon: MessageSquareQuote,
-        slug: 'text-to-speech',
-        description: 'Convert text to natural-sounding speech.',
-      },
-      {
-        name: 'Speech to text',
-        icon: AudioLines,
-        slug: 'speech-to-text',
-        description: 'Transcribe audio and video files with high accuracy.',
-      },
-      {
-        name: 'Sound effects',
-        icon: Sparkles,
-        slug: 'sound-effects',
-        description: 'Turn text into cinematic sound effects.',
-      },
-      {
-        name: 'Conversational AI',
-        icon: MessagesSquare,
-        slug: 'conversational-ai',
-        description: 'Build life-like conversational agents.',
-      },
-    ],
-  },
+  // {
+  //   name: 'Capabilities',
+  //   items: [
+  //     {
+  //       name: 'Smart Assistant',
+  //       icon: Brain,
+  //       slug: 'smart-assistant',
+  //       description: 'Conversational AI assistant that controls your connected tools.',
+  //     },
+  //     {
+  //       name: 'Voice Actions',
+  //       icon: Mic,
+  //       slug: 'voice-action',
+  //       description: 'Control your tools with voice commands.',
+  //     },
+  //     {
+  //       name: 'Text to speech',
+  //       icon: MessageSquareQuote,
+  //       slug: 'text-to-speech',
+  //       description: 'Convert text to natural-sounding speech.',
+  //     },
+  //     {
+  //       name: 'Speech to text',
+  //       icon: AudioLines,
+  //       slug: 'speech-to-text',
+  //       description: 'Transcribe audio and video files with high accuracy.',
+  //     },
+  //     {
+  //       name: 'Sound effects',
+  //       icon: Sparkles,
+  //       slug: 'sound-effects',
+  //       description: 'Turn text into cinematic sound effects.',
+  //     },
+  //     {
+  //       name: 'Conversational AI',
+  //       icon: MessagesSquare,
+  //       slug: 'conversational-ai',
+  //       description: 'Build life-like conversational agents.',
+  //     },
+  //   ],
+  // },
   {
     name: 'Integrations',
     items: [

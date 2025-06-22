@@ -57,8 +57,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter className="p-4">
         <div className="flex w-full flex-col gap-2">
-          <div className="text-muted-foreground text-xs">API Configuration</div>
-          <ApiKeyBanner variant="sidebar" />
+          {/* <div className="text-muted-foreground text-xs">API Configuration</div> */}
+          {/* <ApiKeyBanner variant="sidebar" /> */}
         </div>
       </SidebarFooter>
     </Sidebar>
