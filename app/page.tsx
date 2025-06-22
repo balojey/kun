@@ -4,41 +4,44 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceTab } from '@/components/home/voice-tab';
 import { TextTab } from '@/components/home/text-tab';
+import { Mic, MessageSquare } from 'lucide-react';
 
 export default function HomePage() {
   const [activeTab, setActiveTab] = useState('voice');
 
   return (
-    <div className="container mx-auto p-6 max-w-4xl">
-      <div className="space-y-6">
-        {/* Header */}
-        <div className="text-center space-y-2">
-          <h1 className="text-3xl font-bold">AI Assistant</h1>
-          <p className="text-muted-foreground">
-            Manage your emails and connected tools with voice or text
-          </p>
-        </div>
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+      {/* Hero Section */}
+      <div className="text-center space-y-4 py-8">
+        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gradient">
+          AI Email Assistant
+        </h1>
+        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          Manage your emails and connected tools through natural voice and text conversations
+        </p>
+      </div>
 
-        {/* Tab Switcher */}
+      {/* Tab Interface */}
+      <div className="w-full">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
-            <TabsTrigger value="voice" className="flex items-center gap-2">
-              <span className="text-lg">🎤</span>
-              Voice
-            </TabsTrigger>
-            <TabsTrigger value="text" className="flex items-center gap-2">
-              <span className="text-lg">💬</span>
-              Text
-            </TabsTrigger>
-          </TabsList>
+          <div className="flex justify-center mb-8">
+            <TabsList className="grid w-full max-w-md grid-cols-2 h-12">
+              <TabsTrigger value="voice" className="flex items-center gap-2 text-sm font-medium">
+                <Mic className="h-4 w-4" />
+                Voice
+              </TabsTrigger>
+              <TabsTrigger value="text" className="flex items-center gap-2 text-sm font-medium">
+                <MessageSquare className="h-4 w-4" />
+                Text
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          {/* Voice Tab Content */}
-          <TabsContent value="voice" className="mt-8">
+          <TabsContent value="voice" className="mt-0">
             <VoiceTab />
           </TabsContent>
 
-          {/* Text Tab Content */}
-          <TabsContent value="text" className="mt-8">
+          <TabsContent value="text" className="mt-0">
             <TextTab />
           </TabsContent>
         </Tabs>

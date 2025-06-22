@@ -4,7 +4,6 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import * as React from 'react';
 
-import { ApiKeyBanner } from '@/components/api-key-banner';
 import { UserMenu } from '@/components/auth/user-menu';
 import { Logo } from '@/components/logo';
 import {
@@ -25,28 +24,38 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const pathname = usePathname();
 
   return (
-    <Sidebar {...props}>
-      <SidebarHeader className="h-[60px] px-[21px]">
-        <div className="flex h-full items-center justify-between px-1 pl-0">
-          <Link href="/">
-            <Logo className="dark:text-white" height={16} />
+    <Sidebar {...props} className="border-r border-border/40">
+      <SidebarHeader className="h-16 border-b border-border/40">
+        <div className="flex h-full items-center justify-between px-4">
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">AI</span>
+            </div>
+            <span className="font-semibold">Email Assistant</span>
           </Link>
           <UserMenu />
         </div>
       </SidebarHeader>
-      <SidebarContent>
+      
+      <SidebarContent className="px-2">
         {demos.map((demo) => (
           <SidebarGroup key={demo.name}>
-            <SidebarGroupLabel>{demo.name}</SidebarGroupLabel>
+            <SidebarGroupLabel className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
+              {demo.name}
+            </SidebarGroupLabel>
             <SidebarGroupContent>
               <SidebarMenu>
                 {demo.items.map((item) => (
                   <SidebarMenuItem key={item.name}>
-                    <SidebarMenuButton asChild isActive={pathname === `/${item.slug}`}>
-                      <a href={`/${item.slug}`}>
-                        {item.icon && <item.icon className="!h-[18px] !w-[18px] stroke-[2]" />}
-                        {item.name}
-                      </a>
+                    <SidebarMenuButton 
+                      asChild 
+                      isActive={pathname === `/${item.slug}`}
+                      className="h-10"
+                    >
+                      <Link href={`/${item.slug}`} className="flex items-center space-x-3">
+                        {item.icon && <item.icon className="h-4 w-4" />}
+                        <span>{item.name}</span>
+                      </Link>
                     </SidebarMenuButton>
                   </SidebarMenuItem>
                 ))}
@@ -55,10 +64,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroup>
         ))}
       </SidebarContent>
-      <SidebarFooter className="p-4">
-        <div className="flex w-full flex-col gap-2">
-          {/* <div className="text-muted-foreground text-xs">API Configuration</div> */}
-          {/* <ApiKeyBanner variant="sidebar" /> */}
+      
+      <SidebarFooter className="p-4 border-t border-border/40">
+        <div className="text-xs text-muted-foreground">
+          Powered by ElevenLabs & PicaOS
         </div>
       </SidebarFooter>
     </Sidebar>
