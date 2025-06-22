@@ -15,11 +15,6 @@ export async function POST(request: Request) {
     process.env.PICA_SECRET_KEY as string,
     {
       connectors: connectionIds,
-      // headers: {
-      //   "Access-Control-Allow-Origin": "*",
-      //   "Access-Control-Allow-Methods": "POST, GET, PUT, DELETE, OPTIONS",
-      //   "Access-Control-Allow-Headers": "Content-Type",
-      // }
     },
   );
 
@@ -30,7 +25,7 @@ export async function POST(request: Request) {
     system: systemPrompt,
     tools: { ...pica.oneTool },
     messages: messages,
-    maxSteps: 5,
+    maxSteps: 100,
   });
 
   if (!stream.textStream) {

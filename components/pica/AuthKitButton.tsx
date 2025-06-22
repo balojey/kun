@@ -55,8 +55,6 @@ export function AuthKitButton({
 
   const handleAuthKitSuccess = async (connectionId: string, provider: string) => {
     console.log('Connection successful:', connectionId, provider);
-    // Remove '|' and everything after it from connectionId
-    connectionId = connectionId.split('|')[0];
     try {
       // Store the connection in Supabase
       const { error } = await supabase
