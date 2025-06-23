@@ -4,6 +4,7 @@ import { useAuthContext } from '@/components/auth/auth-provider';
 import { LandingPage } from '@/components/landing/landing-page';
 import { HomePage } from '@/components/home/home-page';
 import { AppHeader } from '@/components/app-header';
+import { GmailGuard } from '@/components/auth/gmail-guard';
 
 export default function RootPage() {
   const { user, loading } = useAuthContext();
@@ -21,13 +22,15 @@ export default function RootPage() {
     return <LandingPage />;
   }
 
-  // Show home page for authenticated users with header
+  // Show home page for authenticated users with Gmail guard
   return (
-    <div className="min-h-screen bg-background">
-      <AppHeader />
-      <main className="container mx-auto px-6 py-8">
-        <HomePage />
-      </main>
-    </div>
+    <GmailGuard>
+      <div className="min-h-screen bg-background">
+        <AppHeader />
+        <main className="container mx-auto px-6 py-8">
+          <HomePage />
+        </main>
+      </div>
+    </GmailGuard>
   );
 }
