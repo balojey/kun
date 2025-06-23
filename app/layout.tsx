@@ -34,22 +34,17 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="en" suppressHydrationWarning className={`dark ${inter.variable}`}>
+    <html lang="en" suppressHydrationWarning className={inter.variable}>
       <body className="font-sans">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          enableSystem={false}
-          forcedTheme="dark"
-          disableTransitionOnChange
+          enableSystem={true}
+          disableTransitionOnChange={false}
         >
           <AuthProvider>
             <AuthGuard>
-              <main className="flex-1">
-                <div className="container mx-auto px-6 py-8">
-                  {children}
-                </div>
-              </main>
+              {children}
             </AuthGuard>
           </AuthProvider>
           <Toaster />
