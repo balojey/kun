@@ -12,29 +12,62 @@ export function HomePage() {
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
       {/* Hero Section */}
-      <div className="text-center space-y-4 py-8">
+      {/* <div className="text-center space-y-4 py-8">
         <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gradient">
           Aven Assistant
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
           Manage your emails and connected tools through natural voice and text conversations
         </p>
-      </div>
+      </div> */}
 
       {/* Tab Interface */}
       <div className="w-full">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-center mb-8">
-            <TabsList className="grid w-full max-w-md grid-cols-2 h-12">
-              <TabsTrigger value="voice" className="flex items-center gap-2 text-sm font-medium">
-                <Mic className="h-4 w-4" />
-                Voice
-              </TabsTrigger>
-              <TabsTrigger value="text" className="flex items-center gap-2 text-sm font-medium">
-                <MessageSquare className="h-4 w-4" />
-                Text
-              </TabsTrigger>
-            </TabsList>
+          <div className="w-full sticky top-17 z-30">
+            <div className="flex justify-center mb-8">
+              <TabsList
+                className="
+                  grid w-full max-w-md grid-cols-2 h-12
+                  bg-muted/60 rounded-xl shadow-md
+                  border border-border/40
+                  p-1 rounded-3xl
+                "
+              >
+                <TabsTrigger
+                  value="voice"
+                  className={`
+                    flex items-center justify-center gap-2 text-sm font-medium
+                    w-full h-full
+                    rounded-3xl transition-all duration-300 ease-in-out
+                    data-[state=active]:bg-primary data-[state=active]:text-primary-foreground
+                    data-[state=active]:shadow-xl
+                    data-[state=active]:ring-4 data-[state=active]:ring-primary/40
+                    data-[state=active]:scale-110
+                    data-[state=inactive]:opacity-80
+                  `}
+                >
+                  <Mic className="h-4 w-4" />
+                  Voice
+                </TabsTrigger>
+                <TabsTrigger
+                  value="text"
+                  className={`
+                    flex items-center justify-center gap-2 text-sm font-medium
+                    w-full h-full
+                    rounded-3xl transition-all duration-300 ease-in-out
+                    data-[state=active]:bg-primary data-[state=active]:text-primary-foreground
+                    data-[state=active]:shadow-xl
+                    data-[state=active]:ring-4 data-[state=active]:ring-primary/40
+                    data-[state=active]:scale-110
+                    data-[state=inactive]:opacity-80
+                  `}
+                >
+                  <MessageSquare className="h-4 w-4" />
+                  Text
+                </TabsTrigger>
+              </TabsList>
+            </div>
           </div>
 
           <TabsContent value="voice" className="mt-0">

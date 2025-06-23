@@ -88,9 +88,9 @@ export function LandingPage() {
                     "Voice-First Email Management."
                   ]}
                   className="bg-gradient-to-r from-primary via-blue-600 to-primary bg-clip-text text-transparent"
-                  speed={80}
-                  deleteSpeed={40}
-                  pauseDuration={3000}
+                  speed={180}
+                  deleteSpeed={90}
+                  pauseDuration={2500}
                 />
               </h1>
             </motion.div>

@@ -1,29 +1,9 @@
 import { deepseek } from "@ai-sdk/deepseek";
 import { streamText, CoreMessage } from "ai";
 import { Pica } from "@picahq/ai";
-import { createClient } from "@/lib/supabase/server";
 
 export async function POST(request: Request) {
-  const { messages }: { messages: CoreMessage[] } = await request.json();
-  
-  // Get user's connections for context
-  const supabase = await createClient();
-  const { data: { user } } = await supabase.auth.getUser();
-  
-  let connections: any[] = [];
-  if (user) {
-    const { data } = await supabase
-      .from('connections')
-      .select('*')
-      .eq('user_id', user.id);
-    connections = data || [];
-  }
-
-  const connectionIds = [
-    ...connections.map(c => c.connection_id),
-    ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
-  ];
-  console.log("Connections:", connectionIds);
+  const { messages, connectionIds }: { messages: CoreMessage[]; connectionIds: string[] } = await request.json();
   
   const pica = new Pica(
     process.env.PICA_SECRET_KEY as string,
@@ -59,13 +39,22 @@ If the user asks about things outside of your capability, reply gracefully and o
   const generatedPrompt = await pica.generateSystemPrompt();
   const systemPrompt = `${generatedPrompt}\n${customPrompt}`;
 
-  const result = streamText({
+  const stream = streamText({
     model: deepseek("deepseek-chat"),
-    system: systemPrompt || "You are a helpful AI assistant that can help manage emails and connected tools. Be conversational and helpful.",
+    system: systemPrompt,
     tools: { ...pica.oneTool },
     messages: messages,
     maxSteps: 100,
   });
 
-  return result.toDataStreamResponse();
+  if (!stream.textStream) {
+      throw new Error("Stream does not support text streaming.");
+  }
+
+  let responseText = '';
+  for await (const chunk of stream.textStream) {
+    responseText += chunk;
+  }
+  console.log('Pica response:', responseText);
+  return new Response(responseText.trim()) || new Response('Command executed successfully!');
 }

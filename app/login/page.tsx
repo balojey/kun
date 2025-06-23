@@ -13,7 +13,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
-import { login } from './action';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -37,13 +36,18 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginForm) => {
     setIsLoading(true);
-
     try {
-      const formData = new FormData();
-      formData.append('email', data.email);
-      formData.append('password', data.password);
-      await login(formData);
-    } catch (error) {
+      const { error } = await supabase.auth.signInWithPassword({
+        email: data.email,
+        password: data.password,
+      });
+      if (error) {
+        toast.error(error.message);
+        return;
+      }
+      // The context will update automatically
+      router.push('/');
+    } catch (error: any) {
       toast.error('An unexpected error occurred');
     } finally {
       setIsLoading(false);
