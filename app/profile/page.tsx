@@ -4,7 +4,8 @@ import { useAuthContext } from '@/components/auth/auth-provider';
 import { AppHeader } from '@/components/app-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { User, Mail, Calendar, Shield } from 'lucide-react';
+import { ThemeToggle } from '@/components/theme-toggle';
+import { User, Mail, Calendar, Shield, Palette } from 'lucide-react';
 
 export default function ProfilePage() {
   const { user } = useAuthContext();
@@ -79,6 +80,30 @@ export default function ProfilePage() {
                     </div>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Preferences Card */}
+          <Card className="border-0 shadow-sm">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Palette className="h-5 w-5" />
+                Preferences
+              </CardTitle>
+              <CardDescription>
+                Customize your Aven experience
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium">Theme</p>
+                  <p className="text-sm text-muted-foreground">
+                    Choose your preferred color scheme
+                  </p>
+                </div>
+                <ThemeToggle />
               </div>
             </CardContent>
           </Card>
