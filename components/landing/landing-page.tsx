@@ -7,9 +7,9 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
-import { ParticleBackground } from '@/components/landing/particle-background';
 import { TypingAnimation } from '@/components/landing/typing-animation';
 import { AnimatedButton } from '@/components/landing/animated-button';
+import { ThreeBackground } from '@/components/landing/three-background';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -27,9 +27,9 @@ const staggerContainer = {
 
 export function LandingPage() {
   return (
-    <div className="min-h-screen bg-background w-full relative">
-      {/* Particle Background */}
-      <ParticleBackground />
+    <div className="min-h-screen bg-background w-full relative overflow-hidden">
+      {/* Three.js Animated Background */}
+      <ThreeBackground />
       
       {/* Navigation */}
       <motion.nav 
@@ -73,7 +73,7 @@ export function LandingPage() {
             animate="animate"
           >
             <motion.div variants={fadeInUp}>
-              <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium shadow-lg">
+              <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium shadow-lg bg-primary/10 text-primary border-primary/20">
                 <Zap className="mr-2 h-4 w-4" />
                 AI Voice for Your Inbox
               </Badge>
@@ -141,7 +141,7 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-32 w-full">
+      <section className="py-32 w-full relative">
         <div className="px-6 w-full max-w-7xl mx-auto">
           <motion.div 
             className="mx-auto max-w-2xl text-center mb-20"
@@ -186,7 +186,7 @@ export function LandingPage() {
               }
             ].map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
-                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full bg-card/50 backdrop-blur-sm">
+                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full bg-card/50 backdrop-blur-sm hover-lift">
                   <CardHeader className="pb-4">
                     <div className={`w-14 h-14 rounded-xl bg-${feature.color}-500/10 flex items-center justify-center mb-6 shadow-lg`}>
                       <feature.icon className={`h-7 w-7 text-${feature.color}-500`} />
