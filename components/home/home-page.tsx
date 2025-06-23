@@ -11,15 +11,6 @@ export function HomePage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-      {/* Hero Section */}
-      {/* <div className="text-center space-y-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gradient">
-          Aven Assistant
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Manage your emails and connected tools through natural voice and text conversations
-        </p>
-      </div> */}
 
       {/* Tab Interface */}
       <div className="w-full">

@@ -6,11 +6,10 @@ import { Send, Mic, Volume2, MicOff, VolumeX, Bot, User } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
+import { useConnections } from '@/hooks/use-connections';
 import ReactMarkdown from 'react-markdown';
 
 export function TextTab() {
@@ -19,11 +18,16 @@ export function TextTab() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-
   const { speak } = useSpeech();
+  const { connections } = useConnections();
+  const connectionIds = [
+    ...connections.map(c => c.connection_id),
+    ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
+  ];
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, stop, status } = useChat({
     api: '/api/chat',
+    body: { connectionIds },
     onFinish: async (message) => {
       if (isSpeechEnabled && message.content) {
         try {
