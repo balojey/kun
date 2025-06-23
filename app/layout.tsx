@@ -10,8 +10,9 @@ import './globals.css';
 
 const inter = Inter({ 
   subsets: ['latin'],
-  variable: '--font-sans',
+  variable: '--font-inter',
   display: 'swap',
+  weight: ['300', '400', '500', '600', '700'],
 });
 
 export const metadata: Metadata = {
@@ -35,7 +36,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
 
   return (
     <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <body className="font-sans">
+      <body className="font-inter antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
