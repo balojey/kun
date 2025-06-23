@@ -29,9 +29,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         <div className="flex h-full items-center justify-between px-4">
           <Link href="/" className="flex items-center space-x-2">
             <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">AI</span>
+              <span className="text-primary-foreground font-bold text-sm">A</span>
             </div>
-            <span className="font-semibold">Email Assistant</span>
+            <span className="font-semibold">Aven</span>
           </Link>
           <UserMenu />
         </div>

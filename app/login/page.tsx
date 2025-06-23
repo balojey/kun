@@ -39,22 +39,10 @@ export default function LoginPage() {
     setIsLoading(true);
 
     try {
-      // const { error } = await supabase.auth.signInWithPassword({
-      //   email: data.email,
-      //   password: data.password,
-      // });
       const formData = new FormData();
       formData.append('email', data.email);
       formData.append('password', data.password);
       await login(formData);
-
-      // if (error) {
-      //   toast.error(error.message);
-      //   return;
-      // }
-
-      // toast.success('Successfully signed in!');
-      // router.push('/');
     } catch (error) {
       toast.error('An unexpected error occurred');
     } finally {
@@ -64,11 +52,21 @@ export default function LoginPage() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
+      {/* Header */}
+      <div className="absolute top-0 left-0 right-0 p-6">
+        <Link href="/" className="flex items-center space-x-2">
+          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+            <span className="text-primary-foreground font-bold text-sm">A</span>
+          </div>
+          <span className="font-bold text-xl">Aven</span>
+        </Link>
+      </div>
+
       <Card className="w-full max-w-md">
         <CardHeader className="space-y-1">
-          <CardTitle className="text-2xl font-bold text-center">Sign in</CardTitle>
+          <CardTitle className="text-2xl font-bold text-center">Welcome back</CardTitle>
           <CardDescription className="text-center">
-            Enter your email and password to access your account
+            Sign in to your Aven account
           </CardDescription>
         </CardHeader>
         <CardContent>

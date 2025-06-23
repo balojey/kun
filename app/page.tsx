@@ -1,51 +1,25 @@
 'use client';
 
-import { useState } from 'react';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { VoiceTab } from '@/components/home/voice-tab';
-import { TextTab } from '@/components/home/text-tab';
-import { Mic, MessageSquare } from 'lucide-react';
+import { useAuthContext } from '@/components/auth/auth-provider';
+import { LandingPage } from '@/components/landing/landing-page';
+import { HomePage } from '@/components/home/home-page';
 
-export default function HomePage() {
-  const [activeTab, setActiveTab] = useState('voice');
+export default function RootPage() {
+  const { user, loading } = useAuthContext();
 
-  return (
-    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-      {/* Hero Section */}
-      <div className="text-center space-y-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-bold tracking-tight text-gradient">
-          AI Email Assistant
-        </h1>
-        <p className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-          Manage your emails and connected tools through natural voice and text conversations
-        </p>
+  if (loading) {
+    return (
+      <div className="flex h-screen items-center justify-center">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
       </div>
+    );
+  }
 
-      {/* Tab Interface */}
-      <div className="w-full">
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="flex justify-center mb-8">
-            <TabsList className="grid w-full max-w-md grid-cols-2 h-12">
-              <TabsTrigger value="voice" className="flex items-center gap-2 text-sm font-medium">
-                <Mic className="h-4 w-4" />
-                Voice
-              </TabsTrigger>
-              <TabsTrigger value="text" className="flex items-center gap-2 text-sm font-medium">
-                <MessageSquare className="h-4 w-4" />
-                Text
-              </TabsTrigger>
-            </TabsList>
-          </div>
+  // Show landing page for unauthenticated users
+  if (!user) {
+    return <LandingPage />;
+  }
 
-          <TabsContent value="voice" className="mt-0">
-            <VoiceTab />
-          </TabsContent>
-
-          <TabsContent value="text" className="mt-0">
-            <TextTab />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
-  );
+  // Show home page for authenticated users
+  return <HomePage />;
 }

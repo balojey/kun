@@ -19,15 +19,15 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: 'AI Email Assistant',
-    template: '%s | AI Email Assistant',
+    default: 'Aven - AI Voice Assistant for Email',
+    template: '%s | Aven',
   },
-  metadataBase: new URL('https://elevenlabs-playground.vercel.app'),
-  description: 'Manage your emails and connected tools with AI-powered voice and text conversations.',
+  metadataBase: new URL('https://aven.ai'),
+  description: 'Transform your email productivity with Aven, the AI voice assistant that helps you manage, reply to, and organize emails through natural conversation.',
   openGraph: {
-    title: 'AI Email Assistant',
-    description: 'Manage your emails and connected tools with AI-powered voice and text conversations.',
-    images: [`/api/og?title=AI Email Assistant`],
+    title: 'Aven - AI Voice Assistant for Email',
+    description: 'Transform your email productivity with Aven, the AI voice assistant that helps you manage, reply to, and organize emails through natural conversation.',
+    images: [`/api/og?title=Aven`],
   },
   twitter: {
     card: 'summary_large_image',
@@ -60,7 +60,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
                     <div className="container flex h-16 items-center px-6">
                       <SidebarTrigger className="mr-4" />
                       <div className="flex items-center space-x-2">
-                        <h2 className="text-lg font-semibold tracking-tight">AI Email Assistant</h2>
+                        <h2 className="text-lg font-semibold tracking-tight">Aven</h2>
                       </div>
                     </div>
                   </header>

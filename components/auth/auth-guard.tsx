@@ -13,20 +13,20 @@ export function AuthGuard({ children }: AuthGuardProps) {
   const { user, loading } = useAuthContext();
   const router = useRouter();
   const pathname = usePathname();
-  console.log('AuthGuard:', { user, loading, pathname });
 
   useEffect(() => {
     if (loading) return;
 
-    if (!user) {
-      if (!pathname.startsWith('/login') && !pathname.startsWith('/signup')) {
-        router.push('/');
-      }
+    // Public routes that don't require authentication
+    const publicRoutes = ['/', '/login', '/signup'];
+    const isPublicRoute = publicRoutes.includes(pathname);
+
+    if (!user && !isPublicRoute) {
+      router.push('/');
       return;
     }
 
     if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
-      console.log('Redirecting to home from auth page');
       router.replace('/');
     }
   }, [user, loading, router, pathname]);
@@ -39,5 +39,17 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  return <>{children}</>;
+  // For authenticated users, show the full app layout
+  if (user) {
+    return <>{children}</>;
+  }
+
+  // For unauthenticated users on public routes, show minimal layout
+  const publicRoutes = ['/', '/login', '/signup'];
+  if (publicRoutes.includes(pathname)) {
+    return <div className="min-h-screen">{children}</div>;
+  }
+
+  // Fallback - shouldn't reach here due to redirect above
+  return null;
 }

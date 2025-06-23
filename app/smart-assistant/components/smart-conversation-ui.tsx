@@ -47,8 +47,8 @@ export default function SmartConversationUI() {
   
 
   const conversation = useConversation({
-    onConnect: () => toast.info('Connected to agent'),
-    onDisconnect: () => toast.info('Disconnected from agent'),
+    onConnect: () => toast.info('Connected to Aven assistant'),
+    onDisconnect: () => toast.info('Disconnected from Aven assistant'),
     onMessage: (message) => toast.info(`Message: ${message.message}`),
     onError: (error) => toast.error(`Error: ${error}`),
   });
@@ -341,7 +341,7 @@ export default function SmartConversationUI() {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-2">
-        <h1 className="text-3xl font-bold">Smart Assistant</h1>
+        <h1 className="text-3xl font-bold">Aven Assistant</h1>
         <p className="text-muted-foreground">
           Interact with your connected tools using voice or text
         </p>
