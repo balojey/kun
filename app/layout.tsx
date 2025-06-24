@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Inter } from 'next/font/google';
+import { Open_Sans } from 'next/font/google';
 
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { AuthGuard } from '@/components/auth/auth-guard';
@@ -8,9 +8,9 @@ import { Toaster } from '@/components/ui/sonner';
 
 import './globals.css';
 
-const inter = Inter({ 
+const openSans = Open_Sans({ 
   subsets: ['latin'],
-  variable: '--font-inter',
+  variable: '--font-open-sans',
   display: 'swap',
   weight: ['300', '400', '500', '600', '700'],
 });
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="en" suppressHydrationWarning className={inter.variable}>
-      <body className="font-inter antialiased">
+    <html lang="en" suppressHydrationWarning className={openSans.variable}>
+      <body className="font-open-sans antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"

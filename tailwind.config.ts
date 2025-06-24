@@ -10,7 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        inter: ['var(--font-inter)', 'system-ui', 'sans-serif'],
+        'open-sans': ['var(--font-open-sans)', 'system-ui', 'sans-serif'],
+        sans: ['var(--font-open-sans)', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

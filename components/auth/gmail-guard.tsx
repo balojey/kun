@@ -20,7 +20,7 @@ export function GmailGuard({ children }: GmailGuardProps) {
   useEffect(() => {
     // Only redirect if we have a user, finished loading, and confirmed no Gmail connection
     if (user && !authLoading && !gmailLoading && hasGmailConnection === false) {
-      router.replace('/connections');
+      router.replace('/connections?needsGmail=true');
     }
   }, [user, authLoading, gmailLoading, hasGmailConnection, router]);
 
@@ -71,7 +71,7 @@ export function GmailGuard({ children }: GmailGuardProps) {
             </CardDescription>
           </CardHeader>
           <CardContent className="text-center">
-            <Button onClick={() => router.push('/connections')} className="w-full">
+            <Button onClick={() => router.push('/connections?needsGmail=true')} className="w-full">
               Connect Gmail
             </Button>
           </CardContent>

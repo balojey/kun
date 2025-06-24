@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Trash2, RefreshCw, Plus, Unplug, ExternalLink, Zap } from 'lucide-react';
+import { Trash2, RefreshCw, Plus, Unplug, ExternalLink, Zap, ArrowLeft, Mail } from 'lucide-react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useConnections } from '@/hooks/use-connections';
 import { AuthKitButton } from '@/components/pica/AuthKitButton';
 import { getProviderInfo, PicaConnection } from '@/lib/pica';
@@ -20,12 +21,32 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Skeleton } from '@/components/ui/skeleton';
 import { AppHeader } from '@/components/app-header';
 
 export default function ConnectionsPage() {
   const { connections, loading, disconnectTool, refreshConnections } = useConnections();
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
+  const [showGmailDialog, setShowGmailDialog] = useState(false);
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  // Check if user was redirected due to missing Gmail
+  useEffect(() => {
+    const needsGmail = searchParams.get('needsGmail');
+    const hasGmailConnection = connections.some(conn => conn.provider === 'gmail');
+    
+    if (needsGmail === 'true' && !hasGmailConnection && !loading) {
+      setShowGmailDialog(true);
+    }
+  }, [searchParams, connections, loading]);
 
   const handleDisconnect = async (connection: PicaConnection) => {
     setDisconnecting(connection.id);
@@ -42,21 +63,77 @@ export default function ConnectionsPage() {
 
   const handleConnectionSuccess = () => {
     refreshConnections();
+    // Close the Gmail dialog if it's open
+    setShowGmailDialog(false);
   };
+
+  const handleBackToHome = () => {
+    router.push('/');
+  };
+
+  // Check if user has Gmail connection
+  const hasGmailConnection = connections.some(conn => conn.provider === 'gmail');
 
   return (
     <div className="min-h-screen bg-background">
       <AppHeader />
+      
+      {/* Gmail Setup Dialog */}
+      <Dialog open={showGmailDialog} onOpenChange={setShowGmailDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+                <Mail className="h-6 w-6 text-primary" />
+              </div>
+              <div>
+                <DialogTitle className="text-xl">Gmail Connection Required</DialogTitle>
+              </div>
+            </div>
+            <DialogDescription className="text-base leading-relaxed">
+              To use Aven, you need to connect your Gmail account. This allows your assistant to help manage your emails.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="flex flex-col gap-3 mt-4">
+            <AuthKitButton 
+              onSuccess={handleConnectionSuccess}
+              size="lg"
+              className="w-full"
+            />
+            <Button 
+              variant="outline" 
+              onClick={() => setShowGmailDialog(false)}
+              className="w-full"
+            >
+              I'll do this later
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
       <main className="container mx-auto px-6 py-8">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
           {/* Header */}
           <div className="space-y-4">
             <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-3xl font-bold tracking-tight">Connected Tools</h1>
-                <p className="text-muted-foreground text-lg">
-                  Manage your integrations and connected services
-                </p>
+              <div className="flex items-center gap-4">
+                {hasGmailConnection && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleBackToHome}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowLeft className="h-4 w-4" />
+                    Back to Home
+                  </Button>
+                )}
+                <div>
+                  <h1 className="text-3xl font-bold tracking-tight">Connected Tools</h1>
+                  <p className="text-muted-foreground text-lg">
+                    Manage your integrations and connected services
+                  </p>
+                </div>
               </div>
               <div className="flex items-center gap-3">
                 <Button
@@ -74,6 +151,25 @@ export default function ConnectionsPage() {
                 />
               </div>
             </div>
+
+            {/* Gmail Connection Notice */}
+            {!hasGmailConnection && (
+              <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-orange-500" />
+                    <div>
+                      <p className="font-medium text-orange-800 dark:text-orange-200">
+                        Gmail Connection Required
+                      </p>
+                      <p className="text-sm text-orange-700 dark:text-orange-300">
+                        Connect your Gmail account to start using Aven's email assistant features.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {loading ? (
@@ -155,6 +251,7 @@ export default function ConnectionsPage() {
                   {connections.map((connection) => {
                     const providerInfo = getProviderInfo(connection.provider);
                     const isDisconnecting = disconnecting === connection.id;
+                    const isGmail = connection.provider === 'gmail';
 
                     return (
                       <Card key={connection.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
@@ -165,7 +262,14 @@ export default function ConnectionsPage() {
                                 {providerInfo.icon}
                               </div>
                               <div>
-                                <CardTitle className="text-lg">{providerInfo.name}</CardTitle>
+                                <div className="flex items-center gap-2">
+                                  <CardTitle className="text-lg">{providerInfo.name}</CardTitle>
+                                  {isGmail && (
+                                    <Badge variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">
+                                      Required
+                                    </Badge>
+                                  )}
+                                </div>
                                 <CardDescription>
                                   Connected {formatDistanceToNow(new Date(connection.created_at), { addSuffix: true })}
                                 </CardDescription>
@@ -196,6 +300,7 @@ export default function ConnectionsPage() {
                                     <AlertDialogTitle>Disconnect {providerInfo.name}?</AlertDialogTitle>
                                     <AlertDialogDescription>
                                       This will remove the connection to {providerInfo.name} and revoke access.
+                                      {isGmail && ' You will need to reconnect Gmail to use Aven\'s email features.'}
                                       You can reconnect at any time.
                                     </AlertDialogDescription>
                                   </AlertDialogHeader>
