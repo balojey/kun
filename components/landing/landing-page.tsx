@@ -53,6 +53,9 @@ export function LandingPage() {
           </motion.div>
           <div className="flex items-center space-x-4">
             <ThemeToggle />
+            <Link href="/pricing">
+              <AnimatedButton variant="ghost">Pricing</AnimatedButton>
+            </Link>
             <Link href="/login">
               <AnimatedButton variant="ghost">Sign In</AnimatedButton>
             </Link>
@@ -112,10 +115,12 @@ export function LandingPage() {
                   <ArrowRight className="ml-3 h-5 w-5" />
                 </AnimatedButton>
               </Link>
-              <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
-                <Mic className="mr-3 h-5 w-5" />
-                Watch Demo
-              </AnimatedButton>
+              <Link href="/pricing">
+                <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
+                  <Mic className="mr-3 h-5 w-5" />
+                  View Pricing
+                </AnimatedButton>
+              </Link>
             </motion.div>
 
             {/* Trust Indicators */}

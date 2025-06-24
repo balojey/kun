@@ -1,6 +1,6 @@
 'use client';
 
-import { Settings, User, Zap, Moon, Sun, LogOut, Monitor } from 'lucide-react';
+import { Settings, User, Zap, Moon, Sun, LogOut, Monitor, CreditCard } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useTheme } from 'next-themes';
 import { useAuthContext } from '@/components/auth/auth-provider';
@@ -60,6 +60,11 @@ export function SettingsMenu() {
         <DropdownMenuItem onClick={() => handleNavigation('/connections')}>
           <Zap className="mr-2 h-4 w-4" />
           <span>Connections</span>
+        </DropdownMenuItem>
+        
+        <DropdownMenuItem onClick={() => handleNavigation('/pricing')}>
+          <CreditCard className="mr-2 h-4 w-4" />
+          <span>Subscription</span>
         </DropdownMenuItem>
         
         <DropdownMenuSub>

@@ -2,6 +2,7 @@
 
 import { useAuthContext } from '@/components/auth/auth-provider';
 import { AppHeader } from '@/components/app-header';
+import { SubscriptionStatus } from '@/components/stripe/subscription-status';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ThemeToggle } from '@/components/theme-toggle';
@@ -83,6 +84,9 @@ export default function ProfilePage() {
               </div>
             </CardContent>
           </Card>
+
+          {/* Subscription Status */}
+          <SubscriptionStatus />
 
           {/* Preferences Card */}
           <Card className="border-0 shadow-sm">
