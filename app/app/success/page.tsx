@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/app-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, Loader2 } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2, Mail, Calendar, Mic } from 'lucide-react';
 import { useSubscription } from '@/hooks/use-subscription';
 
 export default function SuccessPage() {
@@ -43,9 +43,9 @@ export default function SuccessPage() {
                 <CheckCircle className="h-8 w-8 text-green-500" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Payment Successful!</CardTitle>
+                <CardTitle className="text-2xl">Welcome to Aven!</CardTitle>
                 <CardDescription className="text-lg mt-2">
-                  Thank you for your purchase. Your payment has been processed successfully.
+                  Your subscription is now active. Let's get you started with your AI email assistant.
                 </CardDescription>
               </div>
             </CardHeader>
@@ -59,7 +59,7 @@ export default function SuccessPage() {
               ) : (
                 <div className="space-y-4">
                   <p className="text-muted-foreground">
-                    Your account has been updated and you now have access to all features.
+                    Your Aven Shit subscription is now active! You have access to all premium features.
                   </p>
                   
                   {sessionId && (
@@ -72,7 +72,7 @@ export default function SuccessPage() {
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center">
                 <Button onClick={handleContinue} size="lg" className="flex items-center gap-2">
-                  Continue to App
+                  Start Using Aven
                   <ArrowRight className="h-4 w-4" />
                 </Button>
                 <Button 
@@ -89,45 +89,68 @@ export default function SuccessPage() {
           {/* Next Steps */}
           <Card>
             <CardHeader>
-              <CardTitle>What's Next?</CardTitle>
+              <CardTitle>Get Started with Aven</CardTitle>
+              <CardDescription>
+                Follow these steps to maximize your email productivity
+              </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid gap-4">
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-medium text-primary">1</span>
+                  <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Mail className="h-4 w-4 text-blue-500" />
                   </div>
                   <div>
-                    <h3 className="font-medium">Connect Your Tools</h3>
+                    <h3 className="font-medium">Connect Your Gmail</h3>
                     <p className="text-sm text-muted-foreground">
-                      Link your Gmail, Calendar, and other productivity tools to get started.
+                      Link your Gmail account so Aven can help manage your emails with voice commands.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-medium text-primary">2</span>
+                  <div className="w-8 h-8 rounded-full bg-green-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Calendar className="h-4 w-4 text-green-500" />
                   </div>
                   <div>
-                    <h3 className="font-medium">Start Using Voice Commands</h3>
+                    <h3 className="font-medium">Add Calendar Integration</h3>
                     <p className="text-sm text-muted-foreground">
-                      Try speaking to your AI assistant to manage emails and tasks.
+                      Connect Google Calendar to schedule meetings and manage your time with voice.
                     </p>
                   </div>
                 </div>
                 
                 <div className="flex items-start gap-3">
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                    <span className="text-xs font-medium text-primary">3</span>
+                  <div className="w-8 h-8 rounded-full bg-purple-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+                    <Mic className="h-4 w-4 text-purple-500" />
                   </div>
                   <div>
-                    <h3 className="font-medium">Explore Features</h3>
+                    <h3 className="font-medium">Try Voice Commands</h3>
                     <p className="text-sm text-muted-foreground">
-                      Discover all the ways Aven can help boost your productivity.
+                      Start with simple commands like "show me unread emails" or "archive all newsletters."
                     </p>
                   </div>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Support */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Need Help?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-sm text-muted-foreground mb-4">
+                Our team is here to help you get the most out of Aven. Reach out anytime!
+              </p>
+              <div className="flex gap-3">
+                <Button variant="outline" size="sm">
+                  View Documentation
+                </Button>
+                <Button variant="outline" size="sm">
+                  Contact Support
+                </Button>
               </div>
             </CardContent>
           </Card>

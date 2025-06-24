@@ -53,25 +53,27 @@ export default function PublicPricingPage() {
       </header>
 
       <main className="container mx-auto px-6 py-8">
-        <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
+        <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
           {/* Header */}
           <div className="text-center space-y-4">
-            <h1 className="text-4xl font-bold tracking-tight">Choose Your Plan</h1>
-            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Transform your email productivity with Aven. Choose the plan that fits your needs and start your journey to inbox zero.
+            <h1 className="text-3xl font-bold tracking-tight">Pricing</h1>
+            <p className="text-muted-foreground text-lg">
+              Choose the plan that works best for you
             </p>
           </div>
 
           {/* Products Grid */}
-          <div className="grid gap-8 md:grid-cols-3 max-w-5xl mx-auto">
-            {STRIPE_PRODUCTS.map((product, index) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                isCurrentPlan={user ? currentProductName === product.name : false}
-                featured={index === 1} // Make Alpha (middle plan) featured
-              />
-            ))}
+          <div className="flex justify-center">
+            <div className="w-full max-w-md">
+              {STRIPE_PRODUCTS.map((product) => (
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  isCurrentPlan={user ? currentProductName === product.name : false}
+                  featured={true}
+                />
+              ))}
+            </div>
           </div>
 
           {/* Value Proposition */}
@@ -112,21 +114,15 @@ export default function PublicPricingPage() {
             <h2 className="text-2xl font-semibold">Frequently Asked Questions</h2>
             <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto text-left">
               <div className="space-y-2">
-                <h3 className="font-medium">Can I change plans anytime?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Yes, you can upgrade or downgrade your plan at any time. Changes take effect immediately with prorated billing.
-                </p>
-              </div>
-              <div className="space-y-2">
                 <h3 className="font-medium">Is there a free trial?</h3>
                 <p className="text-sm text-muted-foreground">
-                  All plans come with a 14-day free trial. No credit card required to start exploring Aven's features.
+                  Yes! Start with a 14-day free trial. No credit card required to explore Aven's features.
                 </p>
               </div>
               <div className="space-y-2">
                 <h3 className="font-medium">What integrations are included?</h3>
                 <p className="text-sm text-muted-foreground">
-                  All plans include Gmail, Google Calendar, Docs, Sheets. Alpha adds more tools, Gamma includes custom integrations.
+                  Gmail, Google Calendar, Docs, Sheets, and more. Connect all your productivity tools seamlessly.
                 </p>
               </div>
               <div className="space-y-2">
@@ -136,15 +132,21 @@ export default function PublicPricingPage() {
                 </p>
               </div>
               <div className="space-y-2">
+                <h3 className="font-medium">Can I cancel anytime?</h3>
+                <p className="text-sm text-muted-foreground">
+                  Absolutely. Cancel your subscription anytime with no cancellation fees or hidden charges.
+                </p>
+              </div>
+              <div className="space-y-2">
                 <h3 className="font-medium">Do you offer refunds?</h3>
                 <p className="text-sm text-muted-foreground">
                   Yes, we offer a 30-day money-back guarantee if you're not completely satisfied with Aven.
                 </p>
               </div>
               <div className="space-y-2">
-                <h3 className="font-medium">Can I cancel anytime?</h3>
+                <h3 className="font-medium">How does voice control work?</h3>
                 <p className="text-sm text-muted-foreground">
-                  Absolutely. Cancel your subscription anytime with no cancellation fees or hidden charges.
+                  Simply speak naturally to Aven. Say things like "archive all emails from last week" or "schedule a meeting for tomorrow."
                 </p>
               </div>
             </div>

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useCheckout } from '@/hooks/use-checkout';
 import { StripeProduct } from '@/src/stripe-config';
-import { Loader2, Check, Star } from 'lucide-react';
+import { Loader2, Check, Zap } from 'lucide-react';
 
 interface ProductCardProps {
   product: StripeProduct;
@@ -28,62 +28,28 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
       return 'ring-2 ring-primary border-primary/50 bg-primary/5';
     }
     if (featured) {
-      return 'ring-2 ring-blue-500 border-blue-500/50 bg-blue-50 dark:bg-blue-950/20 relative scale-105';
+      return 'ring-2 ring-blue-500 border-blue-500/50 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 relative scale-105 shadow-xl';
     }
     return 'hover:shadow-lg transition-all duration-200 hover:scale-102';
   };
 
-  const getButtonVariant = () => {
-    if (isCurrentPlan) return 'outline';
-    if (featured) return 'default';
-    return 'outline';
-  };
-
   const getFeatures = () => {
-    const baseFeatures = [
+    return [
       'AI Voice Assistant',
-      'Email Management',
-      'Basic Tool Integrations',
-      '14-day Free Trial',
-    ];
-
-    const alphaFeatures = [
-      ...baseFeatures,
+      'Natural Language Email Management',
+      'Gmail Integration',
+      'Google Calendar Sync',
+      'Smart Email Replies',
+      'Voice-to-Text Commands',
+      'Inbox Zero Automation',
       'Priority Support',
-      'Advanced Analytics',
-      'Extended Integrations',
-      'Custom Voice Commands',
+      'Enterprise Security',
+      '99.9% Uptime SLA',
     ];
-
-    const gammaFeatures = [
-      ...alphaFeatures,
-      'Team Management',
-      'Custom Integrations',
-      'API Access',
-      'Dedicated Account Manager',
-    ];
-
-    switch (product.name) {
-      case 'Alpha':
-        return alphaFeatures;
-      case 'Gamma':
-        return gammaFeatures;
-      default:
-        return baseFeatures;
-    }
   };
 
   return (
     <Card className={getCardStyles()}>
-      {featured && (
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <Badge className="bg-blue-500 text-white border-blue-500">
-            <Star className="h-3 w-3 mr-1" />
-            Most Popular
-          </Badge>
-        </div>
-      )}
-      
       {isCurrentPlan && (
         <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
           <Badge className="bg-primary text-primary-foreground">
@@ -93,54 +59,57 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
         </div>
       )}
       
-      <CardHeader className="text-center pb-4">
-        <CardTitle className="text-2xl font-bold">{product.name}</CardTitle>
-        <div className="space-y-2">
-          <div className="text-4xl font-bold text-primary">
-            {product.price}
-            <span className="text-sm font-normal text-muted-foreground">/month</span>
+      <CardHeader className="text-center pb-6">
+        <div className="flex items-center justify-center gap-2 mb-4">
+          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
+            <Zap className="h-6 w-6 text-primary" />
           </div>
-          <CardDescription className="text-base">
-            {product.description}
-          </CardDescription>
         </div>
+        <CardTitle className="text-2xl font-bold mb-2">{product.name}</CardTitle>
+        <CardDescription className="text-base leading-relaxed">
+          {product.description}
+        </CardDescription>
       </CardHeader>
       
       <CardContent className="space-y-6">
         {/* Features */}
         <div className="space-y-3">
+          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+            What's Included
+          </h4>
           {getFeatures().map((feature, index) => (
-            <div key={index} className="flex items-center gap-2">
+            <div key={index} className="flex items-center gap-3">
               <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
               <span className="text-sm">{feature}</span>
             </div>
           ))}
         </div>
         
-        <Button 
-          onClick={handlePurchase}
-          disabled={loading || isCurrentPlan}
-          variant={getButtonVariant()}
-          className={`w-full ${featured ? 'bg-blue-500 hover:bg-blue-600' : ''}`}
-          size="lg"
-        >
-          {loading ? (
-            <>
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-              Processing...
-            </>
-          ) : isCurrentPlan ? (
-            'Current Plan'
-          ) : (
-            `Subscribe to ${product.name}`
+        <div className="pt-4 border-t">
+          <Button 
+            onClick={handlePurchase}
+            disabled={loading || isCurrentPlan}
+            className="w-full"
+            size="lg"
+          >
+            {loading ? (
+              <>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Processing...
+              </>
+            ) : isCurrentPlan ? (
+              'Current Plan'
+            ) : (
+              `Get ${product.name}`
+            )}
+          </Button>
+          
+          {!isCurrentPlan && (
+            <p className="text-xs text-muted-foreground text-center mt-3">
+              Start your free trial • Cancel anytime • No hidden fees
+            </p>
           )}
-        </Button>
-        
-        {!isCurrentPlan && (
-          <p className="text-xs text-muted-foreground text-center">
-            Cancel anytime. No hidden fees.
-          </p>
-        )}
+        </div>
       </CardContent>
     </Card>
   );
