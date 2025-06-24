@@ -181,7 +181,7 @@ export function TextTab() {
                   <Bot className="h-4 w-4 text-primary" />
                 </div>
                 <div className="bg-muted rounded-2xl px-4 py-3 flex items-center">
-                  <span className="text-sm text-muted-foreground mr-2">Aven is working</span>
+                  <span className="text-sm text-muted-foreground mr-2">Working</span>
                   <div className="flex items-center gap-1">
                     <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse" />
                     <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-100" />
