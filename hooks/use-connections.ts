@@ -46,8 +46,7 @@ export function useConnections() {
 
   const disconnectTool = async (connection: PicaConnection) => {
     try {
-
-      // remove from our database
+      // Remove from our database
       const { error } = await supabase
         .from('connections')
         .delete()
@@ -67,6 +66,14 @@ export function useConnections() {
       toast.error('Failed to disconnect tool');
       return false;
     }
+  };
+
+  const getConnectionByAppType = (appType: string): PicaConnection | null => {
+    return connections.find(conn => conn.app_type === appType) || null;
+  };
+
+  const hasConnectionForAppType = (appType: string): boolean => {
+    return connections.some(conn => conn.app_type === appType);
   };
 
   const refreshConnections = () => {
@@ -108,5 +115,7 @@ export function useConnections() {
     error,
     disconnectTool,
     refreshConnections,
+    getConnectionByAppType,
+    hasConnectionForAppType,
   };
 }

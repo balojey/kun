@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthKit } from "@picahq/authkit";
+import { getAppTypeFromProvider, normalizeProvider } from '@/lib/pica';
 
 interface AuthKitButtonProps {
   onSuccess?: () => void;
@@ -56,22 +57,58 @@ export function AuthKitButton({
   const handleAuthKitSuccess = async (connectionId: string, provider: string) => {
     console.log('Connection successful:', connectionId, provider);
     try {
-      // Store the connection in Supabase
-      const { error } = await supabase
+      const normalizedProvider = normalizeProvider(provider);
+      const appType = getAppTypeFromProvider(normalizedProvider);
+
+      // Check for existing connection of the same app type
+      const { data: existingConnections, error: checkError } = await supabase
+        .from('connections')
+        .select('id, provider, app_type')
+        .eq('user_id', user!.id)
+        .eq('app_type', appType);
+
+      if (checkError) {
+        console.error('Failed to check existing connections:', checkError);
+        toast.error('Failed to check existing connections');
+        return;
+      }
+
+      // If there's an existing connection of the same app type, delete it
+      if (existingConnections && existingConnections.length > 0) {
+        const existingConnection = existingConnections[0];
+        
+        const { error: deleteError } = await supabase
+          .from('connections')
+          .delete()
+          .eq('id', existingConnection.id)
+          .eq('user_id', user!.id);
+
+        if (deleteError) {
+          console.error('Failed to delete existing connection:', deleteError);
+          toast.error('Failed to replace existing connection');
+          return;
+        }
+
+        toast.info(`Replaced existing ${existingConnection.provider} connection`);
+      }
+
+      // Store the new connection
+      const { error: insertError } = await supabase
         .from('connections')
         .insert({
           user_id: user!.id,
           connection_id: connectionId,
-          provider: provider,
+          provider: normalizedProvider,
+          app_type: appType,
         });
 
-      if (error) {
-        console.error('Failed to store connection:', error);
+      if (insertError) {
+        console.error('Failed to store connection:', insertError);
         toast.error('Failed to save connection');
         return;
       }
 
-      toast.success(`Successfully connected ${provider}!`);
+      toast.success(`Successfully connected ${normalizedProvider}!`);
       onSuccess?.();
     } catch (error) {
       console.error('Connection storage error:', error);

@@ -22,11 +22,12 @@ export function useGmailConnection() {
       setLoading(true);
       setError(null);
 
+      // Check for Gmail connection using app_type
       const { data, error: fetchError } = await supabase
         .from('connections')
         .select('id')
         .eq('user_id', user.id)
-        .eq('provider', 'gmail')
+        .eq('app_type', 'gmail')
         .limit(1);
 
       if (fetchError) {

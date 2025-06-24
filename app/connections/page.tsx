@@ -32,7 +32,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { AppHeader } from '@/components/app-header';
 
 export default function ConnectionsPage() {
-  const { connections, loading, disconnectTool, refreshConnections } = useConnections();
+  const { connections, loading, disconnectTool, refreshConnections, hasConnectionForAppType } = useConnections();
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
   const [showGmailDialog, setShowGmailDialog] = useState(false);
   const router = useRouter();
@@ -41,12 +41,12 @@ export default function ConnectionsPage() {
   // Check if user was redirected due to missing Gmail
   useEffect(() => {
     const needsGmail = searchParams.get('needsGmail');
-    const hasGmailConnection = connections.some(conn => conn.provider === 'gmail');
+    const hasGmail = hasConnectionForAppType('gmail');
     
-    if (needsGmail === 'true' && !hasGmailConnection && !loading) {
+    if (needsGmail === 'true' && !hasGmail && !loading) {
       setShowGmailDialog(true);
     }
-  }, [searchParams, connections, loading]);
+  }, [searchParams, hasConnectionForAppType, loading]);
 
   const handleDisconnect = async (connection: PicaConnection) => {
     setDisconnecting(connection.id);
@@ -72,7 +72,17 @@ export default function ConnectionsPage() {
   };
 
   // Check if user has Gmail connection
-  const hasGmailConnection = connections.some(conn => conn.provider === 'gmail');
+  const hasGmailConnection = hasConnectionForAppType('gmail');
+
+  // Group connections by app type for display
+  const connectionsByAppType = connections.reduce((acc, connection) => {
+    const appType = connection.app_type;
+    if (!acc[appType]) {
+      acc[appType] = [];
+    }
+    acc[appType].push(connection);
+    return acc;
+  }, {} as Record<string, PicaConnection[]>);
 
   return (
     <div className="min-h-screen bg-background">
@@ -170,6 +180,25 @@ export default function ConnectionsPage() {
                 </CardContent>
               </Card>
             )}
+
+            {/* Connection Replacement Notice */}
+            {connections.length > 0 && (
+              <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
+                <CardContent className="pt-6">
+                  <div className="flex items-center gap-3">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <div>
+                      <p className="font-medium text-blue-800 dark:text-blue-200">
+                        One Connection Per Tool Type
+                      </p>
+                      <p className="text-sm text-blue-700 dark:text-blue-300">
+                        Connecting a new account will replace your existing connection for that tool type.
+                      </p>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
           </div>
 
           {loading ? (
@@ -212,8 +241,8 @@ export default function ConnectionsPage() {
                     <div className="flex items-center space-x-2">
                       <div className="w-2 h-2 rounded-full bg-green-500" />
                       <div>
-                        <p className="text-2xl font-bold">{connections.length}</p>
-                        <p className="text-xs text-muted-foreground">Active Connections</p>
+                        <p className="text-2xl font-bold">{Object.keys(connectionsByAppType).length}</p>
+                        <p className="text-xs text-muted-foreground">App Types Connected</p>
                       </div>
                     </div>
                   </CardContent>
@@ -251,7 +280,7 @@ export default function ConnectionsPage() {
                   {connections.map((connection) => {
                     const providerInfo = getProviderInfo(connection.provider);
                     const isDisconnecting = disconnecting === connection.id;
-                    const isGmail = connection.provider === 'gmail';
+                    const isGmail = connection.app_type === 'gmail';
 
                     return (
                       <Card key={connection.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
@@ -269,6 +298,9 @@ export default function ConnectionsPage() {
                                       Required
                                     </Badge>
                                   )}
+                                  <Badge variant="outline" className="text-xs">
+                                    {connection.app_type}
+                                  </Badge>
                                 </div>
                                 <CardDescription>
                                   Connected {formatDistanceToNow(new Date(connection.created_at), { addSuffix: true })}
@@ -347,6 +379,9 @@ export default function ConnectionsPage() {
                         <h3 className="font-semibold text-lg">Connect another tool</h3>
                         <p className="text-muted-foreground">
                           Add more integrations to expand your automation capabilities
+                        </p>
+                        <p className="text-xs text-muted-foreground mt-2">
+                          Note: New connections will replace existing ones of the same type
                         </p>
                       </div>
                       <AuthKitButton
