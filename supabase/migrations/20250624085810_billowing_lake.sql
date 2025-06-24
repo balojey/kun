@@ -40,6 +40,9 @@ WHERE app_type IS NULL;
 -- Make app_type required
 ALTER TABLE connections ALTER COLUMN app_type SET NOT NULL;
 
+-- Update the existing unique constraint to include app_type
+ALTER TABLE connections DROP CONSTRAINT IF EXISTS connections_user_id_connection_id_key;
+
 -- Drop the old unique constraint if it exists
 DROP INDEX IF EXISTS connections_user_id_connection_id_key;
 
@@ -49,6 +52,3 @@ ON connections(user_id, app_type);
 
 -- Create index for efficient app_type queries
 CREATE INDEX IF NOT EXISTS connections_app_type_idx ON connections(app_type);
-
--- Update the existing unique constraint to include app_type
-ALTER TABLE connections DROP CONSTRAINT IF EXISTS connections_user_id_connection_id_key;
