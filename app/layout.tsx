@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import { Open_Sans } from 'next/font/google';
+import { Ubuntu } from 'next/font/google';
 
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { AuthGuard } from '@/components/auth/auth-guard';
@@ -8,11 +8,11 @@ import { Toaster } from '@/components/ui/sonner';
 
 import './globals.css';
 
-const openSans = Open_Sans({ 
+const ubuntu = Ubuntu({ 
   subsets: ['latin'],
-  variable: '--font-open-sans',
+  variable: '--font-ubuntu',
   display: 'swap',
-  weight: ['300', '400', '500', '600', '700'],
+  weight: ['300', '400', '500', '700'],
 });
 
 export const metadata: Metadata = {
@@ -35,8 +35,8 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="en" suppressHydrationWarning className={openSans.variable}>
-      <body className="font-open-sans antialiased">
+    <html lang="en" suppressHydrationWarning className={ubuntu.variable}>
+      <body className="font-ubuntu antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
