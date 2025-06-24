@@ -7,7 +7,16 @@ import { useSubscription } from '@/hooks/use-subscription';
 import { CreditCard, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
 
 export function SubscriptionStatus() {
-  const { subscription, loading, error, getProductName, isActive, isTrialing, isCanceled, isPastDue } = useSubscription();
+  const { 
+    subscription,
+    loading,
+    error,
+    getProductName,
+    isActive,
+    isTrialing,
+    isCanceled,
+    isPastDue
+  } = useSubscription();
 
   if (loading) {
     return (
