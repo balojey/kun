@@ -69,6 +69,11 @@ export function SubscriptionStatus() {
   }
 
   const getStatusBadge = () => {
+    // Add defensive check for subscription_status
+    if (!subscription.subscription_status) {
+      return <Badge variant="outline">Unknown Status</Badge>;
+    }
+
     if (isActive()) {
       return <Badge variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">Active</Badge>;
     }
@@ -134,13 +139,11 @@ export function SubscriptionStatus() {
           </div>
         )}
 
-        {subscription.cancel_at_period_end && (
+        {subscription.cancel_at_period_end && subscription.current_period_end && (
           <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
             <p className="text-sm text-yellow-700 dark:text-yellow-300">
               Your subscription will not renew and will end on{' '}
-              {subscription.current_period_end && 
-                new Date(subscription.current_period_end * 1000).toLocaleDateString()
-              }.
+              {new Date(subscription.current_period_end * 1000).toLocaleDateString()}.
             </p>
           </div>
         )}
