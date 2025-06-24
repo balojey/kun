@@ -1,18 +1,57 @@
 'use client';
 
-import { AppHeader } from '@/components/app-header';
+import Link from 'next/link';
+import { ArrowLeft } from 'lucide-react';
+import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/stripe/product-card';
-import { SubscriptionStatus } from '@/components/stripe/subscription-status';
 import { useSubscription } from '@/hooks/use-subscription';
+import { useAuthContext } from '@/components/auth/auth-provider';
 import { STRIPE_PRODUCTS } from '@/src/stripe-config';
+import { ThemeToggle } from '@/components/theme-toggle';
 
-export default function PricingPage() {
+export default function PublicPricingPage() {
+  const { user } = useAuthContext();
   const { subscription, getProductName } = useSubscription();
   const currentProductName = getProductName();
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
+      {/* Simple Header */}
+      <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div className="flex h-16 items-center justify-between px-6 w-full max-w-7xl mx-auto">
+          <Link href="/" className="flex items-center space-x-2">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
+              <span className="text-primary-foreground font-bold text-sm">A</span>
+            </div>
+            <span className="font-semibold text-xl">Aven</span>
+          </Link>
+          
+          <div className="flex items-center space-x-4">
+            <ThemeToggle />
+            <Link href="/">
+              <Button variant="ghost" size="sm" className="flex items-center gap-2">
+                <ArrowLeft className="h-4 w-4" />
+                Back to Home
+              </Button>
+            </Link>
+            {user ? (
+              <Link href="/app">
+                <Button>Open App</Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login">
+                  <Button variant="ghost">Sign In</Button>
+                </Link>
+                <Link href="/signup">
+                  <Button>Get Started</Button>
+                </Link>
+              </>
+            )}
+          </div>
+        </div>
+      </header>
+
       <main className="container mx-auto px-6 py-8">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
           {/* Header */}
@@ -23,16 +62,13 @@ export default function PricingPage() {
             </p>
           </div>
 
-          {/* Current Subscription Status */}
-          <SubscriptionStatus />
-
           {/* Products Grid */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {STRIPE_PRODUCTS.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
-                isCurrentPlan={currentProductName === product.name}
+                isCurrentPlan={user ? currentProductName === product.name : false}
               />
             ))}
           </div>

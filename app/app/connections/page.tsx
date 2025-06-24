@@ -68,7 +68,7 @@ export default function ConnectionsPage() {
   };
 
   const handleBackToHome = () => {
-    router.push('/');
+    router.push('/app');
   };
 
   // Check if user has Gmail connection

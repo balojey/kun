@@ -52,17 +52,17 @@ export function SettingsMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         
-        <DropdownMenuItem onClick={() => handleNavigation('/profile')}>
+        <DropdownMenuItem onClick={() => handleNavigation('/app/profile')}>
           <User className="mr-2 h-4 w-4" />
           <span>Profile</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={() => handleNavigation('/connections')}>
+        <DropdownMenuItem onClick={() => handleNavigation('/app/connections')}>
           <Zap className="mr-2 h-4 w-4" />
           <span>Connections</span>
         </DropdownMenuItem>
         
-        <DropdownMenuItem onClick={() => handleNavigation('/pricing')}>
+        <DropdownMenuItem onClick={() => handleNavigation('/app/pricing')}>
           <CreditCard className="mr-2 h-4 w-4" />
           <span>Subscription</span>
         </DropdownMenuItem>

@@ -2,9 +2,7 @@
 
 import { useAuthContext } from '@/components/auth/auth-provider';
 import { LandingPage } from '@/components/landing/landing-page';
-import { HomePage } from '@/components/home/home-page';
-import { AppHeader } from '@/components/app-header';
-import { GmailGuard } from '@/components/auth/gmail-guard';
+import { Loader2 } from 'lucide-react';
 
 export default function RootPage() {
   const { user, loading } = useAuthContext();
@@ -12,25 +10,11 @@ export default function RootPage() {
   if (loading) {
     return (
       <div className="flex h-screen items-center justify-center">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
       </div>
     );
   }
 
-  // Show landing page for unauthenticated users
-  if (!user) {
-    return <LandingPage />;
-  }
-
-  // Show home page for authenticated users with Gmail guard
-  return (
-    <GmailGuard>
-      <div className="min-h-screen bg-background">
-        <AppHeader />
-        <main className="container mx-auto px-6 py-8">
-          <HomePage />
-        </main>
-      </div>
-    </GmailGuard>
-  );
+  // Always show landing page at root, regardless of auth status
+  return <LandingPage />;
 }

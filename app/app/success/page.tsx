@@ -29,7 +29,7 @@ export default function SuccessPage() {
   }, [refetch]);
 
   const handleContinue = () => {
-    router.push('/');
+    router.push('/app');
   };
 
   return (
@@ -77,7 +77,7 @@ export default function SuccessPage() {
                 </Button>
                 <Button 
                   variant="outline" 
-                  onClick={() => router.push('/pricing')} 
+                  onClick={() => router.push('/app/pricing')} 
                   size="lg"
                 >
                   View Subscription

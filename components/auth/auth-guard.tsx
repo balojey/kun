@@ -18,16 +18,19 @@ export function AuthGuard({ children }: AuthGuardProps) {
     if (loading) return;
 
     // Public routes that don't require authentication
-    const publicRoutes = ['/', '/login', '/signup'];
+    const publicRoutes = ['/', '/login', '/signup', '/pricing'];
     const isPublicRoute = publicRoutes.includes(pathname);
 
-    if (!user && !isPublicRoute) {
+    // App routes that require authentication
+    const isAppRoute = pathname.startsWith('/app');
+
+    if (!user && isAppRoute) {
       router.push('/');
       return;
     }
 
     if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
-      router.replace('/');
+      router.replace('/app');
     }
   }, [user, loading, router, pathname]);
 
@@ -39,17 +42,5 @@ export function AuthGuard({ children }: AuthGuardProps) {
     );
   }
 
-  // For authenticated users, show the full app layout
-  if (user) {
-    return <>{children}</>;
-  }
-
-  // For unauthenticated users on public routes, show minimal layout
-  const publicRoutes = ['/', '/login', '/signup'];
-  if (publicRoutes.includes(pathname)) {
-    return <div className="min-h-screen">{children}</div>;
-  }
-
-  // Fallback - shouldn't reach here due to redirect above
-  return null;
+  return <>{children}</>;
 }

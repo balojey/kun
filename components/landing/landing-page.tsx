@@ -10,6 +10,7 @@ import { ThemeToggle } from '@/components/theme-toggle';
 import { TypingAnimation } from '@/components/landing/typing-animation';
 import { AnimatedButton } from '@/components/landing/animated-button';
 import { ThreeBackground } from '@/components/landing/three-background';
+import { useAuthContext } from '@/components/auth/auth-provider';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -26,6 +27,8 @@ const staggerContainer = {
 };
 
 export function LandingPage() {
+  const { user } = useAuthContext();
+
   return (
     <div className="min-h-screen bg-background w-full relative overflow-hidden">
       {/* Three.js Animated Background */}
@@ -56,12 +59,20 @@ export function LandingPage() {
             <Link href="/pricing">
               <AnimatedButton variant="ghost">Pricing</AnimatedButton>
             </Link>
-            <Link href="/login">
-              <AnimatedButton variant="ghost">Sign In</AnimatedButton>
-            </Link>
-            <Link href="/signup">
-              <AnimatedButton>Get Started</AnimatedButton>
-            </Link>
+            {user ? (
+              <Link href="/app">
+                <AnimatedButton>Open App</AnimatedButton>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login">
+                  <AnimatedButton variant="ghost">Sign In</AnimatedButton>
+                </Link>
+                <Link href="/signup">
+                  <AnimatedButton>Get Started</AnimatedButton>
+                </Link>
+              </>
+            )}
           </div>
         </div>
       </motion.nav>
@@ -109,12 +120,21 @@ export function LandingPage() {
               variants={fadeInUp}
               className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
             >
-              <Link href="/signup">
-                <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
-                  Get Started with Aven
-                  <ArrowRight className="ml-3 h-5 w-5" />
-                </AnimatedButton>
-              </Link>
+              {user ? (
+                <Link href="/app">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                    Open App
+                    <ArrowRight className="ml-3 h-5 w-5" />
+                  </AnimatedButton>
+                </Link>
+              ) : (
+                <Link href="/signup">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                    Get Started with Aven
+                    <ArrowRight className="ml-3 h-5 w-5" />
+                  </AnimatedButton>
+                </Link>
+              )}
               <Link href="/pricing">
                 <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
                   <Mic className="mr-3 h-5 w-5" />
@@ -226,17 +246,28 @@ export function LandingPage() {
               Join thousands of professionals who've revolutionized their workflow.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
-              <Link href="/signup">
-                <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
-                  Start Your Free Trial
-                  <ArrowRight className="ml-3 h-5 w-5" />
-                </AnimatedButton>
-              </Link>
-              <Link href="/login">
-                <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
-                  Sign In
-                </AnimatedButton>
-              </Link>
+              {user ? (
+                <Link href="/app">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                    Open App
+                    <ArrowRight className="ml-3 h-5 w-5" />
+                  </AnimatedButton>
+                </Link>
+              ) : (
+                <>
+                  <Link href="/signup">
+                    <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                      Start Your Free Trial
+                      <ArrowRight className="ml-3 h-5 w-5" />
+                    </AnimatedButton>
+                  </Link>
+                  <Link href="/login">
+                    <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
+                      Sign In
+                    </AnimatedButton>
+                  </Link>
+                </>
+              )}
             </div>
           </motion.div>
         </div>
