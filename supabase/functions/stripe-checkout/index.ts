@@ -177,14 +177,14 @@ Deno.serve(async (req) => {
       }
     }
 
-    // create Checkout Session
+    // create Checkout Session - removed quantity for metered billing compatibility
     const session = await stripe.checkout.sessions.create({
       customer: customerId,
       payment_method_types: ['card'],
       line_items: [
         {
           price: price_id,
-          quantity: 1,
+          // Removed quantity: 1 to support metered billing products
         },
       ],
       mode,
