@@ -7,8 +7,8 @@ import { useSubscription } from '@/hooks/use-subscription';
 import { STRIPE_PRODUCTS } from '@/src/stripe-config';
 
 export default function PricingPage() {
-  const { subscription, getProductName } = useSubscription();
-  const currentProductName = getProductName();
+  const subscriptionHook = useSubscription();
+  const currentProductName = subscriptionHook.getProductName();
 
   return (
     <div className="min-h-screen bg-background">
@@ -24,7 +24,7 @@ export default function PricingPage() {
           </div>
 
           {/* Current Subscription Status */}
-          <SubscriptionStatus />
+          <SubscriptionStatus {...subscriptionHook} />
 
           {/* Products Grid */}
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">

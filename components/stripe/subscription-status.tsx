@@ -3,21 +3,29 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { useSubscription } from '@/hooks/use-subscription';
 import { CreditCard, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
 
-export function SubscriptionStatus() {
-  const { 
-    subscription,
-    loading,
-    error,
-    getProductName,
-    isActive,
-    isTrialing,
-    isCanceled,
-    isPastDue
-  } = useSubscription();
+interface SubscriptionStatusProps {
+  subscription: any;
+  loading: boolean;
+  error: string | null;
+  getProductName: () => string | null;
+  isActive: () => boolean;
+  isTrialing: () => boolean;
+  isCanceled: () => boolean;
+  isPastDue: () => boolean;
+}
 
+export function SubscriptionStatus({
+  subscription,
+  loading,
+  error,
+  getProductName,
+  isActive,
+  isTrialing,
+  isCanceled,
+  isPastDue,
+}: SubscriptionStatusProps) {
   if (loading) {
     return (
       <Card>
@@ -69,7 +77,6 @@ export function SubscriptionStatus() {
   }
 
   const getStatusBadge = () => {
-    // Add defensive check for subscription_status
     if (!subscription.subscription_status) {
       return <Badge variant="outline">Unknown Status</Badge>;
     }
