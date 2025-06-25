@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useCheckout } from '@/hooks/use-checkout';
 import { StripeProduct } from '@/src/stripe-config';
-import { Loader2, Check, Zap } from 'lucide-react';
+import { Loader2, Check, Zap, Star } from 'lucide-react';
 
 interface ProductCardProps {
   product: StripeProduct;
@@ -33,19 +33,26 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
     return 'hover:shadow-lg transition-all duration-200 hover:scale-102';
   };
 
-  const getFeatures = () => {
-    return [
-      'AI Voice Assistant',
-      'Natural Language Email Management',
-      'Gmail Integration',
-      'Google Calendar Sync',
-      'Smart Email Replies',
-      'Voice-to-Text Commands',
-      'Inbox Zero Automation',
-      'Priority Support',
-      'Enterprise Security',
-      '99.9% Uptime SLA',
-    ];
+  const getTokenAmount = () => {
+    // Calculate approximate tokens based on price and rate
+    const rate = parseFloat(product.tokenRate.replace('$', ''));
+    const tokens = Math.floor(product.price / rate);
+    return tokens.toLocaleString();
+  };
+
+  const getBestValueBadge = () => {
+    // Delta has the best rate per token
+    if (product.name === 'Delta') {
+      return (
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+          <Badge className="bg-green-500 text-white">
+            <Star className="h-3 w-3 mr-1" />
+            Best Value
+          </Badge>
+        </div>
+      );
+    }
+    return null;
   };
 
   return (
@@ -59,6 +66,8 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
         </div>
       )}
       
+      {!isCurrentPlan && getBestValueBadge()}
+      
       <CardHeader className="text-center pb-6">
         <div className="flex items-center justify-center gap-2 mb-4">
           <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -66,9 +75,17 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
           </div>
         </div>
         <CardTitle className="text-2xl font-bold mb-2">{product.name}</CardTitle>
-        <CardDescription className="text-base leading-relaxed">
-          {product.description}
-        </CardDescription>
+        <div className="space-y-2">
+          <div className="text-3xl font-bold text-primary">
+            ${product.price}
+          </div>
+          <CardDescription className="text-base">
+            {product.description}
+          </CardDescription>
+          <div className="text-sm text-muted-foreground">
+            ~{getTokenAmount()} tokens
+          </div>
+        </div>
       </CardHeader>
       
       <CardContent className="space-y-6">
@@ -77,12 +94,28 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
           <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
             What's Included
           </h4>
-          {getFeatures().map((feature, index) => (
-            <div key={index} className="flex items-center gap-3">
+          <div className="space-y-2">
+            <div className="flex items-center gap-3">
               <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">{feature}</span>
+              <span className="text-sm">AI Voice Processing</span>
             </div>
-          ))}
+            <div className="flex items-center gap-3">
+              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+              <span className="text-sm">Email Management</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+              <span className="text-sm">Tool Integrations</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+              <span className="text-sm">Priority Support</span>
+            </div>
+            <div className="flex items-center gap-3">
+              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
+              <span className="text-sm">Rate: {product.tokenRate}/token</span>
+            </div>
+          </div>
         </div>
         
         <div className="pt-4 border-t">
@@ -100,13 +133,13 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
             ) : isCurrentPlan ? (
               'Current Plan'
             ) : (
-              `Get ${product.name}`
+              `Purchase ${product.name}`
             )}
           </Button>
           
           {!isCurrentPlan && (
             <p className="text-xs text-muted-foreground text-center mt-3">
-              Start your free trial • Cancel anytime • No hidden fees
+              One-time payment • Instant token credit • No recurring charges
             </p>
           )}
         </div>

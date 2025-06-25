@@ -3,36 +3,38 @@
 import { Badge } from '@/components/ui/badge';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { CreditCard, Calendar, AlertTriangle, CheckCircle } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { CreditCard, Calendar, AlertTriangle, CheckCircle, Zap, Plus } from 'lucide-react';
+import Link from 'next/link';
 
 interface SubscriptionStatusProps {
-  subscription: any;
-  loading: boolean;
-  error: string | null;
-  getProductName: () => string | null;
-  isActive: () => boolean;
-  isTrialing: () => boolean;
-  isCanceled: () => boolean;
-  isPastDue: () => boolean;
+  subscription?: any;
+  loading?: boolean;
+  error?: string | null;
+  getProductName?: () => string | null;
+  isActive?: () => boolean;
+  isTrialing?: () => boolean;
+  isCanceled?: () => boolean;
+  isPastDue?: () => boolean;
 }
 
 export function SubscriptionStatus({
   subscription,
-  loading,
-  error,
-  getProductName,
-  isActive,
-  isTrialing,
-  isCanceled,
-  isPastDue,
+  loading = false,
+  error = null,
+  getProductName = () => null,
+  isActive = () => false,
+  isTrialing = () => false,
+  isCanceled = () => false,
+  isPastDue = () => false,
 }: SubscriptionStatusProps) {
   if (loading) {
     return (
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
-            Subscription
+            <Zap className="h-5 w-5" />
+            Token Balance
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
@@ -50,7 +52,7 @@ export function SubscriptionStatus({
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <AlertTriangle className="h-5 w-5 text-destructive" />
-            Subscription Error
+            Account Error
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -60,100 +62,85 @@ export function SubscriptionStatus({
     );
   }
 
-  if (!subscription || !subscription.subscription_id) {
-    return (
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <CreditCard className="h-5 w-5" />
-            Subscription
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground">No active subscription</p>
-        </CardContent>
-      </Card>
-    );
-  }
-
-  const getStatusBadge = () => {
-    if (!subscription.subscription_status) {
-      return <Badge variant="outline">Unknown Status</Badge>;
-    }
-
-    if (isActive()) {
-      return <Badge variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">Active</Badge>;
-    }
-    if (isTrialing()) {
-      return <Badge variant="secondary" className="bg-blue-500/10 text-blue-500 border-blue-500/20">Trial</Badge>;
-    }
-    if (isPastDue()) {
-      return <Badge variant="destructive">Past Due</Badge>;
-    }
-    if (isCanceled()) {
-      return <Badge variant="outline" className="bg-gray-500/10 text-gray-500 border-gray-500/20">Canceled</Badge>;
-    }
-    return <Badge variant="outline">{subscription.subscription_status}</Badge>;
-  };
-
-  const getStatusIcon = () => {
-    if (isActive() || isTrialing()) {
-      return <CheckCircle className="h-5 w-5 text-green-500" />;
-    }
-    return <AlertTriangle className="h-5 w-5 text-yellow-500" />;
-  };
-
+  // For token-based system, we show token balance instead of subscription
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
-          {getStatusIcon()}
-          Subscription
+          <Zap className="h-5 w-5" />
+          Token Balance
         </CardTitle>
         <CardDescription>
-          Your current subscription status and details
+          Your available AI processing credits
         </CardDescription>
       </CardHeader>
       <CardContent className="space-y-4">
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Plan</span>
-          <span className="text-sm">{getProductName() || 'Unknown'}</span>
-        </div>
-        
-        <div className="flex items-center justify-between">
-          <span className="text-sm font-medium">Status</span>
-          {getStatusBadge()}
-        </div>
-
-        {subscription.current_period_end && (
-          <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">
-              {subscription.cancel_at_period_end ? 'Expires' : 'Renews'}
-            </span>
-            <div className="flex items-center gap-1 text-sm">
-              <Calendar className="h-3 w-3" />
-              {new Date(subscription.current_period_end * 1000).toLocaleDateString()}
+        {subscription ? (
+          <>
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Recent Purchase</span>
+              <span className="text-sm">{getProductName() || 'Token Package'}</span>
             </div>
+            
+            <div className="flex items-center justify-between">
+              <span className="text-sm font-medium">Status</span>
+              <Badge variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">
+                Active
+              </Badge>
+            </div>
+
+            {subscription.created_at && (
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium">Purchased</span>
+                <div className="flex items-center gap-1 text-sm">
+                  <Calendar className="h-3 w-3" />
+                  {new Date(subscription.created_at).toLocaleDateString()}
+                </div>
+              </div>
+            )}
+          </>
+        ) : (
+          <div className="text-center py-6">
+            <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
+              <Zap className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <h3 className="font-medium mb-2">No tokens purchased yet</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Purchase tokens to start using your AI voice assistant
+            </p>
+            <Link href="/app/pricing">
+              <Button size="sm">
+                <Plus className="h-4 w-4 mr-2" />
+                Buy Tokens
+              </Button>
+            </Link>
           </div>
         )}
 
-        {subscription.payment_method_brand && subscription.payment_method_last4 && (
+        <div className="pt-4 border-t">
           <div className="flex items-center justify-between">
-            <span className="text-sm font-medium">Payment Method</span>
-            <span className="text-sm">
-              {subscription.payment_method_brand.toUpperCase()} •••• {subscription.payment_method_last4}
+            <span className="text-sm font-medium">Available Tokens</span>
+            <span className="text-lg font-bold text-primary">
+              {/* This would come from your token balance API */}
+              --
             </span>
           </div>
-        )}
+          <p className="text-xs text-muted-foreground mt-1">
+            Tokens never expire and can be used for any AI operation
+          </p>
+        </div>
 
-        {subscription.cancel_at_period_end && subscription.current_period_end && (
-          <div className="mt-4 p-3 bg-yellow-500/10 border border-yellow-500/20 rounded-md">
-            <p className="text-sm text-yellow-700 dark:text-yellow-300">
-              Your subscription will not renew and will end on{' '}
-              {new Date(subscription.current_period_end * 1000).toLocaleDateString()}.
-            </p>
-          </div>
-        )}
+        <div className="flex gap-2">
+          <Link href="/app/pricing" className="flex-1">
+            <Button variant="outline" size="sm" className="w-full">
+              <Plus className="h-4 w-4 mr-2" />
+              Buy More Tokens
+            </Button>
+          </Link>
+          <Button variant="ghost" size="sm">
+            View Usage
+          </Button>
+        </div>
       </CardContent>
     </Card>
   );

@@ -4,15 +4,46 @@ export interface StripeProduct {
   name: string;
   description: string;
   mode: 'payment' | 'subscription';
+  price: number; // Price in dollars
+  tokenRate: string; // Rate per token for display
 }
 
 export const STRIPE_PRODUCTS: StripeProduct[] = [
   {
-    id: 'prod_SYmo3AG8yunq3N',
-    priceId: 'price_1RdfEiQLS5b9gMNer7aUjMXf',
-    name: 'Aven Shit',
-    description: 'Transform your email productivity with Aven, the AI voice assistant that helps you manage, reply to, and organize emails through natural conversation.',
-    mode: 'subscription',
+    id: 'prod_SZ2vf7eJcACRDZ',
+    priceId: 'price_1RdupuQLS5b9gMNe6IaboeNm',
+    name: 'Delta',
+    description: '@ $0.0002/Token',
+    mode: 'payment',
+    price: 249.99,
+    tokenRate: '$0.0002',
+  },
+  {
+    id: 'prod_SZ2tyv24Hj2tCh',
+    priceId: 'price_1RdunYQLS5b9gMNeTRak3KA5',
+    name: 'Gamma',
+    description: '@ $0.0003/Token',
+    mode: 'payment',
+    price: 149.99,
+    tokenRate: '$0.0003',
+  },
+  {
+    id: 'prod_SZ2tsWuP13AyrH',
+    priceId: 'price_1RdunEQLS5b9gMNeqqnqvQdd',
+    name: 'Alpha',
+    description: '@ $0.00036/Token',
+    mode: 'payment',
+    price: 69.99,
+    tokenRate: '$0.00036',
+  },
+  {
+    id: 'prod_SZ2scEg2ZfMZGq',
+    priceId: 'price_1RdumqQLS5b9gMNe5a9BpMh9',
+    name: 'Beta',
+    description: '@ $0.0004/Token',
+    mode: 'payment',
+    price: 19.99,
+    tokenRate: '$0.0004',
   },
 ];
 
@@ -22,4 +53,14 @@ export function getProductById(id: string): StripeProduct | undefined {
 
 export function getProductByPriceId(priceId: string): StripeProduct | undefined {
   return STRIPE_PRODUCTS.find(product => product.priceId === priceId);
+}
+
+// Helper function to get the most cost-effective product
+export function getRecommendedProduct(): StripeProduct {
+  return STRIPE_PRODUCTS.find(product => product.name === 'Delta') || STRIPE_PRODUCTS[0];
+}
+
+// Helper function to sort products by price (ascending)
+export function getProductsSortedByPrice(): StripeProduct[] {
+  return [...STRIPE_PRODUCTS].sort((a, b) => a.price - b.price);
 }

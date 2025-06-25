@@ -6,13 +6,16 @@ import { Button } from '@/components/ui/button';
 import { ProductCard } from '@/components/stripe/product-card';
 import { useSubscription } from '@/hooks/use-subscription';
 import { useAuthContext } from '@/components/auth/auth-provider';
-import { STRIPE_PRODUCTS } from '@/src/stripe-config';
+import { STRIPE_PRODUCTS, getProductsSortedByPrice } from '@/src/stripe-config';
 import { ThemeToggle } from '@/components/theme-toggle';
+import { Badge } from '@/components/ui/badge';
+import { Zap } from 'lucide-react';
 
 export default function PublicPricingPage() {
   const { user } = useAuthContext();
   const { subscription, getProductName } = useSubscription();
   const currentProductName = getProductName();
+  const sortedProducts = getProductsSortedByPrice();
 
   return (
     <div className="min-h-screen bg-background">
@@ -53,27 +56,30 @@ export default function PublicPricingPage() {
       </header>
 
       <main className="container mx-auto px-6 py-8">
-        <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
+        <div className="max-w-6xl mx-auto space-y-8 animate-fade-in">
           {/* Header */}
           <div className="text-center space-y-4">
-            <h1 className="text-3xl font-bold tracking-tight">Pricing</h1>
-            <p className="text-muted-foreground text-lg">
-              Choose the plan that works best for you
+            <Badge variant="secondary" className="mb-4 px-4 py-2">
+              <Zap className="mr-2 h-4 w-4" />
+              Token-Based Pricing
+            </Badge>
+            <h1 className="text-4xl font-bold tracking-tight">Choose Your Token Package</h1>
+            <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+              Purchase tokens to power your AI voice assistant. Pay once, use anytime. 
+              Lower rates per token with larger packages.
             </p>
           </div>
 
           {/* Products Grid */}
-          <div className="flex justify-center">
-            <div className="w-full max-w-md">
-              {STRIPE_PRODUCTS.map((product) => (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  isCurrentPlan={user ? currentProductName === product.name : false}
-                  featured={true}
-                />
-              ))}
-            </div>
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            {sortedProducts.map((product) => (
+              <ProductCard
+                key={product.id}
+                product={product}
+                isCurrentPlan={user ? currentProductName === product.name : false}
+                featured={product.name === 'Delta'}
+              />
+            ))}
           </div>
 
           {/* Value Proposition */}
@@ -81,72 +87,29 @@ export default function PublicPricingPage() {
             <div className="grid gap-6 md:grid-cols-3 max-w-4xl mx-auto">
               <div className="space-y-2">
                 <div className="w-12 h-12 rounded-full bg-green-500/10 flex items-center justify-center mx-auto">
-                  <span className="text-2xl">🚀</span>
+                  <span className="text-2xl">💰</span>
                 </div>
-                <h3 className="font-semibold">Instant Setup</h3>
+                <h3 className="font-semibold">Pay As You Use</h3>
                 <p className="text-sm text-muted-foreground">
-                  Get started in minutes with our simple onboarding process
+                  No monthly subscriptions. Only pay for the AI processing you actually use.
                 </p>
               </div>
               <div className="space-y-2">
                 <div className="w-12 h-12 rounded-full bg-blue-500/10 flex items-center justify-center mx-auto">
-                  <span className="text-2xl">🔒</span>
+                  <span className="text-2xl">⚡</span>
                 </div>
-                <h3 className="font-semibold">Enterprise Security</h3>
+                <h3 className="font-semibold">Instant Access</h3>
                 <p className="text-sm text-muted-foreground">
-                  Bank-level encryption and SOC 2 compliance for your peace of mind
+                  Tokens are credited immediately. Start using your AI assistant right away.
                 </p>
               </div>
               <div className="space-y-2">
                 <div className="w-12 h-12 rounded-full bg-purple-500/10 flex items-center justify-center mx-auto">
-                  <span className="text-2xl">📈</span>
+                  <span className="text-2xl">🔒</span>
                 </div>
-                <h3 className="font-semibold">Proven Results</h3>
+                <h3 className="font-semibold">Never Expire</h3>
                 <p className="text-sm text-muted-foreground">
-                  Users save 2+ hours daily on email management
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* FAQ Section */}
-          <div className="text-center space-y-6 pt-16 border-t">
-            <h2 className="text-2xl font-semibold">Frequently Asked Questions</h2>
-            <div className="grid gap-6 md:grid-cols-2 max-w-4xl mx-auto text-left">
-              <div className="space-y-2">
-                <h3 className="font-medium">Is there a free trial?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Yes! Start with a 14-day free trial. No credit card required to explore Aven's features.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">What integrations are included?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Gmail, Google Calendar, Docs, Sheets, and more. Connect all your productivity tools seamlessly.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">How secure is my data?</h3>
-                <p className="text-sm text-muted-foreground">
-                  We use enterprise-grade security with end-to-end encryption, SOC 2 compliance, and never store your email content.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">Can I cancel anytime?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Absolutely. Cancel your subscription anytime with no cancellation fees or hidden charges.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">Do you offer refunds?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Yes, we offer a 30-day money-back guarantee if you're not completely satisfied with Aven.
-                </p>
-              </div>
-              <div className="space-y-2">
-                <h3 className="font-medium">How does voice control work?</h3>
-                <p className="text-sm text-muted-foreground">
-                  Simply speak naturally to Aven. Say things like "archive all emails from last week" or "schedule a meeting for tomorrow."
+                  Your tokens never expire. Use them at your own pace whenever you need them.
                 </p>
               </div>
             </div>
@@ -154,14 +117,14 @@ export default function PublicPricingPage() {
 
           {/* CTA Section */}
           <div className="text-center space-y-4 pt-8">
-            <h2 className="text-xl font-semibold">Ready to transform your email workflow?</h2>
+            <h2 className="text-xl font-semibold">Ready to supercharge your productivity?</h2>
             <p className="text-muted-foreground">
-              Join thousands of professionals who've achieved inbox zero with Aven.
+              Join thousands of professionals using AI to manage their email and workflows.
             </p>
             {!user && (
               <div className="flex gap-4 justify-center">
                 <Link href="/signup">
-                  <Button size="lg">Start Free Trial</Button>
+                  <Button size="lg">Get Started Free</Button>
                 </Link>
                 <Link href="/login">
                   <Button variant="outline" size="lg">Sign In</Button>

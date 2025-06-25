@@ -5,14 +5,16 @@ import { useRouter, useSearchParams } from 'next/navigation';
 import { AppHeader } from '@/components/app-header';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, Loader2, Mail, Calendar, Mic } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2, Zap, Mail, Calendar, Mic } from 'lucide-react';
 import { useSubscription } from '@/hooks/use-subscription';
+import { getProductByPriceId } from '@/src/stripe-config';
 
 export default function SuccessPage() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { refetch } = useSubscription();
   const [isLoading, setIsLoading] = useState(true);
+  const [purchasedProduct, setPurchasedProduct] = useState<any>(null);
 
   const sessionId = searchParams.get('session_id');
 
@@ -28,8 +30,24 @@ export default function SuccessPage() {
     refreshData();
   }, [refetch]);
 
+  // Try to determine which product was purchased
+  useEffect(() => {
+    const priceId = searchParams.get('price_id');
+    if (priceId) {
+      const product = getProductByPriceId(priceId);
+      setPurchasedProduct(product);
+    }
+  }, [searchParams]);
+
   const handleContinue = () => {
     router.push('/app');
+  };
+
+  const getTokenAmount = () => {
+    if (!purchasedProduct) return 'tokens';
+    const rate = parseFloat(purchasedProduct.tokenRate.replace('$', ''));
+    const tokens = Math.floor(purchasedProduct.price / rate);
+    return tokens.toLocaleString();
   };
 
   return (
@@ -43,9 +61,13 @@ export default function SuccessPage() {
                 <CheckCircle className="h-8 w-8 text-green-500" />
               </div>
               <div>
-                <CardTitle className="text-2xl">Welcome to Aven!</CardTitle>
+                <CardTitle className="text-2xl">Payment Successful!</CardTitle>
                 <CardDescription className="text-lg mt-2">
-                  Your subscription is now active. Let's get you started with your AI email assistant.
+                  {purchasedProduct ? (
+                    <>Your {purchasedProduct.name} token package has been activated.</>
+                  ) : (
+                    <>Your token purchase has been completed successfully.</>
+                  )}
                 </CardDescription>
               </div>
             </CardHeader>
@@ -54,17 +76,30 @@ export default function SuccessPage() {
               {isLoading ? (
                 <div className="flex items-center justify-center gap-2 text-muted-foreground">
                   <Loader2 className="h-4 w-4 animate-spin" />
-                  <span>Setting up your account...</span>
+                  <span>Processing your purchase...</span>
                 </div>
               ) : (
                 <div className="space-y-4">
-                  <p className="text-muted-foreground">
-                    Your Aven Shit subscription is now active! You have access to all premium features.
-                  </p>
+                  {purchasedProduct && (
+                    <div className="p-4 bg-green-50 dark:bg-green-950/20 rounded-lg border border-green-200 dark:border-green-800">
+                      <div className="flex items-center justify-center gap-2 mb-2">
+                        <Zap className="h-5 w-5 text-green-600" />
+                        <span className="font-semibold text-green-800 dark:text-green-200">
+                          {purchasedProduct.name} Package Activated
+                        </span>
+                      </div>
+                      <p className="text-sm text-green-700 dark:text-green-300">
+                        ~{getTokenAmount()} tokens added to your account
+                      </p>
+                      <p className="text-xs text-green-600 dark:text-green-400 mt-1">
+                        Rate: {purchasedProduct.tokenRate} per token
+                      </p>
+                    </div>
+                  )}
                   
                   {sessionId && (
                     <div className="text-xs text-muted-foreground">
-                      Session ID: {sessionId}
+                      Transaction ID: {sessionId}
                     </div>
                   )}
                 </div>
@@ -80,7 +115,7 @@ export default function SuccessPage() {
                   onClick={() => router.push('/app/pricing')} 
                   size="lg"
                 >
-                  View Subscription
+                  View Pricing
                 </Button>
               </div>
             </CardContent>
@@ -89,9 +124,9 @@ export default function SuccessPage() {
           {/* Next Steps */}
           <Card>
             <CardHeader>
-              <CardTitle>Get Started with Aven</CardTitle>
+              <CardTitle>Get Started with Your Tokens</CardTitle>
               <CardDescription>
-                Follow these steps to maximize your email productivity
+                Here's how to make the most of your AI assistant
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -132,6 +167,32 @@ export default function SuccessPage() {
                   </div>
                 </div>
               </div>
+            </CardContent>
+          </Card>
+
+          {/* Token Usage Tips */}
+          <Card>
+            <CardHeader>
+              <CardTitle>Making Your Tokens Last</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-3 text-sm">
+                <div className="flex justify-between items-center">
+                  <span>Voice conversations</span>
+                  <span className="text-muted-foreground">~150 tokens/minute</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Email analysis & replies</span>
+                  <span className="text-muted-foreground">~50-100 tokens</span>
+                </div>
+                <div className="flex justify-between items-center">
+                  <span>Text-only commands</span>
+                  <span className="text-muted-foreground">~25-75 tokens</span>
+                </div>
+              </div>
+              <p className="text-xs text-muted-foreground mt-4">
+                Tip: Use text commands when possible to conserve tokens for voice interactions.
+              </p>
             </CardContent>
           </Card>
 
