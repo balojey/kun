@@ -11,7 +11,7 @@ import { useSpeech } from '@/hooks/use-speech';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
 import { useConnections } from '@/hooks/use-connections';
 import { useTokens } from '@/hooks/use-tokens';
-import { TokenUsageTracker } from '@/components/tokens/token-usage-tracker';
+import { useTokenSessionPersistence } from '@/hooks/use-token-session-persistence';
 import ReactMarkdown from 'react-markdown';
 
 export function TextTab() {
@@ -53,6 +53,21 @@ export function TextTab() {
       }
     },
     maxSteps: 100,
+  });
+
+  // Use persistent session management
+  const { currentSession } = useTokenSessionPersistence({
+    serviceType: 'pica_endpoint',
+    isActive: isLoading,
+    onSessionStart: (newSessionId) => {
+      setSessionId(newSessionId);
+    },
+    onSessionEnd: () => {
+      setSessionId(null);
+    },
+    onInsufficientTokens: () => {
+      toast.error('Insufficient tokens for Pica automation');
+    },
   });
 
   useEffect(() => {
@@ -141,29 +156,8 @@ export function TextTab() {
     handleSubmit(e);
   };
 
-  const handleSessionStart = (newSessionId: string) => {
-    setSessionId(newSessionId);
-  };
-
-  const handleSessionEnd = () => {
-    setSessionId(null);
-  };
-
-  const handleInsufficientTokens = () => {
-    toast.error('Insufficient tokens for Pica automation');
-  };
-
   return (
     <div className="space-y-6">
-      {/* Token Usage Tracker */}
-      <TokenUsageTracker
-        serviceType="pica_endpoint"
-        isActive={isLoading}
-        onSessionStart={handleSessionStart}
-        onSessionEnd={handleSessionEnd}
-        onInsufficientTokens={handleInsufficientTokens}
-      />
-
       {/* Chat Interface */}
       <div className="">
         {/* Messages Area */}

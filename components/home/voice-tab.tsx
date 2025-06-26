@@ -6,9 +6,9 @@ import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
 import { useTokens } from '@/hooks/use-tokens';
+import { useTokenSessionPersistence } from '@/hooks/use-token-session-persistence';
 import { Button } from '@/components/ui/button';
 import { TokenGuard } from '@/components/tokens/token-guard';
-import { TokenUsageTracker } from '@/components/tokens/token-usage-tracker';
 import Link from 'next/link';
 
 export function VoiceTab() {
@@ -21,6 +21,21 @@ export function VoiceTab() {
     onDisconnect: () => toast.info('Disconnected from AI assistant'),
     onMessage: (message) => console.log('Message:', message.message),
     onError: (error) => toast.error(`Connection error: ${error}`),
+  });
+
+  // Use persistent session management
+  const { currentSession } = useTokenSessionPersistence({
+    serviceType: 'conversational_ai',
+    isActive: conversation.status === 'connected',
+    onSessionStart: (newSessionId) => {
+      setSessionId(newSessionId);
+    },
+    onSessionEnd: () => {
+      setSessionId(null);
+    },
+    onInsufficientTokens: () => {
+      toast.error('Insufficient tokens for voice conversation');
+    },
   });
 
   const startConversation = useCallback(async () => {
@@ -73,32 +88,11 @@ export function VoiceTab() {
     await conversation.endSession();
   }, [conversation]);
 
-  const handleSessionStart = (newSessionId: string) => {
-    setSessionId(newSessionId);
-  };
-
-  const handleSessionEnd = () => {
-    setSessionId(null);
-  };
-
-  const handleInsufficientTokens = () => {
-    toast.error('Insufficient tokens to start voice conversation');
-  };
-
   const isConnected = conversation.status === 'connected';
   const isConnecting = conversation.status === 'connecting';
 
   return (
     <div className="space-y-8">
-      {/* Token Usage Tracker */}
-      <TokenUsageTracker
-        serviceType="conversational_ai"
-        isActive={isConnected}
-        onSessionStart={handleSessionStart}
-        onSessionEnd={handleSessionEnd}
-        onInsufficientTokens={handleInsufficientTokens}
-      />
-
       <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-10">
         {/* Status Indicators */}
         <div className="flex justify-center gap-6">
@@ -114,6 +108,14 @@ export function VoiceTab() {
               {connections.length} Tools Connected
             </span>
           </div>
+          {currentSession?.isActive && (
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
+              <span className="text-sm text-muted-foreground">
+                Session Active
+              </span>
+            </div>
+          )}
         </div>
 
         {/* Big Circular Connection Button */}
