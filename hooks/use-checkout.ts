@@ -34,7 +34,7 @@ export function useCheckout() {
       }
 
       const baseUrl = window.location.origin;
-      const successUrl = options.successUrl || `${baseUrl}/success`;
+      const successUrl = options.successUrl || `${baseUrl}/app/success`;
       const cancelUrl = options.cancelUrl || `${baseUrl}/`;
 
       const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/stripe-checkout`, {

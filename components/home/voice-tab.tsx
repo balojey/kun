@@ -9,6 +9,7 @@ import { useTokens } from '@/hooks/use-tokens';
 import { Button } from '@/components/ui/button';
 import { TokenGuard } from '@/components/tokens/token-guard';
 import { TokenUsageTracker } from '@/components/tokens/token-usage-tracker';
+import Link from 'next/link';
 
 export function VoiceTab() {
   const { connections } = useConnections();

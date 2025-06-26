@@ -64,7 +64,7 @@ CREATE TABLE IF NOT EXISTS user_tokens (
 CREATE TABLE IF NOT EXISTS token_transactions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  type token_transaction_type NOT NULL,
+  type public.token_transaction_type NOT NULL,
   amount bigint NOT NULL,
   balance_after bigint NOT NULL CHECK (balance_after >= 0),
   description text NOT NULL,
@@ -76,84 +76,84 @@ CREATE TABLE IF NOT EXISTS token_transactions (
 CREATE TABLE IF NOT EXISTS token_usage_sessions (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
   user_id uuid REFERENCES auth.users(id) ON DELETE CASCADE NOT NULL,
-  service_type token_service_type NOT NULL,
+  service_type public.token_service_type NOT NULL,
   session_id text NOT NULL,
   start_time timestamptz DEFAULT now(),
   end_time timestamptz,
   duration_seconds integer,
   tokens_consumed bigint,
-  status token_session_status NOT NULL DEFAULT 'active',
+  status public.token_session_status NOT NULL DEFAULT 'active',
   created_at timestamptz DEFAULT now(),
   updated_at timestamptz DEFAULT now(),
   UNIQUE(session_id)
 );
 
 -- Enable RLS
-ALTER TABLE user_tokens ENABLE ROW LEVEL SECURITY;
-ALTER TABLE token_transactions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE token_usage_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.user_tokens ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.token_transactions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.token_usage_sessions ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for user_tokens
 CREATE POLICY "Users can view their own token balance"
-  ON user_tokens
+  ON public.user_tokens
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
 -- RLS Policies for token_transactions
 CREATE POLICY "Users can view their own transactions"
-  ON token_transactions
+  ON public.token_transactions
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
 -- RLS Policies for token_usage_sessions
 CREATE POLICY "Users can view their own usage sessions"
-  ON token_usage_sessions
+  ON public.token_usage_sessions
   FOR SELECT
   TO authenticated
   USING (auth.uid() = user_id);
 
 CREATE POLICY "Users can insert their own usage sessions"
-  ON token_usage_sessions
+  ON public.token_usage_sessions
   FOR INSERT
   TO authenticated
   WITH CHECK (auth.uid() = user_id);
 
 CREATE POLICY "Users can update their own usage sessions"
-  ON token_usage_sessions
+  ON public.token_usage_sessions
   FOR UPDATE
   TO authenticated
   USING (auth.uid() = user_id);
 
 -- Service role policies (for system operations)
 CREATE POLICY "Service role can manage all token data"
-  ON user_tokens
+  ON public.user_tokens
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
 
 CREATE POLICY "Service role can manage all transactions"
-  ON token_transactions
+  ON public.token_transactions
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
 
 CREATE POLICY "Service role can manage all usage sessions"
-  ON token_usage_sessions
+  ON public.token_usage_sessions
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS user_tokens_user_id_idx ON user_tokens(user_id);
-CREATE INDEX IF NOT EXISTS token_transactions_user_id_created_at_idx ON token_transactions(user_id, created_at DESC);
-CREATE INDEX IF NOT EXISTS token_usage_sessions_user_id_idx ON token_usage_sessions(user_id);
-CREATE INDEX IF NOT EXISTS token_usage_sessions_session_id_idx ON token_usage_sessions(session_id);
-CREATE INDEX IF NOT EXISTS token_usage_sessions_status_idx ON token_usage_sessions(status);
+CREATE INDEX IF NOT EXISTS user_tokens_user_id_idx ON public.user_tokens(user_id);
+CREATE INDEX IF NOT EXISTS token_transactions_user_id_created_at_idx ON public.token_transactions(user_id, created_at DESC);
+CREATE INDEX IF NOT EXISTS token_usage_sessions_user_id_idx ON public.token_usage_sessions(user_id);
+CREATE INDEX IF NOT EXISTS token_usage_sessions_session_id_idx ON public.token_usage_sessions(session_id);
+CREATE INDEX IF NOT EXISTS token_usage_sessions_status_idx ON public.token_usage_sessions(status);
 
 -- Function to initialize user tokens (10,000 free tokens)
 CREATE OR REPLACE FUNCTION initialize_user_tokens(user_id_param uuid)
@@ -163,15 +163,15 @@ SECURITY DEFINER
 AS $$
 BEGIN
   -- Insert initial token balance
-  INSERT INTO user_tokens (user_id, balance, total_purchased, total_consumed)
+  INSERT INTO public.user_tokens (user_id, balance, total_purchased, total_consumed)
   VALUES (user_id_param, 10000, 0, 0)
   ON CONFLICT (user_id) DO NOTHING;
   
   -- Record the bonus transaction
-  INSERT INTO token_transactions (user_id, type, amount, balance_after, description, metadata)
+  INSERT INTO public.token_transactions (user_id, type, amount, balance_after, description, metadata)
   SELECT user_id_param, 'bonus', 10000, 10000, 'Welcome bonus - 10,000 free tokens', '{"source": "signup_bonus"}'
   WHERE NOT EXISTS (
-    SELECT 1 FROM token_transactions 
+    SELECT 1 FROM public.token_transactions 
     WHERE user_id = user_id_param AND type = 'bonus' AND description LIKE '%Welcome bonus%'
   );
 END;
@@ -194,7 +194,7 @@ DECLARE
 BEGIN
   -- Lock the user's token record for update
   SELECT balance INTO current_balance
-  FROM user_tokens
+  FROM public.user_tokens
   WHERE user_id = user_id_param
   FOR UPDATE;
   
@@ -211,7 +211,7 @@ BEGIN
   new_balance := current_balance - amount_param;
   
   -- Update user balance and total consumed
-  UPDATE user_tokens
+  UPDATE public.user_tokens
   SET 
     balance = new_balance,
     total_consumed = total_consumed + amount_param,
@@ -219,7 +219,7 @@ BEGIN
   WHERE user_id = user_id_param;
   
   -- Record the transaction
-  INSERT INTO token_transactions (user_id, type, amount, balance_after, description, metadata)
+  INSERT INTO public.token_transactions (user_id, type, amount, balance_after, description, metadata)
   VALUES (user_id_param, 'consumption', -amount_param, new_balance, description_param, metadata_param);
   
   RETURN true;
@@ -241,7 +241,7 @@ DECLARE
   new_balance bigint;
 BEGIN
   -- Update user balance and total purchased
-  UPDATE user_tokens
+  UPDATE public.user_tokens
   SET 
     balance = balance + amount_param,
     total_purchased = total_purchased + amount_param,
@@ -251,9 +251,9 @@ BEGIN
   
   -- If user doesn't exist, create account first
   IF new_balance IS NULL THEN
-    PERFORM initialize_user_tokens(user_id_param);
+    PERFORM public.initialize_user_tokens(user_id_param);
     
-    UPDATE user_tokens
+    UPDATE public.user_tokens
     SET 
       balance = balance + amount_param,
       total_purchased = total_purchased + amount_param,
@@ -263,7 +263,7 @@ BEGIN
   END IF;
   
   -- Record the transaction
-  INSERT INTO token_transactions (user_id, type, amount, balance_after, description, metadata)
+  INSERT INTO public.token_transactions (user_id, type, amount, balance_after, description, metadata)
   VALUES (user_id_param, 'purchase', amount_param, new_balance, description_param, metadata_param);
 END;
 $$;
@@ -281,7 +281,7 @@ AS $$
 DECLARE
   session_uuid uuid;
 BEGIN
-  INSERT INTO token_usage_sessions (user_id, service_type, session_id, status)
+  INSERT INTO public.token_usage_sessions (user_id, service_type, session_id, status)
   VALUES (user_id_param, service_type_param, session_id_param, 'active')
   RETURNING id INTO session_uuid;
   
@@ -305,7 +305,7 @@ DECLARE
 BEGIN
   -- Get session details
   SELECT * INTO session_record
-  FROM token_usage_sessions
+  FROM public.token_usage_sessions
   WHERE session_id = session_id_param AND status = 'active'
   FOR UPDATE;
   
@@ -324,7 +324,7 @@ BEGIN
   END CASE;
   
   -- Deduct tokens
-  SELECT deduct_tokens(
+  SELECT public.deduct_tokens(
     session_record.user_id,
     tokens_to_deduct,
     'Usage: ' || session_record.service_type || ' for ' || duration_seconds_param || ' seconds',
@@ -336,7 +336,7 @@ BEGIN
   ) INTO deduction_success;
   
   -- Update session record
-  UPDATE token_usage_sessions
+  UPDATE public.token_usage_sessions
   SET 
     end_time = now(),
     duration_seconds = duration_seconds_param,
@@ -356,7 +356,7 @@ LANGUAGE plpgsql
 SECURITY DEFINER
 AS $$
 BEGIN
-  PERFORM initialize_user_tokens(NEW.id);
+  PERFORM public.initialize_user_tokens(NEW.id);
   RETURN NEW;
 END;
 $$;
@@ -378,11 +378,11 @@ END;
 $$;
 
 CREATE TRIGGER update_user_tokens_updated_at
-  BEFORE UPDATE ON user_tokens
+  BEFORE UPDATE ON public.user_tokens
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
 
 CREATE TRIGGER update_token_usage_sessions_updated_at
-  BEFORE UPDATE ON token_usage_sessions
+  BEFORE UPDATE ON public.token_usage_sessions
   FOR EACH ROW
   EXECUTE FUNCTION update_updated_at_column();
