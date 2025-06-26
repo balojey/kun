@@ -56,28 +56,28 @@ export function useTokens() {
     fetchTokenData();
   };
 
-  // useEffect(() => {
-  //   fetchTokenData();
-  // }, [user]);
+  useEffect(() => {
+    fetchTokenData();
+  }, [user]);
 
-  // // Subscribe to real-time balance changes
-  // useEffect(() => {
-  //   if (!user) return;
+  // Subscribe to real-time balance changes
+  useEffect(() => {
+    if (!user) return;
 
-  //   const unsubscribe = subscribeToTokenBalance((newBalance) => {
-  //     setBalance(newBalance);
-  //     // Refresh estimated time when balance changes
-  //     if (newBalance) {
-  //       getEstimatedUsageTime().then(setEstimatedTime);
-  //     }
-  //   });
+    const unsubscribe = subscribeToTokenBalance((newBalance) => {
+      setBalance(newBalance);
+      // Refresh estimated time when balance changes
+      if (newBalance) {
+        getEstimatedUsageTime().then(setEstimatedTime);
+      }
+    });
 
-  //   return () => {
-  //     if (typeof unsubscribe === 'function') {
-  //       unsubscribe();
-  //     }
-  //   };
-  // }, [user]);
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, [user]);
 
   const hassufficientTokens = (requiredTokens: number): boolean => {
     return balance ? balance.balance >= requiredTokens : false;
