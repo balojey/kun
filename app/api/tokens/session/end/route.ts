@@ -35,7 +35,7 @@ export async function POST(request: NextRequest) {
 
     const { session_id, duration_seconds } = validation.data;
 
-    const success = await endUsageSession(session_id, duration_seconds);
+    const success = await endUsageSession(supabase, session_id, duration_seconds);
 
     if (!success) {
       return NextResponse.json(

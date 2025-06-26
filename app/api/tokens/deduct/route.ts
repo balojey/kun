@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     const { amount, description, metadata } = validation.data;
 
-    const success = await deductTokens(user.id, amount, description, metadata);
+    const success = await deductTokens(supabase, user.id, amount, description, metadata);
 
     if (!success) {
       return NextResponse.json(

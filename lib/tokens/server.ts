@@ -1,4 +1,4 @@
-import { createClient } from '@/lib/supabase/server';
+import { SupabaseClient } from '@supabase/supabase-js';
 
 export interface TokenBalance {
   balance: number;
@@ -31,6 +31,7 @@ export interface UsageSession {
  * Get user's token balance
  */
 export async function getUserTokenBalance(userId: string): Promise<TokenBalance | null> {
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = await createClient();
   
   const { data, error } = await supabase
@@ -51,6 +52,7 @@ export async function getUserTokenBalance(userId: string): Promise<TokenBalance 
  * Initialize tokens for a new user (10,000 free tokens)
  */
 export async function initializeUserTokens(userId: string): Promise<boolean> {
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = await createClient();
   
   const { error } = await supabase.rpc('initialize_user_tokens', {
@@ -74,6 +76,7 @@ export async function addTokens(
   description: string,
   metadata: any = {}
 ): Promise<boolean> {
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = await createClient();
   
   const { error } = await supabase.rpc('add_tokens', {
@@ -95,13 +98,12 @@ export async function addTokens(
  * Deduct tokens from user account
  */
 export async function deductTokens(
+  supabase: SupabaseClient,
   userId: string,
   amount: number,
   description: string,
   metadata: any = {}
 ): Promise<boolean> {
-  const supabase = await createClient();
-  
   const { data, error } = await supabase.rpc('deduct_tokens', {
     user_id_param: userId,
     amount_param: amount,
@@ -125,6 +127,7 @@ export async function startUsageSession(
   serviceType: 'conversational_ai' | 'pica_endpoint',
   sessionId: string
 ): Promise<string | null> {
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = await createClient();
   
   const { data, error } = await supabase.rpc('start_usage_session', {
@@ -145,11 +148,10 @@ export async function startUsageSession(
  * End a usage session and deduct tokens
  */
 export async function endUsageSession(
+  supabase: SupabaseClient,
   sessionId: string,
   durationSeconds: number
 ): Promise<boolean> {
-  const supabase = await createClient();
-  
   const { data, error } = await supabase.rpc('end_usage_session', {
     session_id_param: sessionId,
     duration_seconds_param: durationSeconds
@@ -171,6 +173,7 @@ export async function getUserTokenTransactions(
   limit: number = 50,
   offset: number = 0
 ): Promise<TokenTransaction[]> {
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = await createClient();
   
   const { data, error } = await supabase
@@ -196,6 +199,7 @@ export async function getUserUsageSessions(
   limit: number = 50,
   offset: number = 0
 ): Promise<UsageSession[]> {
+  const { createClient } = await import('@/lib/supabase/server');
   const supabase = await createClient();
   
   const { data, error } = await supabase
