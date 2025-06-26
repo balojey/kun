@@ -10,8 +10,8 @@ const config: Config = {
   theme: {
     extend: {
       fontFamily: {
-        ubuntu: ['var(--font-ubuntu)', 'system-ui', 'sans-serif'],
-        sans: ['var(--font-ubuntu)', 'system-ui', 'sans-serif'],
+        ubuntu: ['Ubuntu', 'system-ui', 'sans-serif'],
+        sans: ['Ubuntu', 'system-ui', 'sans-serif'],
       },
       colors: {
         background: 'hsl(var(--background))',

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useRef, useCallback } from 'react';
-import { nanoid } from 'nanoid';
+import { createClient } from '@/lib/supabase/client';
 
 interface TokenSession {
   sessionId: string;
@@ -16,6 +16,20 @@ export function useTokenSession() {
   const [error, setError] = useState<string | null>(null);
   const intervalRef = useRef<NodeJS.Timeout | null>(null);
 
+  const getAuthHeaders = async () => {
+    const supabase = createClient();
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    if (!session?.access_token) {
+      throw new Error('No authentication token available');
+    }
+
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${session.access_token}`,
+    };
+  };
+
   const startSession = useCallback(async (
     serviceType: 'conversational_ai' | 'pica_endpoint',
     estimatedDurationSeconds?: number
@@ -29,11 +43,11 @@ export function useTokenSession() {
     setError(null);
 
     try {
+      const headers = await getAuthHeaders();
+      
       const response = await fetch('/api/tokens/session/start', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           service_type: serviceType,
           estimated_duration_seconds: estimatedDurationSeconds,
@@ -76,13 +90,12 @@ export function useTokenSession() {
     setError(null);
 
     try {
+      const headers = await getAuthHeaders();
       const durationSeconds = Math.floor((Date.now() - currentSession.startTime) / 1000);
 
       const response = await fetch('/api/tokens/session/end', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           session_id: currentSession.sessionId,
           duration_seconds: durationSeconds,
@@ -128,11 +141,11 @@ export function useTokenSession() {
 
   const checkTokenSufficiency = useCallback(async (requiredTokens: number): Promise<boolean> => {
     try {
+      const headers = await getAuthHeaders();
+      
       const response = await fetch('/api/tokens/check', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers,
         body: JSON.stringify({
           required_tokens: requiredTokens,
         }),

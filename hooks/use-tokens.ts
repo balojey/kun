@@ -60,7 +60,7 @@ export function useTokens() {
     fetchTokenData();
   }, [user]);
 
-  // Subscribe to real-time balance changes
+  // Subscribe to balance changes using polling instead of realtime
   useEffect(() => {
     if (!user) return;
 
@@ -68,15 +68,11 @@ export function useTokens() {
       setBalance(newBalance);
       // Refresh estimated time when balance changes
       if (newBalance) {
-        getEstimatedUsageTime().then(setEstimatedTime);
+        getEstimatedUsageTime().then(setEstimatedTime).catch(console.error);
       }
     });
 
-    return () => {
-      if (typeof unsubscribe === 'function') {
-        unsubscribe();
-      }
-    };
+    return unsubscribe;
   }, [user]);
 
   const hassufficientTokens = (requiredTokens: number): boolean => {

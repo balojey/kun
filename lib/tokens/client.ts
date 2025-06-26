@@ -24,17 +24,23 @@ export interface TokenTransaction {
 export async function getUserTokenBalance(): Promise<TokenBalance | null> {
   const supabase = createClient();
   
-  const { data, error } = await supabase
-    .from('user_tokens')
-    .select('balance, total_purchased, total_consumed')
-    .single();
-  
-  if (error) {
-    console.error('Error fetching token balance:', error);
-    return null;
+  // Get the current session to get the access token
+  const { data: { session } } = await supabase.auth.getSession();
+  if (!session?.access_token) {
+    throw new Error('No authentication token available');
   }
-  
-  return data;
+
+  const response = await fetch('/api/tokens/balance', {
+    headers: {
+      'Authorization': `Bearer ${session.access_token}`,
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error('Failed to fetch token balance');
+  }
+
+  return response.json();
 }
 
 /**
@@ -78,28 +84,37 @@ export async function getEstimatedUsageTime(): Promise<{
 }
 
 /**
- * Subscribe to token balance changes
+ * Subscribe to token balance changes using polling instead of realtime
  */
 export function subscribeToTokenBalance(
   callback: (balance: TokenBalance | null) => void
 ) {
-  const supabase = createClient();
-  
-  const subscription = supabase
-    .channel('token_balance_changes')
-    .on(
-      'postgres_changes',
-      {
-        event: '*',
-        schema: 'public',
-        table: 'user_tokens',
-      },
-      async () => {
-        const balance = await getUserTokenBalance();
-        callback(balance);
-      }
-    )
-    .subscribe();
-  
-  return () => subscription.unsubscribe();
+  let intervalId: NodeJS.Timeout;
+  let isActive = true;
+
+  const pollBalance = async () => {
+    if (!isActive) return;
+    
+    try {
+      const balance = await getUserTokenBalance();
+      callback(balance);
+    } catch (error) {
+      console.error('Error polling token balance:', error);
+      // Don't call callback on error to avoid infinite loading states
+    }
+  };
+
+  // Initial fetch
+  pollBalance();
+
+  // Poll every 30 seconds
+  intervalId = setInterval(pollBalance, 30000);
+
+  // Return cleanup function
+  return () => {
+    isActive = false;
+    if (intervalId) {
+      clearInterval(intervalId);
+    }
+  };
 }

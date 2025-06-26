@@ -1,5 +1,4 @@
 import type { Metadata } from 'next';
-import { Ubuntu } from 'next/font/google';
 
 import { AuthProvider } from '@/components/auth/auth-provider';
 import { AuthGuard } from '@/components/auth/auth-guard';
@@ -7,13 +6,6 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 
 import './globals.css';
-
-const ubuntu = Ubuntu({ 
-  subsets: ['latin'],
-  variable: '--font-ubuntu',
-  display: 'swap',
-  weight: ['300', '400', '500', '700'],
-});
 
 export const metadata: Metadata = {
   title: {
@@ -35,7 +27,7 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="en" suppressHydrationWarning className={ubuntu.variable}>
+    <html lang="en" suppressHydrationWarning>
       <body className="font-ubuntu antialiased">
         <ThemeProvider
           attribute="class"

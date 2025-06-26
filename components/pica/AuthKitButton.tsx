@@ -35,10 +35,20 @@ export function AuthKitButton({
     setIsLoading(true);
 
     try {
+      // Get the current session to get the access token
+      const { data: { session } } = await supabase.auth.getSession();
+      if (!session?.access_token) {
+        toast.error('Authentication required');
+        setIsLoading(false);
+        return;
+      }
+
       const { open } = useAuthKit({
         token: {
-          url: "http://localhost:3000/api/authkit-token",
-          headers: {},
+          url: "/api/authkit-token",
+          headers: {
+            'Authorization': `Bearer ${session.access_token}`,
+          },
         },
         onSuccess: (connection) => {handleAuthKitSuccess(connection.key, connection.platform);},
         onError: (error) => {handleAuthKitError(error);},

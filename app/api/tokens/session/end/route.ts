@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { createClientFromToken } from '@/lib/supabase/server';
 import { endUsageSession } from '@/lib/tokens/server';
 import { z } from 'zod';
 
@@ -10,7 +10,13 @@ const endSessionSchema = z.object({
 
 export async function POST(request: NextRequest) {
   try {
-    const supabase = await createClient();
+    const authHeader = request.headers.get('authorization');
+    if (!authHeader || !authHeader.startsWith('Bearer ')) {
+      return NextResponse.json({ error: 'Missing or invalid authorization header' }, { status: 401 });
+    }
+
+    const token = authHeader.replace('Bearer ', '');
+    const supabase = await createClientFromToken(token);
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
