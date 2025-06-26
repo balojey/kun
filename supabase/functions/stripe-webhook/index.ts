@@ -13,6 +13,14 @@ const stripe = new Stripe(stripeSecret, {
 
 const supabase = createClient(Deno.env.get('URL')!, Deno.env.get('SERVICE_ROLE_KEY')!);
 
+// Token amounts for each price ID
+const TOKEN_AMOUNTS: Record<string, number> = {
+  'price_1RdumqQLS5b9gMNe5a9BpMh9': 50000,    // Beta - $19.99
+  'price_1RdunEQLS5b9gMNeqqnqvQdd': 194417,   // Alpha - $69.99
+  'price_1RdunYQLS5b9gMNeTRak3KA5': 499966,   // Gamma - $149.99
+  'price_1RdupuQLS5b9gMNe6IaboeNm': 1249950,  // Delta - $249.99
+};
+
 Deno.serve(async (req) => {
   try {
     // Handle OPTIONS request for CORS preflight
@@ -100,6 +108,11 @@ async function handleEvent(event: Stripe.Event) {
           currency,
         } = stripeData as Stripe.Checkout.Session;
 
+        // Get line items to determine which product was purchased
+        const session = await stripe.checkout.sessions.retrieve(checkout_session_id, {
+          expand: ['line_items.data.price']
+        });
+
         // Insert the order into the stripe_orders table
         const { error: orderError } = await supabase.from('stripe_orders').insert({
           checkout_session_id,
@@ -109,18 +122,81 @@ async function handleEvent(event: Stripe.Event) {
           amount_total,
           currency,
           payment_status,
-          status: 'completed', // assuming we want to mark it as completed since payment is successful
+          status: 'completed',
         });
 
         if (orderError) {
           console.error('Error inserting order:', orderError);
           return;
         }
+
+        // Credit tokens to user account
+        await creditTokensForPurchase(customerId, session);
+
         console.info(`Successfully processed one-time payment for session: ${checkout_session_id}`);
       } catch (error) {
         console.error('Error processing one-time payment:', error);
       }
     }
+  }
+}
+
+async function creditTokensForPurchase(customerId: string, session: Stripe.Checkout.Session) {
+  try {
+    // Get the user ID from the customer
+    const { data: customer, error: customerError } = await supabase
+      .from('stripe_customers')
+      .select('user_id')
+      .eq('customer_id', customerId)
+      .single();
+
+    if (customerError || !customer) {
+      console.error('Error finding customer:', customerError);
+      return;
+    }
+
+    // Get the price ID from line items
+    const lineItems = session.line_items?.data;
+    if (!lineItems || lineItems.length === 0) {
+      console.error('No line items found in session');
+      return;
+    }
+
+    const priceId = lineItems[0].price?.id;
+    if (!priceId) {
+      console.error('No price ID found in line items');
+      return;
+    }
+
+    // Get token amount for this price
+    const tokenAmount = TOKEN_AMOUNTS[priceId];
+    if (!tokenAmount) {
+      console.error(`No token amount configured for price ID: ${priceId}`);
+      return;
+    }
+
+    // Credit tokens to user account
+    const { error: tokenError } = await supabase.rpc('add_tokens', {
+      user_id_param: customer.user_id,
+      amount_param: tokenAmount,
+      description_param: `Token purchase - ${tokenAmount.toLocaleString()} tokens`,
+      metadata_param: {
+        stripe_session_id: session.id,
+        stripe_payment_intent_id: session.payment_intent,
+        price_id: priceId,
+        amount_paid: session.amount_total,
+        currency: session.currency
+      }
+    });
+
+    if (tokenError) {
+      console.error('Error crediting tokens:', tokenError);
+      return;
+    }
+
+    console.info(`Successfully credited ${tokenAmount} tokens to user ${customer.user_id} for purchase ${session.id}`);
+  } catch (error) {
+    console.error('Error in creditTokensForPurchase:', error);
   }
 }
 

@@ -33,13 +33,6 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
     return 'hover:shadow-lg transition-all duration-200 hover:scale-102';
   };
 
-  const getTokenAmount = () => {
-    // Calculate approximate tokens based on price and rate
-    const rate = parseFloat(product.tokenRate.replace('$', ''));
-    const tokens = Math.floor(product.price / rate);
-    return tokens.toLocaleString();
-  };
-
   const getBestValueBadge = () => {
     // Delta has the best rate per token
     if (product.name === 'Delta') {
@@ -54,6 +47,27 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
     }
     return null;
   };
+
+  const formatTokens = (tokens: number) => {
+    if (tokens >= 1000000) {
+      return `${(tokens / 1000000).toFixed(1)}M`;
+    } else if (tokens >= 1000) {
+      return `${(tokens / 1000).toFixed(0)}K`;
+    }
+    return tokens.toLocaleString();
+  };
+
+  const getUsageEstimate = () => {
+    const conversationalMinutes = Math.floor(product.tokens / 60);
+    const picaMinutes = Math.floor(product.tokens / 30);
+    
+    return {
+      conversational: conversationalMinutes,
+      pica: picaMinutes
+    };
+  };
+
+  const usage = getUsageEstimate();
 
   return (
     <Card className={getCardStyles()}>
@@ -80,15 +94,32 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
             ${product.price}
           </div>
           <CardDescription className="text-base">
-            {product.description}
+            {formatTokens(product.tokens)} tokens
           </CardDescription>
           <div className="text-sm text-muted-foreground">
-            ~{getTokenAmount()} tokens
+            {product.tokenRate} per token
           </div>
         </div>
       </CardHeader>
       
       <CardContent className="space-y-6">
+        {/* Usage Estimates */}
+        <div className="space-y-3">
+          <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
+            Estimated Usage
+          </h4>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between text-sm">
+              <span>Voice Conversations</span>
+              <span className="font-medium">~{usage.conversational} min</span>
+            </div>
+            <div className="flex items-center justify-between text-sm">
+              <span>Tool Automation</span>
+              <span className="font-medium">~{usage.pica} min</span>
+            </div>
+          </div>
+        </div>
+
         {/* Features */}
         <div className="space-y-3">
           <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
@@ -113,7 +144,7 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
             </div>
             <div className="flex items-center gap-3">
               <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">Rate: {product.tokenRate}/token</span>
+              <span className="text-sm">Never Expires</span>
             </div>
           </div>
         </div>
@@ -133,7 +164,7 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
             ) : isCurrentPlan ? (
               'Current Plan'
             ) : (
-              `Purchase ${product.name}`
+              `Purchase ${formatTokens(product.tokens)} Tokens`
             )}
           </Button>
           

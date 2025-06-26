@@ -2,13 +2,18 @@
 
 import { useConversation } from '@elevenlabs/react';
 import { Loader2, Mic, PhoneOff } from 'lucide-react';
-import { useCallback } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
+import { useTokens } from '@/hooks/use-tokens';
 import { Button } from '@/components/ui/button';
+import { TokenGuard } from '@/components/tokens/token-guard';
+import { TokenUsageTracker } from '@/components/tokens/token-usage-tracker';
 
 export function VoiceTab() {
   const { connections } = useConnections();
+  const { hassufficientTokens } = useTokens();
+  const [sessionId, setSessionId] = useState<string | null>(null);
 
   const conversation = useConversation({
     onConnect: () => toast.success('Connected to AI assistant'),
@@ -18,11 +23,19 @@ export function VoiceTab() {
   });
 
   const startConversation = useCallback(async () => {
+    // Check if user has sufficient tokens for at least 30 seconds of conversation
+    if (!hassufficientTokens(30)) {
+      toast.error('Insufficient tokens for voice conversation');
+      return;
+    }
+
     const connectionIds = [
       ...connections.map(c => c.connection_id),
       ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
     ];
+    
     console.log("Connections:", connectionIds);
+    
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
       const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
@@ -53,65 +66,106 @@ export function VoiceTab() {
       console.error('Failed to start conversation:', error);
       toast.error('Failed to start conversation. Please check microphone permissions.');
     }
-  }, [conversation]);
+  }, [conversation, connections, hassufficientTokens]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
   }, [conversation]);
 
+  const handleSessionStart = (newSessionId: string) => {
+    setSessionId(newSessionId);
+  };
+
+  const handleSessionEnd = () => {
+    setSessionId(null);
+  };
+
+  const handleInsufficientTokens = () => {
+    toast.error('Insufficient tokens to start voice conversation');
+  };
+
   const isConnected = conversation.status === 'connected';
   const isConnecting = conversation.status === 'connecting';
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] space-y-10">
-      {/* Status Indicators */}
-      <div className="flex justify-center gap-6">
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-500'}`} />
-          <span className="text-sm text-muted-foreground">
-            {isConnected ? 'AI Connected' : 'AI Disconnected'}
-          </span>
-        </div>
-        <div className="flex items-center gap-2">
-          <div className={`w-2 h-2 rounded-full ${connections.length > 0 ? 'bg-blue-500' : 'bg-gray-500'}`} />
-          <span className="text-sm text-muted-foreground">
-            {connections.length} Tools Connected
-          </span>
-        </div>
-      </div>
+    <div className="space-y-8">
+      {/* Token Usage Tracker */}
+      <TokenUsageTracker
+        serviceType="conversational_ai"
+        isActive={isConnected}
+        onSessionStart={handleSessionStart}
+        onSessionEnd={handleSessionEnd}
+        onInsufficientTokens={handleInsufficientTokens}
+      />
 
-      {/* Big Circular Connection Button (Icon Only) */}
-      <div className="flex justify-center">
-        <Button
-          onClick={isConnected ? stopConversation : startConversation}
-          disabled={isConnecting}
-          variant={isConnected ? 'destructive' : 'default'}
-          size="icon"
-          className={`
-            w-48 h-48 rounded-full flex items-center justify-center
-            shadow-2xl transition-all duration-300 text-5xl
-            ${isConnected ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'}
-          `}
+      <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-10">
+        {/* Status Indicators */}
+        <div className="flex justify-center gap-6">
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-500'}`} />
+            <span className="text-sm text-muted-foreground">
+              {isConnected ? 'AI Connected' : 'AI Disconnected'}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <div className={`w-2 h-2 rounded-full ${connections.length > 0 ? 'bg-blue-500' : 'bg-gray-500'}`} />
+            <span className="text-sm text-muted-foreground">
+              {connections.length} Tools Connected
+            </span>
+          </div>
+        </div>
+
+        {/* Big Circular Connection Button */}
+        <TokenGuard
+          serviceType="conversational_ai"
+          estimatedDurationSeconds={30}
+          fallback={
+            <div className="text-center space-y-4">
+              <div className="w-48 h-48 rounded-full bg-muted flex items-center justify-center opacity-50">
+                <Mic className="h-24 w-24 text-muted-foreground" />
+              </div>
+              <p className="text-muted-foreground">
+                Insufficient tokens for voice conversation
+              </p>
+              <Link href="/app/pricing">
+                <Button>Buy Tokens</Button>
+              </Link>
+            </div>
+          }
         >
-          {isConnecting ? (
-            <Loader2 className="h-24 w-24 animate-spin" />
-          ) : isConnected ? (
-            <PhoneOff className="h-24 w-24" />
-          ) : (
-            <Mic className="h-24 w-24" />
-          )}
-        </Button>
-      </div>
+          <div className="flex justify-center">
+            <Button
+              onClick={isConnected ? stopConversation : startConversation}
+              disabled={isConnecting}
+              variant={isConnected ? 'destructive' : 'default'}
+              size="icon"
+              className={`
+                w-48 h-48 rounded-full flex items-center justify-center
+                shadow-2xl transition-all duration-300 text-5xl
+                ${isConnected ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'}
+              `}
+            >
+              {isConnecting ? (
+                <Loader2 className="h-24 w-24 animate-spin" />
+              ) : isConnected ? (
+                <PhoneOff className="h-24 w-24" />
+              ) : (
+                <Mic className="h-24 w-24" />
+              )}
+            </Button>
+          </div>
+        </TokenGuard>
 
-      {/* Status Message */}
-      <div className="text-center">
-        <p className="text-muted-foreground text-lg">
-          {isConnected ? (
-            "🎉 Ready! Start speaking to manage your emails and tools."
-          ) : (
-            "Click connect and allow microphone access to begin."
-          )}
-        </p>
+        {/* Status Message */}
+        <div className="text-center">
+          <p className="text-muted-foreground text-lg">
+            {isConnected ? (
+              "🎉 Ready! Start speaking to manage your emails and tools."
+            ) : (
+              "Click connect and allow microphone access to begin."
+            )}
+          </p>
+        </div>
       </div>
     </div>
   );

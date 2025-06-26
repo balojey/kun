@@ -10,16 +10,21 @@ import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
 import { useConnections } from '@/hooks/use-connections';
+import { useTokens } from '@/hooks/use-tokens';
+import { TokenUsageTracker } from '@/components/tokens/token-usage-tracker';
 import ReactMarkdown from 'react-markdown';
 
 export function TextTab() {
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
+  const [sessionId, setSessionId] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
   const { connections } = useConnections();
+  const { hassufficientTokens } = useTokens();
+  
   const connectionIds = [
     ...connections.map(c => c.connection_id),
     ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
@@ -55,6 +60,12 @@ export function TextTab() {
   }, [messages]);
 
   const startRecording = async () => {
+    // Check if user has sufficient tokens for at least 10 seconds of conversation
+    if (!hassufficientTokens(10)) {
+      toast.error('Insufficient tokens for voice input');
+      return;
+    }
+
     try {
       setIsRecording(true);
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -120,11 +131,39 @@ export function TextTab() {
   const onSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!input.trim()) return;
+    
+    // Check if user has sufficient tokens for processing
+    if (!hassufficientTokens(5)) {
+      toast.error('Insufficient tokens to process message');
+      return;
+    }
+    
     handleSubmit(e);
+  };
+
+  const handleSessionStart = (newSessionId: string) => {
+    setSessionId(newSessionId);
+  };
+
+  const handleSessionEnd = () => {
+    setSessionId(null);
+  };
+
+  const handleInsufficientTokens = () => {
+    toast.error('Insufficient tokens for Pica automation');
   };
 
   return (
     <div className="space-y-6">
+      {/* Token Usage Tracker */}
+      <TokenUsageTracker
+        serviceType="pica_endpoint"
+        isActive={isLoading}
+        onSessionStart={handleSessionStart}
+        onSessionEnd={handleSessionEnd}
+        onInsufficientTokens={handleInsufficientTokens}
+      />
+
       {/* Chat Interface */}
       <div className="">
         {/* Messages Area */}
