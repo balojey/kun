@@ -7,6 +7,7 @@ interface ExecutionState {
   isExecuting: boolean;
   startTime: number | null;
   serviceType: 'conversational_ai' | 'pica_endpoint';
+  dbSessionUuid: string | null;
 }
 
 export function useExecutionTracker(serviceType: 'conversational_ai' | 'pica_endpoint') {
@@ -14,6 +15,7 @@ export function useExecutionTracker(serviceType: 'conversational_ai' | 'pica_end
     isExecuting: false,
     startTime: null,
     serviceType,
+    dbSessionUuid: null,
   });
   const [executionDuration, setExecutionDuration] = useState(0);
   const [estimatedTokens, setEstimatedTokens] = useState(0);
@@ -57,41 +59,69 @@ export function useExecutionTracker(serviceType: 'conversational_ai' | 'pica_end
     }
   }, []);
 
-  const startExecution = useCallback(() => {
+  const startExecution = useCallback(async () => {
     if (executionState.isExecuting) {
       console.warn('Execution already active');
       return;
     }
 
-    const startTime = Date.now();
-    setExecutionState({
-      isExecuting: true,
-      startTime,
-      serviceType,
-    });
-
-    // Start tracking duration
-    intervalRef.current = setInterval(() => {
-      const duration = Math.floor((Date.now() - startTime) / 1000);
-      setExecutionDuration(duration);
+    try {
+      // Start database session first
+      const headers = await getAuthHeaders();
+      const estimatedDurationSeconds = serviceType === 'conversational_ai' ? 30 : 5;
       
-      // Calculate estimated tokens based on service type
-      const tokens = serviceType === 'conversational_ai' 
-        ? duration 
-        : Math.ceil(duration * 0.5);
-      setEstimatedTokens(tokens);
-    }, 1000);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tokens-session-start`, {
+        method: 'POST',
+        headers,
+        body: JSON.stringify({
+          service_type: serviceType,
+          estimated_duration_seconds: estimatedDurationSeconds,
+        }),
+      });
 
-    console.log(`Started ${serviceType} execution tracking`);
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to start usage session');
+      }
+
+      const { session_id, session_uuid } = await response.json();
+      console.log(`Started database session: ${session_uuid} for ${serviceType}`);
+
+      const startTime = Date.now();
+      setExecutionState({
+        isExecuting: true,
+        startTime,
+        serviceType,
+        dbSessionUuid: session_uuid,
+      });
+
+      // Start tracking duration
+      intervalRef.current = setInterval(() => {
+        const duration = Math.floor((Date.now() - startTime) / 1000);
+        setExecutionDuration(duration);
+        
+        // Calculate estimated tokens based on service type
+        const tokens = serviceType === 'conversational_ai' 
+          ? duration 
+          : Math.ceil(duration * 0.5);
+        setEstimatedTokens(tokens);
+      }, 1000);
+
+      console.log(`Started ${serviceType} execution tracking with session ${session_uuid}`);
+    } catch (error) {
+      console.error('Failed to start execution:', error);
+      throw error;
+    }
   }, [executionState.isExecuting, serviceType]);
 
   const endExecution = useCallback(async () => {
-    if (!executionState.isExecuting || !executionState.startTime) {
+    if (!executionState.isExecuting || !executionState.startTime || !executionState.dbSessionUuid) {
       console.warn('No active execution to end');
       return;
     }
 
     const durationSeconds = Math.floor((Date.now() - executionState.startTime) / 1000);
+    const sessionUuid = executionState.dbSessionUuid;
     
     // Clear interval
     if (intervalRef.current) {
@@ -104,62 +134,55 @@ export function useExecutionTracker(serviceType: 'conversational_ai' | 'pica_end
       isExecuting: false,
       startTime: null,
       serviceType,
+      dbSessionUuid: null,
     });
     setExecutionDuration(0);
     setEstimatedTokens(0);
 
-    // Deduct tokens for the execution
+    // End database session and deduct tokens
     try {
       const headers = await getAuthHeaders();
-      const tokensToDeduct = serviceType === 'conversational_ai' 
-        ? durationSeconds 
-        : Math.ceil(durationSeconds * 0.5);
-
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tokens-deduct`, {
+      
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tokens-session-end`, {
         method: 'POST',
         headers,
         body: JSON.stringify({
-          amount: tokensToDeduct,
-          description: `${serviceType} execution for ${durationSeconds} seconds`,
-          metadata: {
-            service_type: serviceType,
-            duration_seconds: durationSeconds,
-            execution_end: new Date().toISOString(),
-          },
+          session_id: sessionUuid,
+          duration_seconds: durationSeconds,
         }),
       });
 
       if (!response.ok) {
-        console.error('Failed to deduct tokens for execution');
+        console.error('Failed to end session properly');
+        return;
+      }
+
+      const { success } = await response.json();
+      if (success) {
+        console.log(`Successfully ended session ${sessionUuid} and deducted tokens for ${durationSeconds} seconds`);
       } else {
-        console.log(`Deducted ${tokensToDeduct} tokens for ${serviceType} execution`);
+        console.error('Token deduction failed for session:', sessionUuid);
       }
     } catch (error) {
-      console.error('Error deducting tokens:', error);
+      console.error('Error ending session:', error);
     }
   }, [executionState, serviceType]);
 
   // Handle page unload - try to end execution gracefully
   useEffect(() => {
     const handleBeforeUnload = () => {
-      if (executionState.isExecuting && executionState.startTime) {
+      if (executionState.isExecuting && executionState.startTime && executionState.dbSessionUuid) {
         const durationSeconds = Math.floor((Date.now() - executionState.startTime) / 1000);
-        const tokensToDeduct = serviceType === 'conversational_ai' 
-          ? durationSeconds 
-          : Math.ceil(durationSeconds * 0.5);
+        
+        // Use sendBeacon for reliable session ending on page unload
+        const payload = JSON.stringify({
+          session_id: executionState.dbSessionUuid,
+          duration_seconds: durationSeconds,
+        });
 
-        // Use sendBeacon for reliable token deduction on page unload
         navigator.sendBeacon(
-          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tokens-deduct`,
-          JSON.stringify({
-            amount: tokensToDeduct,
-            description: `${serviceType} execution ended on page unload (${durationSeconds}s)`,
-            metadata: {
-              service_type: serviceType,
-              duration_seconds: durationSeconds,
-              ended_by: 'page_unload',
-            },
-          })
+          `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tokens-session-end`,
+          payload
         );
       }
     };

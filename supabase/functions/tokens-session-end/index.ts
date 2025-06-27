@@ -66,6 +66,7 @@ Deno.serve(async (req) => {
             });
         }
 
+        // Call the database function to end the session and deduct tokens
         const { data: success, error: endError } = await supabase.rpc('end_usage_session', {
             session_id_param: session_id,
             duration_seconds_param: duration_seconds
@@ -74,9 +75,10 @@ Deno.serve(async (req) => {
         if (endError) {
             console.error('Error ending session:', endError);
             return new Response(JSON.stringify({ 
-                error: 'Failed to end session or insufficient tokens' 
+                error: 'Failed to end session',
+                details: endError.message
             }), { 
-                status: 400, 
+                status: 500, 
                 headers: corsHeaders 
             });
         }

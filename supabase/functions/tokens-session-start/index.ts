@@ -58,7 +58,7 @@ Deno.serve(async (req) => {
         }
 
         // Check if user has sufficient tokens for estimated duration
-        if (estimated_duration_seconds) {
+        if (estimated_duration_seconds && estimated_duration_seconds > 0) {
             const requiredTokens = service_type === 'conversational_ai' 
                 ? estimated_duration_seconds 
                 : Math.ceil(estimated_duration_seconds * 0.5);
@@ -71,7 +71,9 @@ Deno.serve(async (req) => {
 
             if (!balance || balance.balance < requiredTokens) {
                 return new Response(JSON.stringify({ 
-                    error: 'Insufficient tokens for estimated duration' 
+                    error: 'Insufficient tokens for estimated duration',
+                    required: requiredTokens,
+                    available: balance?.balance || 0
                 }), { 
                     status: 400, 
                     headers: corsHeaders 
@@ -82,6 +84,7 @@ Deno.serve(async (req) => {
         // Generate unique session ID
         const sessionId = `${service_type}_${user.id}_${nanoid()}`;
 
+        // Start the usage session in the database
         const { data: sessionUuid, error: sessionError } = await supabase.rpc('start_usage_session', {
             user_id_param: user.id,
             service_type_param: service_type,
@@ -91,7 +94,8 @@ Deno.serve(async (req) => {
         if (sessionError) {
             console.error('Error starting session:', sessionError);
             return new Response(JSON.stringify({ 
-                error: 'Failed to start usage session' 
+                error: 'Failed to start usage session',
+                details: sessionError.message
             }), { 
                 status: 500, 
                 headers: corsHeaders 
