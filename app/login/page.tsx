@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -59,10 +60,35 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 p-6">
-        <Link href="/" className="flex items-center space-x-2">
-          <Logo width={32} height={32} priority />
-          <span className="font-bold text-xl">Aven</span>
-        </Link>
+        <div className="flex items-center gap-4">
+          <Link href="/" className="flex items-center space-x-2">
+            <Logo width={32} height={32} priority />
+            <span className="font-bold text-xl">Aven</span>
+          </Link>
+          
+          {/* Bolt Logo - Subtle placement */}
+          <div className="flex items-center">
+            <div className="w-px h-6 bg-border/50 mx-3" />
+            <Link 
+              href="https://bolt.new" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="flex items-center gap-1.5 px-2 py-1 rounded-md hover:bg-accent/50 transition-colors group"
+              title="Powered by Bolt"
+            >
+              <Image
+                src="/black_circle_360x360.png"
+                alt="Bolt"
+                width={16}
+                height={16}
+                className="opacity-60 group-hover:opacity-80 transition-opacity"
+              />
+              <span className="text-xs text-muted-foreground group-hover:text-foreground transition-colors">
+                bolt
+              </span>
+            </Link>
+          </div>
+        </div>
       </div>
 
       <Card className="w-full max-w-md">
