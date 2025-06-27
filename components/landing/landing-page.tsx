@@ -47,7 +47,7 @@ export function LandingPage() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg">
+            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
               <span className="text-primary-foreground font-bold text-sm">A</span>
             </div>
             <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">

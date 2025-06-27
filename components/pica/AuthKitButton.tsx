@@ -8,6 +8,7 @@ import { Loader2, Plus } from 'lucide-react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthKit } from "@picahq/authkit";
 import { getAppTypeFromProvider, normalizeProvider } from '@/lib/pica';
+import { useTheme } from 'next-themes';
 
 interface AuthKitButtonProps {
   onSuccess?: () => void;
@@ -25,6 +26,7 @@ export function AuthKitButton({
   const { user } = useAuthContext();
   const [isLoading, setIsLoading] = useState(false);
   const supabase = createClient();
+  const { theme } = useTheme();
 
   const handleConnect = async () => {
     if (!user) {
@@ -53,7 +55,7 @@ export function AuthKitButton({
         onSuccess: (connection) => {handleAuthKitSuccess(connection.key, connection.platform);},
         onError: (error) => {handleAuthKitError(error);},
         onClose: () => {handleAuthKitClose()},
-        appTheme: 'dark',
+        appTheme: theme === 'dark' ? 'dark' : 'light',
       });
       open()
 

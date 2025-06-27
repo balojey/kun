@@ -21,6 +21,7 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
+    creator: '@balojey'
   },
 };
 
@@ -31,7 +32,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-ubuntu antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="dark"
+          defaultTheme="light"
           enableSystem={true}
           disableTransitionOnChange={false}
         >
