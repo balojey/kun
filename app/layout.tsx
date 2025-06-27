@@ -33,13 +33,12 @@ export const metadata: Metadata = {
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
 
   return (
-    <html lang="en" suppressHydrationWarning className="dark">
-      <body className="font-ubuntu antialiased dark">
+    <html lang="en" suppressHydrationWarning>
+      <body className="font-ubuntu antialiased">
         <ThemeProvider
           attribute="class"
           defaultTheme="dark"
-          forcedTheme="dark"
-          enableSystem={false}
+          enableSystem={true}
           disableTransitionOnChange={false}
         >
           <AuthProvider>

@@ -56,19 +56,19 @@ export function LandingPage() {
           <div className="flex items-center space-x-4">
             <ThemeToggle />
             <Link href="/pricing">
-              <AnimatedButton variant="ghost">Pricing</AnimatedButton>
+              <AnimatedButton className='' variant="ghost">Pricing</AnimatedButton>
             </Link>
             {user ? (
               <Link href="/app">
-                <AnimatedButton>Open App</AnimatedButton>
+                <AnimatedButton className=''>Open App</AnimatedButton>
               </Link>
             ) : (
               <>
                 <Link href="/login">
-                  <AnimatedButton variant="ghost">Sign In</AnimatedButton>
+                  <AnimatedButton className='' variant="ghost">Sign In</AnimatedButton>
                 </Link>
                 <Link href="/signup">
-                  <AnimatedButton>Get Started</AnimatedButton>
+                  <AnimatedButton className=''>Get Started</AnimatedButton>
                 </Link>
               </>
             )}
@@ -121,14 +121,14 @@ export function LandingPage() {
             >
               {user ? (
                 <Link href="/app">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
                     Open App
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
               ) : (
                 <Link href="/signup">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
                     Get Started with Aven
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
@@ -247,7 +247,7 @@ export function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {user ? (
                 <Link href="/app">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
                     Open App
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
@@ -255,7 +255,7 @@ export function LandingPage() {
               ) : (
                 <>
                   <Link href="/signup">
-                    <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
+                    <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
                       Start Your Free Trial
                       <ArrowRight className="ml-3 h-5 w-5" />
                     </AnimatedButton>
