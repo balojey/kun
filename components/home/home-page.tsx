@@ -61,13 +61,13 @@ export function HomePage() {
             </div>
           </div>
 
-          <TabsContent value="voice" className="mt-0" forceMount>
+          <TabsContent value="voice" className="mt-0">
             <div className={activeTab === 'voice' ? 'block' : 'hidden'}>
               <VoiceTab />
             </div>
           </TabsContent>
 
-          <TabsContent value="text" className="mt-0" forceMount>
+          <TabsContent value="text" className="mt-0">
             <div className={activeTab === 'text' ? 'block' : 'hidden'}>
               <TextTab />
             </div>
