@@ -42,7 +42,7 @@ export function LandingPage() {
         transition={{ duration: 0.6 }}
         className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
       >
-        <div className="flex h-16 items-center justify-between px-6 w-full max-w-7xl mx-auto">
+        <div className="flex h-16 items-center justify-between px-6 w-full max-w-none mx-auto">
           <motion.div 
             className="flex items-center space-x-2"
             whileHover={{ scale: 1.05 }}
