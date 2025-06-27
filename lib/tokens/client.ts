@@ -30,7 +30,7 @@ export async function getUserTokenBalance(): Promise<TokenBalance | null> {
     throw new Error('No authentication token available');
   }
 
-  const response = await fetch('/api/tokens/balance', {
+  const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/tokens-balance`, {
     headers: {
       'Authorization': `Bearer ${session.access_token}`,
     },

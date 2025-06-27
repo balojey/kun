@@ -5,38 +5,39 @@ import { Loader2, Mic, PhoneOff } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
-import { useTokens } from '@/hooks/use-tokens';
-import { useTokenSessionPersistence } from '@/hooks/use-token-session-persistence';
+import { useExecutionTracker } from '@/hooks/use-execution-tracker';
 import { Button } from '@/components/ui/button';
 import { TokenGuard } from '@/components/tokens/token-guard';
 import Link from 'next/link';
 
 export function VoiceTab() {
   const { connections } = useConnections();
-  const { hassufficientTokens } = useTokens();
-  const [sessionId, setSessionId] = useState<string | null>(null);
 
   const conversation = useConversation({
-    onConnect: () => toast.success('Connected to AI assistant'),
-    onDisconnect: () => toast.info('Disconnected from AI assistant'),
+    onConnect: () => {
+      toast.success('Connected to AI assistant');
+      startExecution();
+    },
+    onDisconnect: () => {
+      toast.info('Disconnected from AI assistant');
+      endExecution();
+    },
     onMessage: (message) => console.log('Message:', message.message),
-    onError: (error) => toast.error(`Connection error: ${error}`),
+    onError: (error) => {
+      toast.error(`Connection error: ${error}`);
+      endExecution();
+    },
   });
 
-  // Use persistent session management
-  const { currentSession } = useTokenSessionPersistence({
-    serviceType: 'conversational_ai',
-    isActive: conversation.status === 'connected',
-    onSessionStart: (newSessionId) => {
-      setSessionId(newSessionId);
-    },
-    onSessionEnd: () => {
-      setSessionId(null);
-    },
-    onInsufficientTokens: () => {
-      toast.error('Insufficient tokens for voice conversation');
-    },
-  });
+  // Use execution tracker
+  const { 
+    isExecuting, 
+    executionDuration, 
+    estimatedTokens, 
+    startExecution, 
+    endExecution,
+    hassufficientTokens 
+  } = useExecutionTracker('conversational_ai');
 
   const startConversation = useCallback(async () => {
     // Check if user has sufficient tokens for at least 30 seconds of conversation
@@ -62,7 +63,7 @@ export function VoiceTab() {
         agentId,
         clientTools: {
           callPica: async ({ input }) => {
-            const response = await fetch('/api/pica/execute', {
+            const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/pica-execute`, {
               method: 'POST',
               headers: {
                 'Content-Type': 'application/json',
@@ -72,9 +73,9 @@ export function VoiceTab() {
             if (!response.ok) {
               throw new Error('Failed to call Pica');
             }
-            const data = await response.json();
+            const data = await response.text();
             console.log('Pica response in convo:', data);
-            return data.response;
+            return data;
           },
         },
       });
@@ -82,7 +83,7 @@ export function VoiceTab() {
       console.error('Failed to start conversation:', error);
       toast.error('Failed to start conversation. Please check microphone permissions.');
     }
-  }, [conversation, connections, hassufficientTokens]);
+  }, [conversation, connections, hassufficientTokens, startExecution]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
@@ -93,6 +94,21 @@ export function VoiceTab() {
 
   return (
     <div className="space-y-8">
+      {/* Execution Status */}
+      {isExecuting && (
+        <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
+          <div className="flex items-center justify-between">
+            <span className="text-green-800 dark:text-green-200 font-medium">
+              Voice Session Active
+            </span>
+            <div className="flex items-center gap-4 text-green-700 dark:text-green-300 text-sm">
+              <span>Duration: {executionDuration}s</span>
+              <span>Est. Tokens: {estimatedTokens}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-10">
         {/* Status Indicators */}
         <div className="flex justify-center gap-6">
@@ -108,7 +124,7 @@ export function VoiceTab() {
               {connections.length} Tools Connected
             </span>
           </div>
-          {currentSession?.isActive && (
+          {isExecuting && (
             <div className="flex items-center gap-2">
               <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
               <span className="text-sm text-muted-foreground">

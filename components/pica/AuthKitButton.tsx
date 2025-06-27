@@ -47,7 +47,7 @@ export function AuthKitButton({
 
       const { open } = useAuthKit({
         token: {
-          url: "/api/authkit-token",
+          url: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/authkit-token`,
           headers: {
             'Authorization': `Bearer ${session.access_token}`,
           },

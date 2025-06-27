@@ -13,6 +13,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
+import { Logo } from '@/components/logo';
 
 const signupSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -64,9 +65,7 @@ export default function SignupPage() {
       {/* Header */}
       <div className="absolute top-0 left-0 right-0 p-6">
         <Link href="/" className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-            <span className="text-primary-foreground font-bold text-sm">A</span>
-          </div>
+          <Logo width={32} height={32} priority />
           <span className="font-bold text-xl">Aven</span>
         </Link>
       </div>

@@ -11,6 +11,7 @@ import { TypingAnimation } from '@/components/landing/typing-animation';
 import { AnimatedButton } from '@/components/landing/animated-button';
 import { ThreeBackground } from '@/components/landing/three-background';
 import { useAuthContext } from '@/components/auth/auth-provider';
+import { Logo } from '@/components/logo';
 
 const fadeInUp = {
   initial: { opacity: 0, y: 30 },
@@ -47,9 +48,7 @@ export function LandingPage() {
             whileHover={{ scale: 1.05 }}
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">A</span>
-            </div>
+            <Logo width={32} height={32} priority />
             <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
               Aven
             </span>
@@ -278,9 +277,7 @@ export function LandingPage() {
         <div className="px-6 w-full max-w-7xl mx-auto">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
-              <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center shadow-lg">
-                <span className="text-primary-foreground font-bold text-sm">A</span>
-              </div>
+              <Logo width={32} height={32} className="shadow-lg" />
               <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
                 Aven
               </span>

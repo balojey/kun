@@ -10,20 +10,17 @@ import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
 import { useConnections } from '@/hooks/use-connections';
-import { useTokens } from '@/hooks/use-tokens';
-import { useTokenSessionPersistence } from '@/hooks/use-token-session-persistence';
+import { useExecutionTracker } from '@/hooks/use-execution-tracker';
 import ReactMarkdown from 'react-markdown';
 
 export function TextTab() {
   const [isRecording, setIsRecording] = useState(false);
   const [isSpeechEnabled, setIsSpeechEnabled] = useState(false);
-  const [sessionId, setSessionId] = useState<string | null>(null);
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
   const { connections } = useConnections();
-  const { hassufficientTokens } = useTokens();
   
   const connectionIds = [
     ...connections.map(c => c.connection_id),
@@ -31,7 +28,7 @@ export function TextTab() {
   ];
 
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, stop, status } = useChat({
-    api: '/api/chat',
+    api: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/chat`,
     body: { connectionIds },
     onFinish: async (message) => {
       if (isSpeechEnabled && message.content) {
@@ -51,24 +48,20 @@ export function TextTab() {
           console.error('TTS error:', error);
         }
       }
+      endExecution();
     },
     maxSteps: 100,
   });
 
-  // Use persistent session management
-  const { currentSession } = useTokenSessionPersistence({
-    serviceType: 'pica_endpoint',
-    isActive: isLoading,
-    onSessionStart: (newSessionId) => {
-      setSessionId(newSessionId);
-    },
-    onSessionEnd: () => {
-      setSessionId(null);
-    },
-    onInsufficientTokens: () => {
-      toast.error('Insufficient tokens for Pica automation');
-    },
-  });
+  // Use execution tracker
+  const { 
+    isExecuting, 
+    executionDuration, 
+    estimatedTokens, 
+    startExecution, 
+    endExecution,
+    hassufficientTokens 
+  } = useExecutionTracker('pica_endpoint');
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -153,11 +146,27 @@ export function TextTab() {
       return;
     }
     
+    startExecution();
     handleSubmit(e);
   };
 
   return (
     <div className="space-y-6">
+      {/* Execution Status */}
+      {isExecuting && (
+        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
+          <div className="flex items-center justify-between text-sm">
+            <span className="text-blue-800 dark:text-blue-200 font-medium">
+              AI Processing Active
+            </span>
+            <div className="flex items-center gap-4 text-blue-700 dark:text-blue-300">
+              <span>Duration: {executionDuration}s</span>
+              <span>Est. Tokens: {estimatedTokens}</span>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Chat Interface */}
       <div className="">
         {/* Messages Area */}

@@ -23,6 +23,11 @@ export const metadata: Metadata = {
     card: 'summary_large_image',
     creator: '@balojey'
   },
+  icons: {
+    icon: '/aven-logo.png',
+    shortcut: '/aven-logo.png',
+    apple: '/aven-logo.png',
+  },
 };
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {

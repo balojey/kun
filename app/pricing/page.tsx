@@ -10,6 +10,7 @@ import { STRIPE_PRODUCTS, getProductsSortedByPrice } from '@/src/stripe-config';
 import { ThemeToggle } from '@/components/theme-toggle';
 import { Badge } from '@/components/ui/badge';
 import { Zap } from 'lucide-react';
+import { Logo } from '@/components/logo';
 
 export default function PublicPricingPage() {
   const { user } = useAuthContext();
@@ -23,9 +24,7 @@ export default function PublicPricingPage() {
       <header className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-16 items-center justify-between px-6 w-full max-w-7xl mx-auto">
           <Link href="/" className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-sm">A</span>
-            </div>
+            <Logo width={32} height={32} priority />
             <span className="font-semibold text-xl">Aven</span>
           </Link>
           
