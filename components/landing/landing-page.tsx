@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { ArrowRight, Mic, Mail, Zap, Shield, Clock, Brain, CheckCircle, Star } from 'lucide-react';
+import { ArrowRight, Mic, Mail, Zap, Shield, Clock, Brain, CheckCircle, Star, Users, Calendar, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
@@ -68,7 +68,7 @@ export function LandingPage() {
                   <AnimatedButton className='' variant="ghost">Sign In</AnimatedButton>
                 </Link>
                 <Link href="/signup">
-                  <AnimatedButton className=''>Get Started</AnimatedButton>
+                  <AnimatedButton className=''>Get Started Free</AnimatedButton>
                 </Link>
               </>
             )}
@@ -88,7 +88,7 @@ export function LandingPage() {
             <motion.div variants={fadeInUp}>
               <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium shadow-lg bg-primary/10 text-primary border-primary/20">
                 <Zap className="mr-2 h-4 w-4" />
-                AI Voice for Your Inbox
+                10,000 Free Tokens • No Credit Card Required
               </Badge>
             </motion.div>
             
@@ -96,23 +96,25 @@ export function LandingPage() {
               <h1 className="text-6xl font-bold tracking-tight sm:text-7xl lg:text-8xl mb-6">
                 <TypingAnimation 
                   phrases={[
-                    "Your AI Email Assistant.",
-                    "Converse. Control. Inbox Zero.",
-                    "Voice-First Email Management."
+                    "Turn Conversations Into Actions.",
+                    "Speak. Aven Handles Your Inbox.",
+                    "From Email Chaos to Inbox Zero.",
+                    "Your Voice-Powered Email Assistant."
                   ]}
                   className="text-gradient"
-                  speed={180}
-                  deleteSpeed={90}
-                  pauseDuration={2500}
+                  speed={150}
+                  deleteSpeed={80}
+                  pauseDuration={2000}
                 />
               </h1>
             </motion.div>
             
             <motion.p 
               variants={fadeInUp}
-              className="text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed mb-12"
+              className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12"
             >
-              Converse with your inbox. Arrive at Inbox Zero.
+              Stop drowning in emails. Aven transforms how busy professionals manage their inbox through natural conversation. 
+              Simply speak your commands—reply to clients, schedule meetings, organize messages—and watch your productivity soar.
             </motion.p>
             
             <motion.div 
@@ -122,14 +124,14 @@ export function LandingPage() {
               {user ? (
                 <Link href="/app">
                   <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
-                    Open App
+                    Open Your Dashboard
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
               ) : (
                 <Link href="/signup">
                   <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
-                    Get Started with Aven
+                    Claim 10,000 Free Tokens
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
@@ -137,7 +139,7 @@ export function LandingPage() {
               <Link href="/pricing">
                 <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg border-primary/30 hover:border-primary">
                   <Mic className="mr-3 h-5 w-5" />
-                  View Pricing
+                  See Token Packages
                 </AnimatedButton>
               </Link>
             </motion.div>
@@ -149,15 +151,15 @@ export function LandingPage() {
             >
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-primary" />
-                <span>Enterprise Security</span>
+                <span>Bank-Level Security</span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Users className="h-4 w-4 text-primary" />
+                <span>10,000+ Professionals</span>
               </div>
               <div className="flex items-center gap-2">
                 <Star className="h-4 w-4 text-primary" />
-                <span>99.9% Uptime</span>
-              </div>
-              <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-primary" />
-                <span>SOC 2 Compliant</span>
+                <span>4.9/5 User Rating</span>
               </div>
             </motion.div>
           </motion.div>
@@ -168,17 +170,18 @@ export function LandingPage() {
       <section className="py-32 w-full relative">
         <div className="px-6 w-full max-w-7xl mx-auto">
           <motion.div 
-            className="mx-auto max-w-2xl text-center mb-20"
+            className="mx-auto max-w-3xl text-center mb-20"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
             <h2 className="text-5xl font-bold tracking-tight mb-6">
-              Email Management, Reimagined
+              Why Executives Choose Aven
             </h2>
             <p className="text-xl text-muted-foreground">
-              Experience the future of email productivity
+              Built for C-suite leaders, entrepreneurs, and high-performing professionals who value their time. 
+              Connect your tools once, then control everything with your voice.
             </p>
           </motion.div>
           
@@ -192,20 +195,20 @@ export function LandingPage() {
             {[
               {
                 icon: Mic,
-                title: 'Voice-First Interface',
-                description: 'Simply speak to compose, reply, and manage emails.',
+                title: 'Natural Voice Commands',
+                description: 'Say "Reply to Sarah about the quarterly report" and Aven drafts the perfect response. No typing, no clicking—just speak naturally.',
                 color: 'primary'
               },
               {
                 icon: Brain,
-                title: 'AI Understanding',
-                description: 'Advanced AI comprehends context and intent.',
+                title: 'Contextual AI Intelligence',
+                description: 'Aven understands your communication style, priorities, and relationships. It learns from your patterns to make smarter suggestions.',
                 color: 'primary'
               },
               {
-                icon: Clock,
-                title: 'Save Hours Daily',
-                description: 'Reduce email processing time by up to 70%.',
+                icon: Zap,
+                title: 'Universal Tool Integration',
+                description: 'Connect Gmail, Calendar, Docs, Sheets, Notion, Slack, and more. One voice command controls your entire productivity stack.',
                 color: 'primary'
               }
             ].map((feature, index) => (
@@ -227,28 +230,135 @@ export function LandingPage() {
         </div>
       </section>
 
-      {/* CTA Section */}
+      {/* Use Cases Section */}
       <section className="py-32 w-full relative">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-logo-blue/5" />
         <div className="px-6 w-full max-w-7xl mx-auto relative">
           <motion.div 
-            className="mx-auto max-w-2xl text-center"
+            className="mx-auto max-w-3xl text-center mb-20"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
             <h2 className="text-5xl font-bold tracking-tight mb-6">
-              Ready to Transform Your Email?
+              Perfect For Busy Professionals
+            </h2>
+            <p className="text-xl text-muted-foreground">
+              Whether you're a CEO managing hundreds of emails daily or a consultant juggling multiple clients, 
+              Aven adapts to your workflow and amplifies your productivity.
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                icon: Users,
+                title: 'C-Suite Executives',
+                description: 'Manage board communications, investor updates, and strategic decisions without getting lost in email threads.',
+                color: 'primary'
+              },
+              {
+                icon: Calendar,
+                title: 'Consultants & Freelancers',
+                description: 'Juggle multiple clients effortlessly. Schedule calls, send proposals, and track project updates with voice commands.',
+                color: 'primary'
+              },
+              {
+                icon: FileText,
+                title: 'Sales & Business Development',
+                description: 'Follow up with prospects, schedule demos, and manage your pipeline while staying focused on closing deals.',
+                color: 'primary'
+              }
+            ].map((useCase, index) => (
+              <motion.div key={index} variants={fadeInUp}>
+                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full bg-card/50 backdrop-blur-sm hover-lift border-primary/10">
+                  <CardHeader className="pb-4">
+                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 shadow-lg">
+                      <useCase.icon className="h-7 w-7 text-primary" />
+                    </div>
+                    <CardTitle className="text-2xl mb-3">{useCase.title}</CardTitle>
+                    <CardDescription className="text-base leading-relaxed text-muted-foreground">
+                      {useCase.description}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Token System Explanation */}
+      <section className="py-32 w-full relative">
+        <div className="px-6 w-full max-w-7xl mx-auto">
+          <motion.div 
+            className="mx-auto max-w-4xl text-center"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium shadow-lg bg-primary/10 text-primary border-primary/20">
+              <Zap className="mr-2 h-4 w-4" />
+              Fair, Transparent Pricing
+            </Badge>
+            
+            <h2 className="text-5xl font-bold tracking-tight mb-6">
+              Pay Only for What You Use
+            </h2>
+            <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
+              No monthly subscriptions or hidden fees. Purchase tokens once and use them whenever you need AI assistance. 
+              Your tokens never expire, and you get 10,000 free tokens to start—enough for weeks of email management.
+            </p>
+            
+            <div className="grid gap-6 md:grid-cols-3 mb-12">
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">10,000</div>
+                <div className="text-sm text-muted-foreground">Free tokens on signup</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">~150</div>
+                <div className="text-sm text-muted-foreground">Emails processed per 1,000 tokens</div>
+              </div>
+              <div className="text-center">
+                <div className="text-3xl font-bold text-primary mb-2">∞</div>
+                <div className="text-sm text-muted-foreground">Tokens never expire</div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* CTA Section */}
+      <section className="py-32 w-full relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-logo-blue/5" />
+        <div className="px-6 w-full max-w-7xl mx-auto relative">
+          <motion.div 
+            className="mx-auto max-w-3xl text-center"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <h2 className="text-5xl font-bold tracking-tight mb-6">
+              Ready to Reclaim Your Time?
             </h2>
             <p className="text-xl text-muted-foreground mb-12">
-              Join thousands of professionals who've revolutionized their workflow.
+              Join 10,000+ professionals who've eliminated email overwhelm. Start with 10,000 free tokens—no credit card required. 
+              Experience the future of email management in under 60 seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {user ? (
                 <Link href="/app">
                   <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
-                    Open App
+                    Access Your Dashboard
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
@@ -256,17 +366,30 @@ export function LandingPage() {
                 <>
                   <Link href="/signup">
                     <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
-                      Start Your Free Trial
+                      Start Free with 10,000 Tokens
                       <ArrowRight className="ml-3 h-5 w-5" />
                     </AnimatedButton>
                   </Link>
                   <Link href="/login">
                     <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg border-primary/30 hover:border-primary">
-                      Sign In
+                      Sign In to Existing Account
                     </AnimatedButton>
                   </Link>
                 </>
               )}
+            </div>
+            
+            {/* Final Trust Signal */}
+            <div className="mt-12 pt-8 border-t border-border/20">
+              <p className="text-sm text-muted-foreground mb-4">
+                Trusted by executives at leading companies
+              </p>
+              <div className="flex items-center justify-center gap-8 text-xs text-muted-foreground">
+                <span>✓ SOC 2 Type II Certified</span>
+                <span>✓ GDPR Compliant</span>
+                <span>✓ 99.9% Uptime SLA</span>
+                <span>✓ 30-Day Money Back</span>
+              </div>
             </div>
           </motion.div>
         </div>
@@ -283,7 +406,7 @@ export function LandingPage() {
               </span>
             </div>
             <div className="text-sm text-muted-foreground">
-              © 2025 Aven. All rights reserved.
+              © 2025 Aven. All rights reserved. • Built for professionals who value their time.
             </div>
           </div>
         </div>
