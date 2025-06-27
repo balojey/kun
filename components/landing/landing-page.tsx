@@ -43,7 +43,7 @@ export function LandingPage() {
         transition={{ duration: 0.6 }}
         className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
       >
-        <div className="flex h-16 items-center justify-between px-6 w-full max-w-7xl mx-auto">
+        <div className="flex h-16 items-center justify-between px-6 w-full max-w-none mx-auto">
           <div className="flex items-center gap-4">
             <motion.div 
               className="flex items-center space-x-2"
@@ -67,7 +67,7 @@ export function LandingPage() {
                 title="Powered by Bolt"
               >
                 <Image
-                  src="/black_circle_360x360.png"
+                  src="/bolt.png"
                   alt="Bolt"
                   width={16}
                   height={16}

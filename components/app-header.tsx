@@ -30,7 +30,7 @@ export function AppHeader() {
               title="Powered by Bolt"
             >
               <Image
-                src="/black_circle_360x360.png"
+                src="/bolt.png"
                 alt="Bolt"
                 width={16}
                 height={16}
