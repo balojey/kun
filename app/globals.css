@@ -10,74 +10,81 @@
 }
 
 :root {
-  --background: 0 0% 100%;
-  --foreground: 222 84% 4.9%;
+  /* Light mode - keeping some light options for accessibility */
+  --background: 210 40% 98%;
+  --foreground: 8 30% 9%;
   --card: 0 0% 100%;
-  --card-foreground: 222 84% 4.9%;
+  --card-foreground: 8 30% 9%;
   --popover: 0 0% 100%;
-  --popover-foreground: 222 84% 4.9%;
-  --primary: 221 83% 53%;
-  --primary-foreground: 210 40% 98%;
+  --popover-foreground: 8 30% 9%;
+  --primary: 210 100% 8%;
+  --primary-foreground: 0 0% 100%;
   --secondary: 210 40% 96%;
-  --secondary-foreground: 222 84% 4.9%;
+  --secondary-foreground: 8 30% 9%;
   --muted: 210 40% 96%;
   --muted-foreground: 215 16% 46.9%;
   --accent: 210 40% 96%;
-  --accent-foreground: 222 84% 4.9%;
+  --accent-foreground: 8 30% 9%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 210 40% 98%;
   --border: 214 32% 91.2%;
   --input: 214 32% 91.2%;
-  --ring: 221 83% 53%;
+  --ring: 210 100% 8%;
   --chart-1: 12 76% 61%;
   --chart-2: 173 58% 39%;
   --chart-3: 197 37% 24%;
   --chart-4: 43 74% 66%;
   --chart-5: 27 87% 67%;
   --radius: 0.75rem;
-  --sidebar: 0 0% 98%;
+  --sidebar: 210 40% 98%;
   --sidebar-foreground: 215 16% 46.9%;
-  --sidebar-primary: 222 84% 4.9%;
+  --sidebar-primary: 8 30% 9%;
   --sidebar-primary-foreground: 210 40% 98%;
   --sidebar-accent: 210 40% 96%;
-  --sidebar-accent-foreground: 222 84% 4.9%;
+  --sidebar-accent-foreground: 8 30% 9%;
   --sidebar-border: 214 32% 91.2%;
-  --sidebar-ring: 221 83% 53%;
+  --sidebar-ring: 210 100% 8%;
 }
 
 .dark {
-  --background: 222 84% 4.9%;
-  --foreground: 210 40% 98%;
-  --card: 222 84% 4.9%;
-  --card-foreground: 210 40% 98%;
-  --popover: 222 84% 4.9%;
-  --popover-foreground: 210 40% 98%;
-  --primary: 217 91% 60%;
-  --primary-foreground: 222 84% 4.9%;
-  --secondary: 217 32% 17.5%;
-  --secondary-foreground: 210 40% 98%;
-  --muted: 217 32% 17.5%;
+  /* Dark mode - primary theme based on logo colors */
+  --background: 210 100% 8%; /* #051628 - Deep navy blue */
+  --foreground: 0 0% 100%; /* Pure white for maximum contrast */
+  --card: 210 85% 11%; /* #081e34 - Dark blue for cards */
+  --card-foreground: 0 0% 100%;
+  --popover: 210 85% 11%;
+  --popover-foreground: 0 0% 100%;
+  --primary: 200 100% 50%; /* Vibrant blue from logo gradient */
+  --primary-foreground: 210 100% 8%;
+  --secondary: 210 85% 15%;
+  --secondary-foreground: 0 0% 100%;
+  --muted: 210 85% 15%;
   --muted-foreground: 215 20% 65.1%;
-  --accent: 217 32% 17.5%;
-  --accent-foreground: 210 40% 98%;
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 210 40% 98%;
-  --border: 217 32% 17.5%;
-  --input: 217 32% 17.5%;
-  --ring: 224 71% 4%;
-  --chart-1: 220 70% 50%;
-  --chart-2: 160 60% 45%;
-  --chart-3: 30 80% 55%;
-  --chart-4: 280 65% 60%;
-  --chart-5: 340 75% 55%;
-  --sidebar: 222 84% 4.9%;
+  --accent: 210 85% 15%;
+  --accent-foreground: 0 0% 100%;
+  --destructive: 0 62.8% 50%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 210 85% 15%;
+  --input: 210 85% 15%;
+  --ring: 200 100% 50%;
+  --chart-1: 200 100% 60%;
+  --chart-2: 180 100% 50%;
+  --chart-3: 220 100% 60%;
+  --chart-4: 240 100% 60%;
+  --chart-5: 260 100% 60%;
+  --sidebar: 210 100% 8%;
   --sidebar-foreground: 215 20% 65.1%;
-  --sidebar-primary: 210 40% 98%;
-  --sidebar-primary-foreground: 222 84% 4.9%;
-  --sidebar-accent: 217 32% 17.5%;
-  --sidebar-accent-foreground: 210 40% 98%;
-  --sidebar-border: 217 32% 17.5%;
-  --sidebar-ring: 224 71% 4%;
+  --sidebar-primary: 0 0% 100%;
+  --sidebar-primary-foreground: 210 100% 8%;
+  --sidebar-accent: 210 85% 15%;
+  --sidebar-accent-foreground: 0 0% 100%;
+  --sidebar-border: 210 85% 15%;
+  --sidebar-ring: 200 100% 50%;
+}
+
+/* Force dark mode as default */
+html {
+  color-scheme: dark;
 }
 
 @theme inline {
@@ -176,9 +183,9 @@ h1 {
   z-index: -1;
 }
 
-/* Gradient text effects */
+/* Gradient text effects - updated for logo colors */
 .text-gradient {
-  background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--primary)) 50%, hsl(var(--muted-foreground)));
+  background: linear-gradient(135deg, hsl(var(--primary)), #00d4ff 50%, hsl(var(--foreground)));
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -229,10 +236,10 @@ h1 {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 20px rgba(59, 130, 246, 0.3);
+    box-shadow: 0 0 20px rgba(0, 212, 255, 0.3);
   }
   50% {
-    box-shadow: 0 0 30px rgba(59, 130, 246, 0.5);
+    box-shadow: 0 0 30px rgba(0, 212, 255, 0.5);
   }
 }
 
@@ -285,11 +292,11 @@ h1 {
 
 .hover-lift:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  box-shadow: 0 10px 25px -5px rgba(0, 212, 255, 0.1), 0 10px 10px -5px rgba(0, 212, 255, 0.04);
 }
 
 .dark .hover-lift:hover {
-  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3), 0 10px 10px -5px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 10px 25px -5px rgba(0, 212, 255, 0.3), 0 10px 10px -5px rgba(0, 212, 255, 0.2);
 }
 
 /* Gradient backgrounds */
@@ -303,14 +310,14 @@ h1 {
 
 /* Glass morphism effects */
 .glass {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(0, 212, 255, 0.1);
   backdrop-filter: blur(10px);
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(0, 212, 255, 0.2);
 }
 
 .dark .glass {
-  background: rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(5, 22, 40, 0.8);
+  border: 1px solid rgba(0, 212, 255, 0.1);
 }
 
 /* Button glow effects */
@@ -326,10 +333,18 @@ h1 {
   left: -100%;
   width: 100%;
   height: 100%;
-  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+  background: linear-gradient(90deg, transparent, rgba(0, 212, 255, 0.2), transparent);
   transition: left 0.5s;
 }
 
 .btn-glow:hover::before {
   left: 100%;
+}
+
+/* Logo gradient effect */
+.logo-gradient {
+  background: linear-gradient(135deg, #00d4ff, #0099cc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
 }

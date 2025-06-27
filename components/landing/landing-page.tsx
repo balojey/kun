@@ -49,7 +49,7 @@ export function LandingPage() {
             transition={{ type: "spring", stiffness: 400, damping: 17 }}
           >
             <Logo width={32} height={32} priority />
-            <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+            <span className="font-bold text-xl logo-gradient">
               Aven
             </span>
           </motion.div>
@@ -100,7 +100,7 @@ export function LandingPage() {
                     "Converse. Control. Inbox Zero.",
                     "Voice-First Email Management."
                   ]}
-                  className="bg-gradient-to-r from-primary via-blue-600 to-primary bg-clip-text text-transparent"
+                  className="text-gradient"
                   speed={180}
                   deleteSpeed={90}
                   pauseDuration={2500}
@@ -121,21 +121,21 @@ export function LandingPage() {
             >
               {user ? (
                 <Link href="/app">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
                     Open App
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
               ) : (
                 <Link href="/signup">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
                     Get Started with Aven
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
               )}
               <Link href="/pricing">
-                <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
+                <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg border-primary/30 hover:border-primary">
                   <Mic className="mr-3 h-5 w-5" />
                   View Pricing
                 </AnimatedButton>
@@ -148,15 +148,15 @@ export function LandingPage() {
               className="flex items-center justify-center gap-8 text-sm text-muted-foreground"
             >
               <div className="flex items-center gap-2">
-                <CheckCircle className="h-4 w-4 text-green-500" />
+                <CheckCircle className="h-4 w-4 text-primary" />
                 <span>Enterprise Security</span>
               </div>
               <div className="flex items-center gap-2">
-                <Star className="h-4 w-4 text-yellow-500" />
+                <Star className="h-4 w-4 text-primary" />
                 <span>99.9% Uptime</span>
               </div>
               <div className="flex items-center gap-2">
-                <Shield className="h-4 w-4 text-blue-500" />
+                <Shield className="h-4 w-4 text-primary" />
                 <span>SOC 2 Compliant</span>
               </div>
             </motion.div>
@@ -194,26 +194,26 @@ export function LandingPage() {
                 icon: Mic,
                 title: 'Voice-First Interface',
                 description: 'Simply speak to compose, reply, and manage emails.',
-                color: 'blue'
+                color: 'primary'
               },
               {
                 icon: Brain,
                 title: 'AI Understanding',
                 description: 'Advanced AI comprehends context and intent.',
-                color: 'purple'
+                color: 'primary'
               },
               {
                 icon: Clock,
                 title: 'Save Hours Daily',
                 description: 'Reduce email processing time by up to 70%.',
-                color: 'orange'
+                color: 'primary'
               }
             ].map((feature, index) => (
               <motion.div key={index} variants={fadeInUp}>
-                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full bg-card/50 backdrop-blur-sm hover-lift">
+                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full bg-card/50 backdrop-blur-sm hover-lift border-primary/10">
                   <CardHeader className="pb-4">
-                    <div className={`w-14 h-14 rounded-xl bg-${feature.color}-500/10 flex items-center justify-center mb-6 shadow-lg`}>
-                      <feature.icon className={`h-7 w-7 text-${feature.color}-500`} />
+                    <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 shadow-lg">
+                      <feature.icon className="h-7 w-7 text-primary" />
                     </div>
                     <CardTitle className="text-2xl mb-3">{feature.title}</CardTitle>
                     <CardDescription className="text-base leading-relaxed text-muted-foreground">
@@ -229,7 +229,7 @@ export function LandingPage() {
 
       {/* CTA Section */}
       <section className="py-32 w-full relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-blue-500/5" />
+        <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-logo-blue/5" />
         <div className="px-6 w-full max-w-7xl mx-auto relative">
           <motion.div 
             className="mx-auto max-w-2xl text-center"
@@ -247,7 +247,7 @@ export function LandingPage() {
             <div className="flex flex-col sm:flex-row gap-6 justify-center">
               {user ? (
                 <Link href="/app">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
                     Open App
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
@@ -255,13 +255,13 @@ export function LandingPage() {
               ) : (
                 <>
                   <Link href="/signup">
-                    <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold">
+                    <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold bg-logo-gradient hover:opacity-90">
                       Start Your Free Trial
                       <ArrowRight className="ml-3 h-5 w-5" />
                     </AnimatedButton>
                   </Link>
                   <Link href="/login">
-                    <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg">
+                    <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg border-primary/30 hover:border-primary">
                       Sign In
                     </AnimatedButton>
                   </Link>
@@ -278,7 +278,7 @@ export function LandingPage() {
           <div className="flex flex-col md:flex-row justify-between items-center">
             <div className="flex items-center space-x-2 mb-4 md:mb-0">
               <Logo width={32} height={32} className="shadow-lg" />
-              <span className="font-bold text-xl bg-gradient-to-r from-primary to-blue-600 bg-clip-text text-transparent">
+              <span className="font-bold text-xl logo-gradient">
                 Aven
               </span>
             </div>

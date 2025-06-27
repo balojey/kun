@@ -14,6 +14,13 @@ const config: Config = {
         sans: ['Ubuntu', 'system-ui', 'sans-serif'],
       },
       colors: {
+        // Logo-inspired color palette
+        'logo-navy': '#051628',
+        'logo-surface': '#081e34',
+        'logo-blue': '#00d4ff',
+        'logo-gradient-start': '#0099cc',
+        'logo-gradient-end': '#00d4ff',
+        
         background: 'hsl(var(--background))',
         foreground: 'hsl(var(--foreground))',
         card: {
@@ -75,6 +82,7 @@ const config: Config = {
         'fade-in-up': 'fade-in-up 0.8s ease-out',
         'scale-in': 'scale-in 0.5s ease-out',
         'float': 'float 6s ease-in-out infinite',
+        'glow': 'glow 2s ease-in-out infinite',
       },
       keyframes: {
         'fade-in': {
@@ -115,6 +123,18 @@ const config: Config = {
             transform: 'translateY(-10px)',
           },
         },
+        'glow': {
+          '0%, 100%': {
+            boxShadow: '0 0 20px rgba(0, 212, 255, 0.3)',
+          },
+          '50%': {
+            boxShadow: '0 0 30px rgba(0, 212, 255, 0.5)',
+          },
+        },
+      },
+      backgroundImage: {
+        'logo-gradient': 'linear-gradient(135deg, #00d4ff, #0099cc)',
+        'accent-gradient': 'linear-gradient(135deg, #00d4ff, #0066ff)',
       },
     },
   },

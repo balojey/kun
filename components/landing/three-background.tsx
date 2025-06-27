@@ -12,22 +12,21 @@ function FloatingWireframeSphere({ position, scale, speed }: {
   speed: number; 
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const { resolvedTheme } = useTheme();
 
-  const color = resolvedTheme === 'dark' ? '#3B82F6' : '#1E40AF';
+  // Use logo colors for the wireframes
+  const color = '#00d4ff'; // Logo blue
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
-    // ↓↓↓ Reduce multipliers here ↓↓↓
-    meshRef.current.rotation.x += speed * 0.2; // was 0.5
-    meshRef.current.rotation.y += speed * 0.12; // was 0.3
-    meshRef.current.position.y = position[1] + Math.sin(clock.elapsedTime * speed * 0.5) * 0.4; // slower oscillation
+    meshRef.current.rotation.x += speed * 0.2;
+    meshRef.current.rotation.y += speed * 0.12;
+    meshRef.current.position.y = position[1] + Math.sin(clock.elapsedTime * speed * 0.5) * 0.4;
   });
 
   return (
     <mesh ref={meshRef} position={position} scale={scale}>
       <sphereGeometry args={[1, 16, 12]} />
-      <meshBasicMaterial color={color} wireframe transparent opacity={0.15} />
+      <meshBasicMaterial color={color} wireframe transparent opacity={0.2} />
     </mesh>
   );
 }
@@ -40,16 +39,14 @@ function FloatingGeometry({ position, geometry, scale, speed }: {
   speed: number;
 }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  const { resolvedTheme } = useTheme();
-  const color = resolvedTheme === 'dark' ? '#60A5FA' : '#2563EB';
+  const color = '#0099cc'; // Logo gradient color
 
   useFrame(({ clock }) => {
     if (!meshRef.current) return;
-    // ↓↓↓ Reduce multipliers here ↓↓↓
-    meshRef.current.rotation.x += speed * 0.15; // was 0.4
-    meshRef.current.rotation.z += speed * 0.08; // was 0.2
-    meshRef.current.position.x = position[0] + Math.cos(clock.elapsedTime * speed * 0.2) * 0.2; // slower
-    meshRef.current.position.y = position[1] + Math.sin(clock.elapsedTime * speed * 0.3) * 0.25; // slower
+    meshRef.current.rotation.x += speed * 0.15;
+    meshRef.current.rotation.z += speed * 0.08;
+    meshRef.current.position.x = position[0] + Math.cos(clock.elapsedTime * speed * 0.2) * 0.2;
+    meshRef.current.position.y = position[1] + Math.sin(clock.elapsedTime * speed * 0.3) * 0.25;
   });
 
   const renderGeometry = () => {
@@ -64,16 +61,15 @@ function FloatingGeometry({ position, geometry, scale, speed }: {
   return (
     <mesh ref={meshRef} position={position} scale={scale}>
       {renderGeometry()}
-      <meshBasicMaterial color={color} wireframe transparent opacity={0.1} />
+      <meshBasicMaterial color={color} wireframe transparent opacity={0.15} />
     </mesh>
   );
 }
 
-// Perspective grid with safe geometry construction
+// Perspective grid with logo colors
 function PerspectiveGrid() {
   const gridRef = useRef<THREE.Group>(null);
-  const { resolvedTheme } = useTheme();
-  const color = resolvedTheme === 'dark' ? '#1E40AF' : '#3B82F6';
+  const color = '#00d4ff'; // Logo blue
 
   const lines = useMemo(() => {
     const geometries = [];
@@ -86,9 +82,8 @@ function PerspectiveGrid() {
 
   useFrame(({ clock }) => {
     if (!gridRef.current) return;
-    // ↓↓↓ Reduce multipliers here ↓↓↓
-    gridRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.05) * 0.08; // was 0.1, now slower
-    gridRef.current.position.z = -5 + Math.sin(clock.elapsedTime * 0.1) * 0.3; // was 0.2/0.5, now slower
+    gridRef.current.rotation.x = Math.sin(clock.elapsedTime * 0.05) * 0.08;
+    gridRef.current.position.z = -5 + Math.sin(clock.elapsedTime * 0.1) * 0.3;
   });
 
   return (
@@ -103,13 +98,12 @@ function PerspectiveGrid() {
               itemSize={3}
             />
           </bufferGeometry>
-          <lineBasicMaterial color={color} transparent opacity={0.08} />
+          <lineBasicMaterial color={color} transparent opacity={0.1} />
         </line>
       ))}
     </group>
   );
 }
-
 
 // Main scene setup
 function Scene() {
