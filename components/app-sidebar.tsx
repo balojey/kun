@@ -63,7 +63,7 @@ const navigationItems = [
     description: 'Connected Tools'
   },
   {
-    title: 'Pricing',
+    title: 'Buy Tokens',
     url: '/app/pricing',
     icon: CreditCard,
     description: 'Token Packages'
