@@ -24,8 +24,6 @@ export function VoiceTab() {
   ];
   const connectedTools = connections.map(c => c.provider).join(', ');
   
-  console.log("Connections:", connectionIds);
-
   const executeUserCommand = async ({ rowId }: { command: string, rowId: string }) => {
     const { data: { session } } = await supabase.auth.getSession();
     
@@ -85,28 +83,6 @@ export function VoiceTab() {
   const conversation = useConversation({
     onConnect: async () => {
       toast.success('Connected to AI assistant');
-      
-      // Create conversation session record when connection starts
-      try {
-        const conversationId = conversation.getId();
-        if (conversationId && user) {
-          const { error } = await supabase
-            .from('conversation_sessions')
-            .insert({
-              user_id: user.id,
-              conversation_id: conversationId,
-              status: 'initiated'
-            });
-
-          if (error) {
-            console.error('Error creating conversation session:', error);
-          } else {
-            console.log(`Created conversation session for ${conversationId}`);
-          }
-        }
-      } catch (error) {
-        console.error('Error in conversation session creation:', error);
-      }
     },
     onDisconnect: () => {
       toast.info('Disconnected from AI assistant');
@@ -141,6 +117,28 @@ export function VoiceTab() {
           getCallResponse,
         },
       });
+      
+      // Create conversation session record when connection starts
+      try {
+        const conversationId = conversation.getId();
+        if (conversationId && user) {
+          const { error } = await supabase
+            .from('conversation_sessions')
+            .insert({
+              user_id: user.id,
+              conversation_id: conversationId,
+              status: 'initiated'
+            });
+
+          if (error) {
+            console.error('Error creating conversation session:', error);
+          } else {
+            console.log(`Created conversation session for ${conversationId}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error in conversation session creation:', error);
+      }
     } catch (error) {
       console.error('Failed to start conversation:', error);
       toast.error('Failed to start conversation. Please check microphone permissions.');

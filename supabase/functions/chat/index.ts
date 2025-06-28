@@ -112,7 +112,7 @@ If the user asks about things outside of your capability, reply gracefully and o
         });
 
         // Create the response stream
-        const response = result.toDataStreamResponse();
+        // const response = result.toDataStreamResponse();
 
         // Measure execution time and deduct tokens in background
         EdgeRuntime.waitUntil((async () => {
@@ -142,7 +142,7 @@ If the user asks about things outside of your capability, reply gracefully and o
             }
         })());
 
-        return response;
+        return result.toDataStreamResponse({ headers: corsHeaders });
     } catch (error) {
         console.error('Chat error:', error);
 

@@ -61,19 +61,19 @@ export function useTokens() {
   }, [user]);
 
   // Subscribe to balance changes using polling instead of realtime
-  useEffect(() => {
-    if (!user) return;
+  // useEffect(() => {
+  //   if (!user) return;
 
-    const unsubscribe = subscribeToTokenBalance((newBalance) => {
-      setBalance(newBalance);
-      // Refresh estimated time when balance changes
-      if (newBalance) {
-        getEstimatedUsageTime().then(setEstimatedTime).catch(console.error);
-      }
-    });
+  //   const unsubscribe = subscribeToTokenBalance((newBalance) => {
+  //     setBalance(newBalance);
+  //     // Refresh estimated time when balance changes
+  //     if (newBalance) {
+  //       getEstimatedUsageTime().then(setEstimatedTime).catch(console.error);
+  //     }
+  //   });
 
-    return unsubscribe;
-  }, [user]);
+  //   return unsubscribe;
+  // }, [user]);
 
   const hassufficientTokens = (requiredTokens: number): boolean => {
     return balance ? balance.balance >= requiredTokens : false;

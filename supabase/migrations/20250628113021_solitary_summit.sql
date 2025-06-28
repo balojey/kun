@@ -38,49 +38,49 @@ CREATE TABLE IF NOT EXISTS conversation_history (
 );
 
 -- Enable RLS
-ALTER TABLE conversation_sessions ENABLE ROW LEVEL SECURITY;
-ALTER TABLE conversation_history ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversation_sessions ENABLE ROW LEVEL SECURITY;
+ALTER TABLE public.conversation_history ENABLE ROW LEVEL SECURITY;
 
 -- RLS Policies for conversation_sessions
 CREATE POLICY "Users can view their own conversation sessions"
-  ON conversation_sessions
+  ON public.conversation_sessions
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid()::text);
 
 CREATE POLICY "Users can insert their own conversation sessions"
-  ON conversation_sessions
+  ON public.conversation_sessions
   FOR INSERT
   TO authenticated
   WITH CHECK (user_id = auth.uid()::text);
 
 -- RLS Policies for conversation_history
 CREATE POLICY "Users can view their own conversation history"
-  ON conversation_history
+  ON public.conversation_history
   FOR SELECT
   TO authenticated
   USING (user_id = auth.uid()::text);
 
 -- Service role policies for system operations
 CREATE POLICY "Service role can manage all conversation sessions"
-  ON conversation_sessions
+  ON public.conversation_sessions
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
 
 CREATE POLICY "Service role can manage all conversation history"
-  ON conversation_history
+  ON public.conversation_history
   FOR ALL
   TO service_role
   USING (true)
   WITH CHECK (true);
 
 -- Indexes for performance
-CREATE INDEX IF NOT EXISTS conversation_sessions_user_id_idx ON conversation_sessions(user_id);
-CREATE INDEX IF NOT EXISTS conversation_sessions_conversation_id_idx ON conversation_sessions(conversation_id);
-CREATE INDEX IF NOT EXISTS conversation_sessions_status_idx ON conversation_sessions(status);
-CREATE INDEX IF NOT EXISTS conversation_history_user_id_idx ON conversation_history(user_id);
+CREATE INDEX IF NOT EXISTS conversation_sessions_user_id_idx ON public.conversation_sessions(user_id);
+CREATE INDEX IF NOT EXISTS conversation_sessions_conversation_id_idx ON public.conversation_sessions(conversation_id);
+CREATE INDEX IF NOT EXISTS conversation_sessions_status_idx ON public.conversation_sessions(status);
+CREATE INDEX IF NOT EXISTS conversation_history_user_id_idx ON public.conversation_history(user_id);
 
 -- Function to check if user has sufficient tokens for execution
 CREATE OR REPLACE FUNCTION check_tokens_for_execution(

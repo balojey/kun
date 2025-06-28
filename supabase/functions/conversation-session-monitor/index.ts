@@ -10,7 +10,7 @@ const elevenLabsClient = new ElevenLabsClient({
 // This function should NOT be exposed to frontend - it's for internal monitoring only
 Deno.serve(async (req) => {
   // Only allow internal calls - no CORS headers
-  if (req.method !== 'POST') {
+  if (req.method === 'POST') {
     return new Response('Method not allowed', { status: 405 });
   }
 
@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
     const { data: activeSessions, error: fetchError } = await supabase
       .from('conversation_sessions')
       .select('*')
-      .in('status', ['initiated', 'in-progress', 'processing']);
+      // .in('status', ['initiated', 'in-progress', 'processing']);
 
     if (fetchError) {
       console.error('Error fetching active sessions:', fetchError);
@@ -52,14 +52,16 @@ Deno.serve(async (req) => {
         const conversationDetails = await elevenLabsClient.conversationalAi.conversations.get(
           session.conversation_id
         );
+        // return new Response(JSON.stringify({conversationDetails}))
 
-        console.log(`Conversation ${session.conversation_id} status: ${conversationDetails.status}`);
+        console.log(`Conversation ${session.conversation_id} status: ${conversationDetails.status} - Duration: ${conversationDetails.metadata?.callDurationSecs} seconds`);
 
         // Update session with latest status and duration
         const updateData: any = {
           status: conversationDetails.status,
-          conversation_duration: conversationDetails.metadata?.call_duration_secs || 0
+          conversation_duration: conversationDetails.metadata?.callDurationSecs || 0
         };
+        console.log('Updating session with data:', updateData);
 
         const { error: updateError } = await supabase
           .from('conversation_sessions')
@@ -77,7 +79,8 @@ Deno.serve(async (req) => {
         if (conversationDetails.status === 'done' || conversationDetails.status === 'failed') {
           console.log(`Conversation ${session.conversation_id} completed with status: ${conversationDetails.status}`);
 
-          const duration = conversationDetails.metadata?.call_duration_secs || 0;
+          const duration = conversationDetails.metadata?.callDurationSecs || 0;
+          console.log(`Conversation ${session.conversation_id} duration: ${duration} seconds`);
 
           // Deduct tokens for conversation duration (1 token per second)
           if (duration > 0) {

@@ -10,7 +10,7 @@ import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
 import { useConnections } from '@/hooks/use-connections';
-import { useExecutionTracker } from '@/hooks/use-execution-tracker';
+import { useTokens } from '@/hooks/use-tokens';
 import ReactMarkdown from 'react-markdown';
 
 export function TextTab() {
@@ -20,7 +20,7 @@ export function TextTab() {
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { speak } = useSpeech();
-  const { connections } = useConnections();
+  const { connections, supabaseToken } = useConnections();
   
   const connectionIds = [
     ...connections.map(c => c.connection_id),
@@ -30,6 +30,10 @@ export function TextTab() {
   const { messages, input, handleInputChange, handleSubmit, isLoading, append, stop, status } = useChat({
     api: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/chat`,
     body: { connectionIds },
+    headers: {
+      Authorization: `Bearer ${supabaseToken}`,
+      'Content-Type': 'application/json',
+    },
     onFinish: async (message) => {
       if (isSpeechEnabled && message.content) {
         try {
@@ -48,20 +52,14 @@ export function TextTab() {
           console.error('TTS error:', error);
         }
       }
-      endExecution();
     },
     maxSteps: 100,
   });
 
   // Use execution tracker
-  const { 
-    isExecuting, 
-    executionDuration, 
-    estimatedTokens, 
-    startExecution, 
-    endExecution,
-    hassufficientTokens 
-  } = useExecutionTracker('pica_endpoint');
+  const {
+    hassufficientTokens
+  } = useTokens();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -146,27 +144,11 @@ export function TextTab() {
       return;
     }
     
-    startExecution();
     handleSubmit(e);
   };
 
   return (
     <div className="space-y-6">
-      {/* Execution Status */}
-      {isExecuting && (
-        <div className="bg-blue-50 dark:bg-blue-950/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3">
-          <div className="flex items-center justify-between text-sm">
-            <span className="text-blue-800 dark:text-blue-200 font-medium">
-              AI Processing Active
-            </span>
-            <div className="flex items-center gap-4 text-blue-700 dark:text-blue-300">
-              <span>Duration: {executionDuration}s</span>
-              <span>Est. Tokens: {estimatedTokens}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       {/* Chat Interface */}
       <div className="">
         {/* Messages Area */}

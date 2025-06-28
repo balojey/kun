@@ -12,6 +12,7 @@ export function useConnections() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
+  const [supabaseToken, setSupabaseToken] = useState<string>('');
 
   const fetchConnections = async () => {
     if (!user) {
@@ -84,6 +85,20 @@ export function useConnections() {
     fetchConnections();
   }, [user]);
 
+  useEffect(() => {
+    const getToken = async () => {
+      if (!user) {
+        setSupabaseToken('');
+        return;
+      }
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+      setSupabaseToken(session?.access_token || '');
+    };
+    getToken();
+  }, [user]);
+
   // Set up real-time subscription for connections
   useEffect(() => {
     if (!user) return;
@@ -113,6 +128,7 @@ export function useConnections() {
     connections,
     loading,
     error,
+    supabaseToken,
     disconnectTool,
     refreshConnections,
     getConnectionByAppType,
