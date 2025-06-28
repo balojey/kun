@@ -15,6 +15,8 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Loader2 } from 'lucide-react';
 import { Logo } from '@/components/logo';
+import { useAuthContext } from '@/components/auth/auth-provider';
+import { Separator } from '@/components/ui/separator';
 
 const loginSchema = z.object({
   email: z.string().email('Please enter a valid email address'),
@@ -25,8 +27,10 @@ type LoginForm = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
   const [isLoading, setIsLoading] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
   const router = useRouter();
   const supabase = createClient();
+  const { signInWithGoogle } = useAuthContext();
 
   const {
     register,
@@ -56,10 +60,22 @@ export default function LoginPage() {
     }
   };
 
+  const handleGoogleSignIn = async () => {
+    setIsGoogleLoading(true);
+    try {
+      await signInWithGoogle();
+      // Auth state will be handled by the auth provider
+    } catch (error) {
+      console.error('Google sign in error:', error);
+    } finally {
+      setIsGoogleLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen flex items-center justify-center bg-background p-4">
       {/* Header */}
-      <div className="absolute top-0 left-0 right-0 p-6">
+      <div className="absolute top-0 left-0 right-0 p-4 sm:p-6">
         <div className="flex items-center gap-4">
           <Link href="/" className="flex items-center space-x-2">
             <Logo width={32} height={32} priority />
@@ -99,6 +115,38 @@ export default function LoginPage() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {/* Google Sign In Button */}
+          <Button 
+            variant="outline" 
+            onClick={handleGoogleSignIn} 
+            disabled={isGoogleLoading}
+            className="w-full mb-4 relative"
+          >
+            {isGoogleLoading ? (
+              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            ) : (
+              <Image 
+                src="/google-logo.svg" 
+                alt="Google" 
+                width={18} 
+                height={18} 
+                className="mr-2"
+              />
+            )}
+            {isGoogleLoading ? "Signing in..." : "Sign in with Google"}
+          </Button>
+
+          <div className="relative my-4">
+            <div className="absolute inset-0 flex items-center">
+              <Separator className="w-full" />
+            </div>
+            <div className="relative flex justify-center">
+              <span className="bg-card px-2 text-xs text-muted-foreground">
+                OR CONTINUE WITH EMAIL
+              </span>
+            </div>
+          </div>
+
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
@@ -135,7 +183,7 @@ export default function LoginPage() {
                   Signing in...
                 </>
               ) : (
-                'Sign in'
+                'Sign in with Email'
               )}
             </Button>
           </form>

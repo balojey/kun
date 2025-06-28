@@ -42,6 +42,7 @@ import {
   DropdownMenuSubTrigger,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import Image from 'next/image';
 
 const navigationItems = [
   {
@@ -90,6 +91,10 @@ export function AppSidebar() {
   const router = useRouter();
   const { user, signOut } = useAuthContext();
   const { theme, setTheme } = useTheme();
+
+  // Check if user has an avatar (from Google)
+  const hasAvatar = user?.user_metadata?.avatar_url;
+  const userName = user?.user_metadata?.full_name || user?.email?.split('@')[0] || 'User';
 
   const handleSignOut = async () => {
     await signOut();
@@ -184,12 +189,24 @@ export function AppSidebar() {
           <DropdownMenuTrigger asChild>
             <Button variant="ghost" className="w-full justify-start h-auto p-3 rounded-xl hover:bg-accent/50">
               <div className="flex items-center space-x-3 w-full">
-                <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20">
-                  <User className="h-5 w-5 text-primary" />
-                </div>
+                {hasAvatar ? (
+                  <div className="w-10 h-10 rounded-full overflow-hidden border border-primary/20 flex-shrink-0">
+                    <Image 
+                      src={user.user_metadata.avatar_url} 
+                      alt={userName}
+                      width={40}
+                      height={40}
+                      className="h-full w-full object-cover"
+                    />
+                  </div>
+                ) : (
+                  <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary/20 to-primary/10 flex items-center justify-center border border-primary/20 flex-shrink-0">
+                    <User className="h-5 w-5 text-primary" />
+                  </div>
+                )}
                 <div className="flex-1 text-left min-w-0">
                   <p className="text-sm font-medium truncate">
-                    {user?.email?.split('@')[0] || 'User'}
+                    {userName}
                   </p>
                   <p className="text-xs text-muted-foreground truncate">
                     {user?.email}
