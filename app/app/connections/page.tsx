@@ -77,10 +77,10 @@ export default function ConnectionsPage() {
   }, {} as Record<string, PicaConnection[]>);
 
   return (
-    <div className="max-w-4xl mx-auto space-y-6 sm:space-y-8 animate-fade-in">
+    <div className="max-w-4xl mx-auto space-y-4 sm:space-y-6 animate-fade-in px-3 sm:px-0">
       {/* Connection Setup Dialog */}
       <Dialog open={showConnectionDialog} onOpenChange={setShowConnectionDialog}>
-        <DialogContent className="sm:max-w-md mx-4">
+        <DialogContent className="sm:max-w-md mx-4 sm:mx-auto">
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center">
@@ -116,7 +116,7 @@ export default function ConnectionsPage() {
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
           <div>
             <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Connected Tools</h1>
-            <p className="text-muted-foreground text-base sm:text-lg">
+            <p className="text-muted-foreground text-sm sm:text-lg">
               Manage your integrations and connected services
             </p>
           </div>
@@ -125,14 +125,14 @@ export default function ConnectionsPage() {
               variant="outline"
               onClick={handleRefresh}
               disabled={loading}
-              className="w-full sm:w-auto h-10"
+              className="w-full sm:w-auto h-9 sm:h-10"
             >
               <RefreshCw className="mr-2 h-4 w-4" />
               Refresh
             </Button>
             <AuthKitButton
               onSuccess={handleConnectionSuccess}
-              className="w-full sm:w-auto h-10"
+              className="w-full sm:w-auto h-9 sm:h-10"
             />
           </div>
         </div>
@@ -140,14 +140,14 @@ export default function ConnectionsPage() {
         {/* Connection Notice */}
         {connections.length === 0 && (
           <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20">
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-orange-500 mt-2 flex-shrink-0" />
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-start gap-2 sm:gap-3">
+                <div className="w-2 h-2 rounded-full bg-orange-500 mt-1.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-orange-800 dark:text-orange-200 text-sm sm:text-base">
+                  <p className="font-medium text-orange-800 dark:text-orange-200 text-sm">
                     Tool Connection Required
                   </p>
-                  <p className="text-sm text-orange-700 dark:text-orange-300 mt-1">
+                  <p className="text-xs sm:text-sm text-orange-700 dark:text-orange-300 mt-1">
                     Connect at least one tool to start using Aven's personal assistant features.
                   </p>
                 </div>
@@ -159,14 +159,14 @@ export default function ConnectionsPage() {
         {/* Connection Replacement Notice */}
         {connections.length > 0 && (
           <Card className="border-blue-200 bg-blue-50 dark:border-blue-800 dark:bg-blue-950/20">
-            <CardContent className="pt-4 sm:pt-6">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+            <CardContent className="pt-4 sm:pt-6 px-3 sm:px-6">
+              <div className="flex items-start gap-2 sm:gap-3">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-blue-800 dark:text-blue-200 text-sm sm:text-base">
+                  <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
                     One Connection Per Tool Type
                   </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                  <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 mt-1">
                     Connecting a new account will replace your existing connection for that tool type.
                   </p>
                 </div>
@@ -177,10 +177,10 @@ export default function ConnectionsPage() {
       </div>
 
       {loading ? (
-        <div className="grid gap-4 sm:gap-6">
+        <div className="grid gap-3 sm:gap-4">
           {Array.from({ length: 3 }).map((_, i) => (
             <Card key={i} className="border-0 shadow-sm">
-              <CardHeader>
+              <CardHeader className="p-3 sm:p-4">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-3">
                     <Skeleton className="h-8 w-8 sm:h-10 sm:w-10 rounded-full" />
@@ -198,38 +198,38 @@ export default function ConnectionsPage() {
       ) : (
         <>
           {/* Stats - Mobile Responsive Grid */}
-          <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3">
+          <div className="grid gap-2 sm:gap-4 grid-cols-3">
             <Card className="border-0 shadow-sm">
-              <CardContent className="pt-4 sm:pt-6">
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <Zap className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
+              <CardContent className="pt-3 sm:pt-6 p-3 sm:p-6">
+                <div className="flex items-center space-x-2">
+                  <Zap className="h-3 w-3 sm:h-5 sm:w-5 text-blue-500" />
                   <div>
-                    <p className="text-xl sm:text-2xl font-bold">{connections.length}</p>
-                    <p className="text-xs text-muted-foreground">Connected Tools</p>
+                    <p className="text-base sm:text-2xl font-bold">{connections.length}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Connected Tools</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
             <Card className="border-0 shadow-sm">
-              <CardContent className="pt-4 sm:pt-6">
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
+              <CardContent className="pt-3 sm:pt-6 p-3 sm:p-6">
+                <div className="flex items-center space-x-2">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500" />
                   <div>
-                    <p className="text-xl sm:text-2xl font-bold">{Object.keys(connectionsByAppType).length}</p>
-                    <p className="text-xs text-muted-foreground">App Types Connected</p>
+                    <p className="text-base sm:text-2xl font-bold">{Object.keys(connectionsByAppType).length}</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">App Types</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
             
             <Card className="border-0 shadow-sm">
-              <CardContent className="pt-4 sm:pt-6">
-                <div className="flex items-center space-x-2 sm:space-x-3">
-                  <ExternalLink className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
+              <CardContent className="pt-3 sm:pt-6 p-3 sm:p-6">
+                <div className="flex items-center space-x-2">
+                  <ExternalLink className="h-3 w-3 sm:h-5 sm:w-5 text-purple-500" />
                   <div>
-                    <p className="text-xl sm:text-2xl font-bold">∞</p>
-                    <p className="text-xs text-muted-foreground">Available Tools</p>
+                    <p className="text-base sm:text-2xl font-bold">∞</p>
+                    <p className="text-[10px] sm:text-xs text-muted-foreground">Available</p>
                   </div>
                 </div>
               </CardContent>
@@ -239,15 +239,15 @@ export default function ConnectionsPage() {
           {/* Connections List */}
           {connections.length === 0 ? (
             <Card className="border-0 shadow-sm">
-              <CardContent className="text-center py-12 sm:py-16">
+              <CardContent className="text-center py-8 sm:py-16">
                 <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 bg-muted rounded-full flex items-center justify-center mb-4 sm:mb-6">
                   <Unplug className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground" />
                 </div>
                 <h3 className="text-lg sm:text-xl font-semibold mb-2">No tools connected</h3>
-                <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 max-w-md mx-auto">
+                <p className="text-sm text-muted-foreground mb-4 sm:mb-6 max-w-md mx-auto px-4">
                   Connect your first tool to start automating your workflow with AI-powered voice and text commands
                 </p>
-                <AuthKitButton onSuccess={handleConnectionSuccess} size="lg" className="w-full sm:w-auto" />
+                <AuthKitButton onSuccess={handleConnectionSuccess} size="lg" className="w-auto" />
               </CardContent>
             </Card>
           ) : (
@@ -258,26 +258,26 @@ export default function ConnectionsPage() {
 
                 return (
                   <Card key={connection.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
-                    <CardHeader className="pb-3 sm:pb-4">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 sm:gap-0">
+                    <CardHeader className="pb-2 sm:pb-3 p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0">
                         <div className="flex items-center space-x-3 sm:space-x-4 min-w-0 flex-1">
-                          <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center text-lg sm:text-xl flex-shrink-0">
+                          <div className="w-8 h-8 sm:w-12 sm:h-12 rounded-full bg-primary/10 flex items-center justify-center text-base sm:text-xl flex-shrink-0">
                             {providerInfo.icon}
                           </div>
                           <div className="min-w-0 flex-1">
-                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
-                              <CardTitle className="text-base sm:text-lg truncate">{providerInfo.name}</CardTitle>
-                              <Badge variant="outline" className="text-xs w-fit">
+                            <div className="flex flex-wrap gap-1 sm:gap-2 items-center">
+                              <CardTitle className="text-sm sm:text-lg">{providerInfo.name}</CardTitle>
+                              <Badge variant="outline" className="text-[10px] sm:text-xs">
                                 {connection.app_type}
                               </Badge>
                             </div>
-                            <CardDescription className="text-xs sm:text-sm">
-                              Connected {formatDistanceToNow(new Date(connection.created_at), { addSuffix: true })}
+                            <CardDescription className="text-[10px] sm:text-sm">
+                              {formatDistanceToNow(new Date(connection.created_at), { addSuffix: true })}
                             </CardDescription>
                           </div>
                         </div>
                         <div className="flex items-center gap-2 sm:gap-3 self-end sm:self-auto">
-                          <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-green-500/20 text-xs">
+                          <Badge variant="secondary" className="bg-green-500/10 text-green-500 border-green-500/20 text-[10px] sm:text-xs">
                             Active
                           </Badge>
                           <AlertDialog>
@@ -286,12 +286,12 @@ export default function ConnectionsPage() {
                                 variant="outline"
                                 size="sm"
                                 disabled={isDisconnecting}
-                                className="text-destructive hover:text-destructive text-xs sm:text-sm"
+                                className="text-destructive hover:text-destructive h-7 sm:h-8 text-[10px] sm:text-xs px-2 sm:px-3"
                               >
                                 {isDisconnecting ? (
-                                  <RefreshCw className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4 animate-spin" />
+                                  <RefreshCw className="mr-1 sm:mr-2 h-3 w-3 animate-spin" />
                                 ) : (
-                                  <Trash2 className="mr-1 sm:mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                                  <Trash2 className="mr-1 sm:mr-2 h-3 w-3" />
                                 )}
                                 <span className="hidden sm:inline">
                                   {isDisconnecting ? 'Disconnecting...' : 'Disconnect'}
@@ -301,7 +301,7 @@ export default function ConnectionsPage() {
                                 </span>
                               </Button>
                             </AlertDialogTrigger>
-                            <AlertDialogContent className="mx-4">
+                            <AlertDialogContent className="mx-4 sm:mx-0">
                               <AlertDialogHeader>
                                 <AlertDialogTitle>Disconnect {providerInfo.name}?</AlertDialogTitle>
                                 <AlertDialogDescription>
@@ -323,14 +323,14 @@ export default function ConnectionsPage() {
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent className="pt-0">
-                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-0 text-xs sm:text-sm">
-                        <div className="text-muted-foreground">
-                          Connection ID: <code className="bg-muted px-1 sm:px-2 py-0.5 sm:py-1 rounded text-xs font-mono break-all">{connection.connection_id}</code>
+                    <CardContent className="pt-0 p-3 sm:p-6">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-0 text-[10px] sm:text-xs">
+                        <div className="text-muted-foreground truncate">
+                          ID: <code className="bg-muted px-1 sm:px-2 py-0.5 rounded text-[10px] sm:text-xs font-mono">{connection.connection_id.substring(0, 12)}...</code>
                         </div>
                         <div className="flex items-center gap-1 text-green-500">
-                          <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500" />
-                          <span className="text-xs">Ready for commands</span>
+                          <div className="w-1.5 h-1.5 rounded-full bg-green-500" />
+                          <span className="text-[10px] sm:text-xs">Ready</span>
                         </div>
                       </div>
                     </CardContent>
@@ -343,17 +343,17 @@ export default function ConnectionsPage() {
           {/* Add Connection Card */}
           {connections.length > 0 && (
             <Card className="border-2 border-dashed border-muted-foreground/25 hover:border-muted-foreground/50 transition-colors">
-              <CardContent className="flex items-center justify-center py-8 sm:py-12">
-                <div className="text-center space-y-3 sm:space-y-4">
+              <CardContent className="flex items-center justify-center py-6 sm:py-12">
+                <div className="text-center space-y-3 sm:space-y-4 px-2 sm:px-0">
                   <div className="mx-auto w-10 h-10 sm:w-12 sm:h-12 bg-muted rounded-full flex items-center justify-center">
                     <Plus className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-base sm:text-lg">Connect another tool</h3>
-                    <p className="text-sm text-muted-foreground">
+                    <h3 className="font-semibold text-sm sm:text-lg">Connect another tool</h3>
+                    <p className="text-xs sm:text-sm text-muted-foreground">
                       Add more integrations to expand your automation capabilities
                     </p>
-                    <p className="text-xs text-muted-foreground mt-1 sm:mt-2">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground mt-1 sm:mt-2">
                       Note: New connections will replace existing ones of the same type
                     </p>
                   </div>
