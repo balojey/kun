@@ -197,14 +197,14 @@ export function VoiceTab() {
         </Card>
       </div>
 
-      {/* Main Voice Interface - Centered */}
-      <div className="flex-1 flex items-center justify-center min-h-0">
+      {/* Main Voice Interface - Properly Centered */}
+      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
         <TokenGuard
           serviceType="conversational_ai"
           estimatedDurationSeconds={30}
           fallback={
             <div className="text-center space-y-6">
-              <div className="w-48 h-48 rounded-full bg-muted/50 flex items-center justify-center opacity-50 border-4 border-dashed border-muted-foreground/30">
+              <div className="w-48 h-48 rounded-full bg-muted/50 flex items-center justify-center opacity-50 border-4 border-dashed border-muted-foreground/30 mx-auto">
                 <Mic className="h-24 w-24 text-muted-foreground" />
               </div>
               <div className="space-y-4">
@@ -222,9 +222,9 @@ export function VoiceTab() {
             </div>
           }
         >
-          <div className="text-center space-y-8">
+          <div className="text-center space-y-8 w-full max-w-md mx-auto">
             {/* Voice Button */}
-            <div className="relative">
+            <div className="relative flex justify-center">
               <Button
                 onClick={isConnected ? stopConversation : startConversation}
                 disabled={isConnecting}

@@ -147,7 +147,7 @@ export function TextTab() {
   return (
     <div className="h-full flex flex-col">
       {/* Chat Interface */}
-      <Card className="flex-1 border-0 shadow-lg min-h-0">
+      <Card className="flex-1 border-0 shadow-lg min-h-0 flex flex-col">
         <CardHeader className="border-b border-border/50 flex-shrink-0">
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
@@ -239,19 +239,19 @@ export function TextTab() {
             </div>
           </div>
 
-          {/* Input Area - Fixed at bottom */}
-          <div className="border-t border-border/50 p-6 bg-muted/20 flex-shrink-0">
+          {/* Input Area - Fixed at bottom with proper constraints */}
+          <div className="border-t border-border/50 p-4 bg-muted/20 flex-shrink-0">
             <form
               onSubmit={onSubmit}
-              className="flex gap-3 items-end"
+              className="flex gap-3 items-end max-w-full"
             >
-              <div className="flex-1 space-y-2">
+              <div className="flex-1 min-w-0 space-y-2">
                 <Input
                   value={input}
                   onChange={handleInputChange}
                   placeholder="Type your message or hold the mic button to speak..."
                   disabled={isLoading}
-                  className="h-12 text-base border-0 bg-background shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20"
+                  className="h-12 text-base border-0 bg-background shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 w-full"
                 />
               </div>
               
