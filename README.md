@@ -1,7 +1,7 @@
 ![Aven Logo](https://github.com/user-attachments/assets/615d8a31-c5b0-43b6-8fb9-3f52132ff76e)
 
 <p align="center">
-  Aven - AI Voice Assistant for Email Productivity
+  Aven - AI Personal Assistant for Professional Productivity
 </p>
 
 ## Getting started
@@ -36,14 +36,14 @@ Open http://localhost:3000
 
 ## About Aven
 
-Aven is an AI-powered voice assistant designed specifically for email productivity. It helps busy professionals manage, reply to, and organize emails through natural conversation.
+Aven is an AI-powered personal assistant designed specifically for professional productivity. It helps busy professionals manage emails, calendar, documents, and more through natural conversation.
 
 ### Key Features
 
-- **Voice-First Interface**: Simply speak to compose, reply, and manage emails
-- **Smart Email Control**: Archive, delete, schedule, and organize emails with natural language
-- **AI Understanding**: Advanced AI comprehends context and intent for accurate email actions
-- **Tool Integration**: Connect Gmail, Calendar, Slack, and more for unified productivity
+- **Voice-First Interface**: Simply speak to manage your digital workspace
+- **Smart Productivity Control**: Organize emails, schedule meetings, manage documents with natural language
+- **AI Understanding**: Advanced AI comprehends context and intent for accurate task execution
+- **Universal Tool Integration**: Connect Gmail, Calendar, Slack, Notion, and more for unified productivity
 - **Enterprise Security**: Bank-level encryption and privacy controls
 
 ### Capabilities
@@ -52,7 +52,7 @@ Aven is an AI-powered voice assistant designed specifically for email productivi
 - Speech to Text (ElevenLabs)
 - Sound Effects (ElevenLabs)
 - Conversational AI (ElevenLabs)
-- Email Management (PicaOS)
+- Productivity Management (PicaOS)
 - Tool Integrations (PicaOS)
 
 ## Technology Stack

@@ -37,7 +37,7 @@ const getPageInfo = (pathname: string) => {
   
   switch (lastSegment) {
     case 'app':
-      return { title: 'Home', description: 'AI Assistant Interface' };
+      return { title: 'Home', description: 'Personal Assistant Interface' };
     case 'dashboard':
       return { title: 'Dashboard', description: 'Usage & Analytics' };
     case 'connections':
@@ -51,7 +51,7 @@ const getPageInfo = (pathname: string) => {
     case 'success':
       return { title: 'Success', description: 'Payment Confirmation' };
     default:
-      return { title: 'Aven', description: 'AI Email Assistant' };
+      return { title: 'Aven', description: 'AI Personal Assistant' };
   }
 };
 

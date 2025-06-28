@@ -181,10 +181,10 @@ export function LandingPage() {
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
                 <TypingAnimation 
                   phrases={[
-                    "Turn Conversations Into Actions.",
-                    "Speak. Aven Handles Your Inbox.",
-                    "From Email Chaos to Inbox Zero.",
-                    "Your Voice-Powered Email Assistant."
+                    "Your AI Personal Assistant.",
+                    "Speak. Aven Handles Everything.",
+                    "From Chaos to Organized.",
+                    "Voice-Powered Productivity."
                   ]}
                   className="text-gradient"
                   speed={150}
@@ -198,8 +198,8 @@ export function LandingPage() {
               variants={fadeInUp}
               className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12"
             >
-              Stop drowning in emails. Aven transforms how busy professionals manage their inbox through natural conversation. 
-              Simply speak your commands—reply to clients, schedule meetings, organize messages—and watch your productivity soar.
+              Stop juggling multiple apps and tools. Aven transforms how busy professionals manage their digital workspace through natural conversation. 
+              Simply speak your commands—manage emails, schedule meetings, organize documents—and watch your productivity soar.
             </motion.p>
             
             <motion.div 
@@ -400,7 +400,7 @@ export function LandingPage() {
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
               No monthly subscriptions or hidden fees. Purchase tokens once and use them whenever you need AI assistance. 
-              Your tokens never expire, and you get 10,000 free tokens to start—enough for weeks of email management.
+              Your tokens never expire, and you get 10,000 free tokens to start—enough for weeks of productivity management.
             </p>
             
             <div className="grid gap-6 md:grid-cols-3 mb-12">
@@ -410,7 +410,7 @@ export function LandingPage() {
               </div>
               <div className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-primary mb-2">~150</div>
-                <div className="text-sm text-muted-foreground">Emails processed per 1,000 tokens</div>
+                <div className="text-sm text-muted-foreground">Tasks processed per 1,000 tokens</div>
               </div>
               <div className="text-center">
                 <div className="text-2xl md:text-3xl font-bold text-primary mb-2">∞</div>
@@ -436,8 +436,8 @@ export function LandingPage() {
               Ready to Reclaim Your Time?
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground mb-12">
-              Join 10,000+ professionals who've eliminated email overwhelm. Start with 10,000 free tokens—no credit card required. 
-              Experience the future of email management in under 60 seconds.
+              Join 10,000+ professionals who've eliminated digital overwhelm. Start with 10,000 free tokens—no credit card required. 
+              Experience the future of productivity management in under 60 seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {user ? (

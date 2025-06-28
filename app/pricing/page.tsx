@@ -90,7 +90,7 @@ export default function PublicPricingPage() {
             </Badge>
             <h1 className="text-4xl font-bold tracking-tight">Choose Your Token Package</h1>
             <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-              Purchase tokens to power your AI voice assistant. Pay once, use anytime. 
+              Purchase tokens to power your AI personal assistant. Pay once, use anytime. 
               Lower rates per token with larger packages.
             </p>
           </div>
@@ -125,7 +125,7 @@ export default function PublicPricingPage() {
                 </div>
                 <h3 className="font-semibold">Instant Access</h3>
                 <p className="text-sm text-muted-foreground">
-                  Tokens are credited immediately. Start using your AI assistant right away.
+                  Tokens are credited immediately. Start using your AI personal assistant right away.
                 </p>
               </div>
               <div className="space-y-2">
@@ -144,7 +144,7 @@ export default function PublicPricingPage() {
           <div className="text-center space-y-4 pt-8">
             <h2 className="text-xl font-semibold">Ready to supercharge your productivity?</h2>
             <p className="text-muted-foreground">
-              Join thousands of professionals using AI to manage their email and workflows.
+              Join thousands of professionals using AI to manage their digital workspace and workflows.
             </p>
             {!user && (
               <div className="flex gap-4 justify-center">

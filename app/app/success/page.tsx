@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { CheckCircle, ArrowRight, Loader2, Zap, Mail, Calendar, Mic } from 'lucide-react';
+import { CheckCircle, ArrowRight, Loader2, Zap, Sparkles, Calendar, Mic } from 'lucide-react';
 import { useSubscription } from '@/hooks/use-subscription';
 import { getProductByPriceId } from '@/src/stripe-config';
 
@@ -122,19 +122,19 @@ export default function SuccessPage() {
         <CardHeader>
           <CardTitle>Get Started with Your Tokens</CardTitle>
           <CardDescription>
-            Here's how to make the most of your AI assistant
+            Here's how to make the most of your AI personal assistant
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid gap-4">
             <div className="flex items-start gap-3">
               <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-                <Mail className="h-4 w-4 text-blue-500" />
+                <Sparkles className="h-4 w-4 text-blue-500" />
               </div>
               <div>
-                <h3 className="font-medium">Connect Your Gmail</h3>
+                <h3 className="font-medium">Connect Your Tools</h3>
                 <p className="text-sm text-muted-foreground">
-                  Link your Gmail account so Aven can help manage your emails with voice commands.
+                  Link your Gmail, Calendar, Docs, and other tools so Aven can help manage your digital workspace.
                 </p>
               </div>
             </div>
@@ -144,9 +144,9 @@ export default function SuccessPage() {
                 <Calendar className="h-4 w-4 text-green-500" />
               </div>
               <div>
-                <h3 className="font-medium">Add Calendar Integration</h3>
+                <h3 className="font-medium">Organize Your Workflow</h3>
                 <p className="text-sm text-muted-foreground">
-                  Connect Google Calendar to schedule meetings and manage your time with voice.
+                  Set up integrations to schedule meetings, manage documents, and automate routine tasks.
                 </p>
               </div>
             </div>
@@ -158,7 +158,7 @@ export default function SuccessPage() {
               <div>
                 <h3 className="font-medium">Try Voice Commands</h3>
                 <p className="text-sm text-muted-foreground">
-                  Start with simple commands like "show me unread emails" or "archive all newsletters."
+                  Start with simple commands like "show me today's schedule" or "summarize my unread emails."
                 </p>
               </div>
             </div>
@@ -178,7 +178,7 @@ export default function SuccessPage() {
               <span className="text-muted-foreground">~150 tokens/minute</span>
             </div>
             <div className="flex justify-between items-center">
-              <span>Email analysis & replies</span>
+              <span>Email & document processing</span>
               <span className="text-muted-foreground">~50-100 tokens</span>
             </div>
             <div className="flex justify-between items-center">

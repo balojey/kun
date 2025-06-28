@@ -236,7 +236,7 @@ export default function DashboardPage() {
                       <span>0.5 tokens/second</span>
                     </div>
                     <div className="flex justify-between">
-                      <span>Email processing</span>
+                      <span>Document processing</span>
                       <span>~25-75 tokens</span>
                     </div>
                     <div className="flex justify-between">

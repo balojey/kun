@@ -9,14 +9,14 @@ import './globals.css';
 
 export const metadata: Metadata = {
   title: {
-    default: 'Aven - AI Voice Assistant for Email',
+    default: 'Aven - AI Personal Assistant',
     template: '%s | Aven',
   },
   metadataBase: new URL('https://aven.ai'),
-  description: 'Transform your email productivity with Aven, the AI voice assistant that helps you manage, reply to, and organize emails through natural conversation.',
+  description: 'Transform your productivity with Aven, the AI personal assistant that helps you manage emails, calendar, documents, and more through natural conversation.',
   openGraph: {
-    title: 'Aven - AI Voice Assistant for Email',
-    description: 'Transform your email productivity with Aven, the AI voice assistant that helps you manage, reply to, and organize emails through natural conversation.',
+    title: 'Aven - AI Personal Assistant',
+    description: 'Transform your productivity with Aven, the AI personal assistant that helps you manage emails, calendar, documents, and more through natural conversation.',
     images: [`/api/og?title=Aven`],
   },
   twitter: {

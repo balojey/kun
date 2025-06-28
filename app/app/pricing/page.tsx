@@ -22,7 +22,7 @@ export default function PricingPage() {
         </Badge>
         <h1 className="text-4xl font-bold tracking-tight">Choose Your Token Package</h1>
         <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-          Purchase tokens to power your AI voice assistant. Pay once, use anytime. 
+          Purchase tokens to power your AI personal assistant. Pay once, use anytime. 
           Lower rates per token with larger packages.
         </p>
       </div>
@@ -117,7 +117,7 @@ export default function PricingPage() {
                   <span>~25 tokens</span>
                 </div>
                 <div className="flex justify-between">
-                  <span>Email composition</span>
+                  <span>Document processing</span>
                   <span>~75 tokens</span>
                 </div>
                 <div className="flex justify-between">

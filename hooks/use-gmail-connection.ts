@@ -6,14 +6,14 @@ import { useAuthContext } from '@/components/auth/auth-provider';
 
 export function useGmailConnection() {
   const { user } = useAuthContext();
-  const [hasGmailConnection, setHasGmailConnection] = useState<boolean | null>(null);
+  const [hasAnyConnection, setHasAnyConnection] = useState<boolean | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
-  const checkGmailConnection = async () => {
+  const checkAnyConnection = async () => {
     if (!user) {
-      setHasGmailConnection(false);
+      setHasAnyConnection(false);
       setLoading(false);
       return;
     }
@@ -22,30 +22,29 @@ export function useGmailConnection() {
       setLoading(true);
       setError(null);
 
-      // Check for Gmail connection using app_type
+      // Check for any connection
       const { data, error: fetchError } = await supabase
         .from('connections')
         .select('id')
         .eq('user_id', user.id)
-        .eq('app_type', 'gmail')
         .limit(1);
 
       if (fetchError) {
         throw fetchError;
       }
 
-      setHasGmailConnection(data && data.length > 0);
+      setHasAnyConnection(data && data.length > 0);
     } catch (err) {
-      console.error('Failed to check Gmail connection:', err);
-      setError(err instanceof Error ? err.message : 'Failed to check Gmail connection');
-      setHasGmailConnection(false);
+      console.error('Failed to check connections:', err);
+      setError(err instanceof Error ? err.message : 'Failed to check connections');
+      setHasAnyConnection(false);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    checkGmailConnection();
+    checkAnyConnection();
   }, [user]);
 
   // Set up real-time subscription for connections changes
@@ -53,7 +52,7 @@ export function useGmailConnection() {
     if (!user) return;
 
     const subscription = supabase
-      .channel('gmail_connections_changes')
+      .channel('any_connections_changes')
       .on(
         'postgres_changes',
         {
@@ -63,7 +62,7 @@ export function useGmailConnection() {
           filter: `user_id=eq.${user.id}`,
         },
         () => {
-          checkGmailConnection();
+          checkAnyConnection();
         }
       )
       .subscribe();
@@ -74,9 +73,9 @@ export function useGmailConnection() {
   }, [user]);
 
   return {
-    hasGmailConnection,
+    hasGmailConnection: hasAnyConnection, // Keep the same interface for compatibility
     loading,
     error,
-    refetch: checkGmailConnection,
+    refetch: checkAnyConnection,
   };
 }

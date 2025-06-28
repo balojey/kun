@@ -84,10 +84,10 @@ export function VoiceTab() {
 
   const conversation = useConversation({
     onConnect: async () => {
-      toast.success('Connected to AI assistant');
+      toast.success('Connected to AI personal assistant');
     },
     onDisconnect: () => {
-      toast.info('Disconnected from AI assistant');
+      toast.info('Disconnected from AI personal assistant');
     },
     onMessage: (message) => console.log('Message:', message.message),
     onError: (error) => {
@@ -163,7 +163,7 @@ export function VoiceTab() {
             <div className="flex items-center space-x-3">
               <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
               <div>
-                <p className="text-sm font-medium">AI Assistant</p>
+                <p className="text-sm font-medium">AI Personal Assistant</p>
                 <p className="text-xs text-muted-foreground">
                   {isConnected ? 'Connected & Ready' : 'Disconnected'}
                 </p>
@@ -264,8 +264,8 @@ export function VoiceTab() {
                  'Ready to Connect'}
               </h2>
               <p className="text-lg text-muted-foreground max-w-md mx-auto">
-                {isConnecting ? 'Setting up your AI assistant connection' :
-                 isConnected ? 'Speak naturally to manage your emails and tools' :
+                {isConnecting ? 'Setting up your AI personal assistant connection' :
+                 isConnected ? 'Speak naturally to manage your digital workspace and tools' :
                  'Click the microphone to start your voice conversation'}
               </p>
             </div>

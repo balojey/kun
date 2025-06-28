@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { formatDistanceToNow } from 'date-fns';
-import { Trash2, RefreshCw, Plus, Unplug, ExternalLink, Zap, Mail } from 'lucide-react';
+import { Trash2, RefreshCw, Plus, Unplug, ExternalLink, Zap, Sparkles } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useConnections } from '@/hooks/use-connections';
 import { AuthKitButton } from '@/components/pica/AuthKitButton';
@@ -31,21 +31,21 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 
 export default function ConnectionsPage() {
-  const { connections, loading, disconnectTool, refreshConnections, hasConnectionForAppType } = useConnections();
+  const { connections, loading, disconnectTool, refreshConnections } = useConnections();
   const [disconnecting, setDisconnecting] = useState<string | null>(null);
-  const [showGmailDialog, setShowGmailDialog] = useState(false);
+  const [showConnectionDialog, setShowConnectionDialog] = useState(false);
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  // Check if user was redirected due to missing Gmail
+  // Check if user was redirected due to missing connections
   useEffect(() => {
-    const needsGmail = searchParams.get('needsGmail');
-    const hasGmail = hasConnectionForAppType('gmail');
+    const needsConnection = searchParams.get('needsConnection');
+    const hasAnyConnection = connections.length > 0;
     
-    if (needsGmail === 'true' && !hasGmail && !loading) {
-      setShowGmailDialog(true);
+    if (needsConnection === 'true' && !hasAnyConnection && !loading) {
+      setShowConnectionDialog(true);
     }
-  }, [searchParams, hasConnectionForAppType, loading]);
+  }, [searchParams, connections.length, loading]);
 
   const handleDisconnect = async (connection: PicaConnection) => {
     setDisconnecting(connection.id);
@@ -62,12 +62,9 @@ export default function ConnectionsPage() {
 
   const handleConnectionSuccess = () => {
     refreshConnections();
-    // Close the Gmail dialog if it's open
-    setShowGmailDialog(false);
+    // Close the connection dialog if it's open
+    setShowConnectionDialog(false);
   };
-
-  // Check if user has Gmail connection
-  const hasGmailConnection = hasConnectionForAppType('gmail');
 
   // Group connections by app type for display
   const connectionsByAppType = connections.reduce((acc, connection) => {
@@ -81,20 +78,20 @@ export default function ConnectionsPage() {
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
-      {/* Gmail Setup Dialog */}
-      <Dialog open={showGmailDialog} onOpenChange={setShowGmailDialog}>
+      {/* Connection Setup Dialog */}
+      <Dialog open={showConnectionDialog} onOpenChange={setShowConnectionDialog}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
             <div className="flex items-center gap-3 mb-2">
               <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-                <Mail className="h-6 w-6 text-primary" />
+                <Sparkles className="h-6 w-6 text-primary" />
               </div>
               <div>
-                <DialogTitle className="text-xl">Gmail Connection Required</DialogTitle>
+                <DialogTitle className="text-xl">Connect Your First Tool</DialogTitle>
               </div>
             </div>
             <DialogDescription className="text-base leading-relaxed">
-              To use Aven, you need to connect your Gmail account. This allows your assistant to help manage your emails.
+              To use Aven as your personal assistant, you need to connect at least one tool. This allows your assistant to help manage your emails, calendar, documents, and more.
             </DialogDescription>
           </DialogHeader>
           <div className="flex flex-col gap-3 mt-4">
@@ -105,7 +102,7 @@ export default function ConnectionsPage() {
             />
             <Button 
               variant="outline" 
-              onClick={() => setShowGmailDialog(false)}
+              onClick={() => setShowConnectionDialog(false)}
               className="w-full"
             >
               I'll do this later
@@ -140,18 +137,18 @@ export default function ConnectionsPage() {
           </div>
         </div>
 
-        {/* Gmail Connection Notice */}
-        {!hasGmailConnection && (
+        {/* Connection Notice */}
+        {connections.length === 0 && (
           <Card className="border-orange-200 bg-orange-50 dark:border-orange-800 dark:bg-orange-950/20">
             <CardContent className="pt-6">
               <div className="flex items-center gap-3">
                 <div className="w-2 h-2 rounded-full bg-orange-500" />
                 <div>
                   <p className="font-medium text-orange-800 dark:text-orange-200">
-                    Gmail Connection Required
+                    Tool Connection Required
                   </p>
                   <p className="text-sm text-orange-700 dark:text-orange-300">
-                    Connect your Gmail account to start using Aven's email assistant features.
+                    Connect at least one tool to start using Aven's personal assistant features.
                   </p>
                 </div>
               </div>
@@ -258,7 +255,6 @@ export default function ConnectionsPage() {
               {connections.map((connection) => {
                 const providerInfo = getProviderInfo(connection.provider);
                 const isDisconnecting = disconnecting === connection.id;
-                const isGmail = connection.app_type === 'gmail';
 
                 return (
                   <Card key={connection.id} className="border-0 shadow-sm hover:shadow-md transition-shadow">
@@ -271,11 +267,6 @@ export default function ConnectionsPage() {
                           <div>
                             <div className="flex items-center gap-2">
                               <CardTitle className="text-lg">{providerInfo.name}</CardTitle>
-                              {isGmail && (
-                                <Badge variant="default" className="bg-green-500/10 text-green-500 border-green-500/20">
-                                  Required
-                                </Badge>
-                              )}
                               <Badge variant="outline" className="text-xs">
                                 {connection.app_type}
                               </Badge>
@@ -310,7 +301,6 @@ export default function ConnectionsPage() {
                                 <AlertDialogTitle>Disconnect {providerInfo.name}?</AlertDialogTitle>
                                 <AlertDialogDescription>
                                   This will remove the connection to {providerInfo.name} and revoke access.
-                                  {isGmail && ' You will need to reconnect Gmail to use Aven\'s email features.'}
                                   You can reconnect at any time.
                                 </AlertDialogDescription>
                               </AlertDialogHeader>

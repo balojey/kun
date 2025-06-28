@@ -48,7 +48,7 @@ const navigationItems = [
     title: 'Home',
     url: '/app',
     icon: Home,
-    description: 'AI Assistant Interface'
+    description: 'Personal Assistant Interface'
   },
   {
     title: 'Dashboard',
@@ -110,7 +110,7 @@ export function AppSidebar() {
             <span className="font-bold text-xl logo-gradient group-hover:scale-105 transition-transform">
               Aven
             </span>
-            <p className="text-xs text-muted-foreground">AI Email Assistant</p>
+            <p className="text-xs text-muted-foreground">AI Personal Assistant</p>
           </div>
         </Link>
       </SidebarHeader>

@@ -152,7 +152,7 @@ export function TextTab() {
           <div className="flex items-center justify-between">
             <CardTitle className="flex items-center gap-2">
               <Bot className="h-5 w-5 text-primary" />
-              AI Assistant
+              AI Personal Assistant
             </CardTitle>
             <div className="flex items-center gap-2">
               <Badge variant={isSpeechEnabled ? "default" : "secondary"} className="text-xs">
@@ -180,8 +180,8 @@ export function TextTab() {
                   </p>
                   <div className="grid gap-2 max-w-md mx-auto text-sm text-muted-foreground">
                     <p>• "Show me my unread emails"</p>
-                    <p>• "Reply to the latest message from John"</p>
-                    <p>• "Archive all promotional emails"</p>
+                    <p>• "What's on my calendar today?"</p>
+                    <p>• "Create a new document"</p>
                   </div>
                 </div>
               )}
