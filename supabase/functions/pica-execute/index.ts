@@ -24,7 +24,47 @@ Deno.serve(async (req) => {
         });
     }
 
+    const startTime = performance.now();
+    let userId: string | null = null;
+
     try {
+        // Get user from auth header
+        const authHeader = req.headers.get('authorization');
+        if (!authHeader || !authHeader.startsWith('Bearer ')) {
+            return new Response(JSON.stringify({ error: 'Missing or invalid authorization header' }), { 
+                status: 401, 
+                headers: corsHeaders 
+            });
+        }
+
+        const token = authHeader.replace('Bearer ', '');
+        const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+
+        if (authError || !user) {
+            return new Response(JSON.stringify({ error: 'Unauthorized' }), { 
+                status: 401, 
+                headers: corsHeaders 
+            });
+        }
+
+        userId = user.id;
+
+        // Check if user has sufficient tokens for estimated execution (15 seconds)
+        const { data: hasTokens, error: checkError } = await supabase.rpc('check_tokens_for_execution', {
+            user_id_param: userId,
+            estimated_seconds_param: 15.0
+        });
+
+        if (checkError || !hasTokens) {
+            return new Response(JSON.stringify({ 
+                error: 'Insufficient tokens for request',
+                details: 'Please purchase more tokens to continue using the service'
+            }), { 
+                status: 402, 
+                headers: corsHeaders 
+            });
+        }
+
         const { connectionIds, rowId }: { connectionIds: string[]; rowId: string } = await req.json();
 
         // Fetch the prompt from Supabase using the rowId
@@ -121,12 +161,64 @@ If the user asks about things outside of your capability, reply gracefully and o
             console.log(`Response saved to aven_calls row ${rowId}`);
         }
 
+        // Measure execution time and deduct tokens in background
+        EdgeRuntime.waitUntil((async () => {
+            try {
+                const endTime = performance.now();
+                const executionSeconds = (endTime - startTime) / 1000;
+
+                console.log(`Pica execution time: ${executionSeconds} seconds for user ${userId}`);
+
+                // Deduct tokens based on actual execution time
+                const { error: deductError } = await supabase.rpc('deduct_tokens_for_execution', {
+                    user_id_param: userId,
+                    execution_seconds_param: executionSeconds,
+                    description_param: `Pica execution - ${executionSeconds.toFixed(2)} seconds`,
+                    metadata_param: {
+                        service_type: 'pica_execute',
+                        execution_seconds: executionSeconds,
+                        connection_ids: connectionIds,
+                        row_id: rowId
+                    }
+                });
+
+                if (deductError) {
+                    console.error('Error deducting tokens for pica execution:', deductError);
+                }
+            } catch (error) {
+                console.error('Error in background token deduction:', error);
+            }
+        })());
+
         return new Response(finalResponse, {
             headers: corsHeaders,
         });
 
     } catch (error: any) {
         console.error('Pica execute error:', error);
+
+        // Still deduct tokens for failed requests if we have userId
+        if (userId) {
+            EdgeRuntime.waitUntil((async () => {
+                try {
+                    const endTime = performance.now();
+                    const executionSeconds = (endTime - startTime) / 1000;
+
+                    await supabase.rpc('deduct_tokens_for_execution', {
+                        user_id_param: userId,
+                        execution_seconds_param: executionSeconds,
+                        description_param: `Pica execution (failed) - ${executionSeconds.toFixed(2)} seconds`,
+                        metadata_param: {
+                            service_type: 'pica_execute',
+                            execution_seconds: executionSeconds,
+                            error: error.message || 'Unknown error'
+                        }
+                    });
+                } catch (deductError) {
+                    console.error('Error deducting tokens for failed pica execution:', deductError);
+                }
+            })());
+        }
 
         // Attempt to log error to aven_calls if rowId was passed
         try {

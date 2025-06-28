@@ -5,16 +5,16 @@ import { Loader2, Mic, PhoneOff } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
-import { useExecutionTracker } from '@/hooks/use-execution-tracker';
+import { useTokens } from '@/hooks/use-tokens';
 import { Button } from '@/components/ui/button';
 import { TokenGuard } from '@/components/tokens/token-guard';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthContext } from '../auth/auth-provider';
-import { connected } from 'process';
 
 export function VoiceTab() {
   const { connections } = useConnections();
+  const { hassufficientTokens } = useTokens();
   const supabase = createClient();
   const { user } = useAuthContext();
 
@@ -25,20 +25,24 @@ export function VoiceTab() {
   const connectedTools = connections.map(c => c.provider).join(', ');
   
   console.log("Connections:", connectionIds);
+
   const executeUserCommand = async ({ rowId }: { command: string, rowId: string }) => {
-      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/pica-execute`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ connectionIds, rowId }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to call Pica');
-      }
-      const data = await response.text();
-      console.log('Pica response in convo:', data);
-      return data;
+    const { data: { session } } = await supabase.auth.getSession();
+    
+    const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/pica-execute`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${session?.access_token}`,
+      },
+      body: JSON.stringify({ connectionIds, rowId }),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to call Pica');
+    }
+    const data = await response.text();
+    console.log('Pica response in convo:', data);
+    return data;
   }
 
   const createPromptRow = async ({ prompt }: { prompt: string }) => {
@@ -79,30 +83,39 @@ export function VoiceTab() {
   }
 
   const conversation = useConversation({
-    onConnect: () => {
+    onConnect: async () => {
       toast.success('Connected to AI assistant');
-      startExecution();
+      
+      // Create conversation session record when connection starts
+      try {
+        const conversationId = conversation.getId();
+        if (conversationId && user) {
+          const { error } = await supabase
+            .from('conversation_sessions')
+            .insert({
+              user_id: user.id,
+              conversation_id: conversationId,
+              status: 'initiated'
+            });
+
+          if (error) {
+            console.error('Error creating conversation session:', error);
+          } else {
+            console.log(`Created conversation session for ${conversationId}`);
+          }
+        }
+      } catch (error) {
+        console.error('Error in conversation session creation:', error);
+      }
     },
     onDisconnect: () => {
       toast.info('Disconnected from AI assistant');
-      endExecution();
     },
     onMessage: (message) => console.log('Message:', message.message),
     onError: (error) => {
       toast.error(`Connection error: ${error}`);
-      endExecution();
     },
   });
-
-  // Use execution tracker
-  const { 
-    isExecuting, 
-    executionDuration, 
-    estimatedTokens, 
-    startExecution, 
-    endExecution,
-    hassufficientTokens 
-  } = useExecutionTracker('conversational_ai');
 
   const startConversation = useCallback(async () => {
     // Check if user has sufficient tokens for at least 30 seconds of conversation
@@ -132,7 +145,7 @@ export function VoiceTab() {
       console.error('Failed to start conversation:', error);
       toast.error('Failed to start conversation. Please check microphone permissions.');
     }
-  }, [conversation, connections, hassufficientTokens, startExecution]);
+  }, [conversation, connections, hassufficientTokens]);
 
   const stopConversation = useCallback(async () => {
     await conversation.endSession();
@@ -143,21 +156,6 @@ export function VoiceTab() {
 
   return (
     <div className="space-y-8">
-      {/* Execution Status */}
-      {isExecuting && (
-        <div className="bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg p-4">
-          <div className="flex items-center justify-between">
-            <span className="text-green-800 dark:text-green-200 font-medium">
-              Voice Session Active
-            </span>
-            <div className="flex items-center gap-4 text-green-700 dark:text-green-300 text-sm">
-              <span>Duration: {executionDuration}s</span>
-              <span>Est. Tokens: {estimatedTokens}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
       <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-10">
         {/* Status Indicators */}
         <div className="flex justify-center gap-6">
@@ -173,14 +171,6 @@ export function VoiceTab() {
               {connections.length} Tools Connected
             </span>
           </div>
-          {isExecuting && (
-            <div className="flex items-center gap-2">
-              <div className="w-2 h-2 rounded-full bg-orange-500 animate-pulse" />
-              <span className="text-sm text-muted-foreground">
-                Session Active
-              </span>
-            </div>
-          )}
         </div>
 
         {/* Big Circular Connection Button */}
