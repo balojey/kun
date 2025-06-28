@@ -1,9 +1,37 @@
 import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
-import { updateSession } from '@/lib/supabase/middleware';
+import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
+import { cookies } from 'next/headers';
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const response = NextResponse.next();
+  const supabase = createMiddlewareClient({ cookies: () => cookies() });
+  
+  // Check if the path is a public route
+  const { pathname } = request.nextUrl;
+  const isPublicRoute = pathname === '/' || 
+                        pathname === '/pricing' || 
+                        pathname === '/login' || 
+                        pathname === '/signup' || 
+                        pathname.startsWith('/auth/');
+  
+  // If it's a public route, allow access without authentication check
+  if (isPublicRoute) {
+    return response;
+  }
+
+  // For protected routes, check authentication
+  const {
+    data: { session },
+  } = await supabase.auth.getSession();
+
+  // If no session and trying to access a protected route, redirect to login
+  if (!session && pathname.startsWith('/app')) {
+    const redirectUrl = new URL('/login', request.url);
+    return NextResponse.redirect(redirectUrl);
+  }
+
+  return response;
 }
 
 export const config = {
@@ -14,8 +42,7 @@ export const config = {
      * - _next/image (image optimization files)
      * - favicon.ico (favicon file)
      * - public (public files)
-     * - auth (auth callback routes)
      */
-    '/((?!_next/static|_next/image|favicon.ico|public|auth).*)',
+    '/((?!_next/static|_next/image|favicon.ico|public).*)',
   ],
 };

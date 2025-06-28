@@ -19,17 +19,17 @@ export function AuthGuard({ children }: AuthGuardProps) {
 
     // Public routes that don't require authentication
     const publicRoutes = ['/', '/login', '/signup', '/pricing'];
-    const isPublicRoute = publicRoutes.includes(pathname);
+    const isPublicRoute = publicRoutes.includes(pathname) || pathname.startsWith('/auth/');
 
     // App routes that require authentication
     const isAppRoute = pathname.startsWith('/app');
 
     if (!user && isAppRoute) {
-      router.push('/');
+      router.push('/login');
       return;
     }
 
-    if (user && (pathname.startsWith('/login') || pathname.startsWith('/signup'))) {
+    if (user && (pathname === '/login' || pathname === '/signup')) {
       router.replace('/app');
     }
   }, [user, loading, router, pathname]);
