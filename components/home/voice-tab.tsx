@@ -1,7 +1,7 @@
 'use client';
 
 import { useConversation } from '@elevenlabs/react';
-import { Loader2, Mic, PhoneOff, Zap, Users, Clock } from 'lucide-react';
+import { Loader2, Mic, PhoneOff, Zap, Users, Clock, MessageCircle } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
@@ -155,9 +155,9 @@ export function VoiceTab() {
   const isConnecting = conversation.status === 'connecting';
 
   return (
-    <div className="space-y-8">
+    <div className="h-full flex flex-col space-y-6">
       {/* Status Cards */}
-      <div className="grid gap-4 md:grid-cols-3">
+      <div className="grid gap-4 md:grid-cols-3 flex-shrink-0">
         <Card className="border-0 shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center space-x-3">
@@ -198,7 +198,7 @@ export function VoiceTab() {
       </div>
 
       {/* Main Voice Interface */}
-      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-12">
+      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
         <TokenGuard
           serviceType="conversational_ai"
           estimatedDurationSeconds={30}
@@ -286,38 +286,6 @@ export function VoiceTab() {
           </div>
         </TokenGuard>
       </div>
-
-      {/* Example Commands */}
-      {!isConnected && (
-        <Card className="border-0 shadow-sm bg-gradient-to-br from-primary/5 to-primary/10">
-          <CardHeader>
-            <CardTitle className="text-center">Try These Voice Commands</CardTitle>
-            <CardDescription className="text-center">
-              Natural language examples to get you started
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-3 md:grid-cols-2">
-              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
-                <p className="text-sm font-medium mb-1">"Show me my unread emails"</p>
-                <p className="text-xs text-muted-foreground">View and manage your inbox</p>
-              </div>
-              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
-                <p className="text-sm font-medium mb-1">"Reply to Sarah about the meeting"</p>
-                <p className="text-xs text-muted-foreground">Compose and send responses</p>
-              </div>
-              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
-                <p className="text-sm font-medium mb-1">"Archive all newsletters"</p>
-                <p className="text-xs text-muted-foreground">Organize your email automatically</p>
-              </div>
-              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
-                <p className="text-sm font-medium mb-1">"Schedule a call with the team"</p>
-                <p className="text-xs text-muted-foreground">Calendar management and scheduling</p>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      )}
     </div>
   );
 }

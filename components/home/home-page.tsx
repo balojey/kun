@@ -4,57 +4,155 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceTab } from '@/components/home/voice-tab';
 import { TextTab } from '@/components/home/text-tab';
-import { Mic, MessageSquare, Sparkles } from 'lucide-react';
-import { Card, CardContent } from '@/components/ui/card';
+import { Mic, MessageSquare, Sparkles, Lightbulb } from 'lucide-react';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function HomePage() {
   const [activeTab, setActiveTab] = useState('voice');
 
   return (
-    <div className="max-w-5xl mx-auto space-y-8 animate-fade-in">
-      {/* Main Interface Card */}
-      <Card className="border-0 shadow-2xl bg-card/50 backdrop-blur-sm">
-        <CardContent className="p-0">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            {/* Tab Navigation */}
-            <div className="sticky top-0 z-30 bg-card/80 backdrop-blur-sm border-b border-border/50">
-              <div className="flex justify-center p-6 pb-4">
-                <TabsList className="grid w-full max-w-md grid-cols-2 h-14 bg-muted/60 rounded-2xl shadow-lg border border-border/40 p-1">
-                  <TabsTrigger
-                    value="voice"
-                    className="flex items-center justify-center gap-3 text-base font-medium h-full rounded-xl transition-all duration-300 ease-in-out data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-4 data-[state=active]:ring-primary/20 data-[state=active]:scale-105 data-[state=inactive]:opacity-80"
-                  >
-                    <Mic className="h-5 w-5" />
-                    Voice
-                  </TabsTrigger>
-                  <TabsTrigger
-                    value="text"
-                    className="flex items-center justify-center gap-3 text-base font-medium h-full rounded-xl transition-all duration-300 ease-in-out data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-4 data-[state=active]:ring-primary/20 data-[state=active]:scale-105 data-[state=inactive]:opacity-80"
-                  >
-                    <MessageSquare className="h-5 w-5" />
-                    Text
-                  </TabsTrigger>
-                </TabsList>
+    <div className="h-full flex flex-col lg:flex-row gap-6 p-6 max-w-7xl mx-auto">
+      {/* Main Content Area */}
+      <div className="flex-1 min-w-0 flex flex-col">
+        {/* Welcome Header */}
+        <div className="text-center space-y-4 mb-6">
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20">
+            <Sparkles className="h-4 w-4" />
+            <span className="text-sm font-medium">AI-Powered Email Assistant</span>
+          </div>
+          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gradient">
+            Welcome to Aven
+          </h1>
+          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            Transform your email workflow with natural conversation. 
+            Speak or type your commands and watch Aven handle the rest.
+          </p>
+        </div>
+
+        {/* Main Interface Card */}
+        <Card className="flex-1 border-0 shadow-2xl bg-card/50 backdrop-blur-sm min-h-0">
+          <CardContent className="p-0 h-full flex flex-col">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full flex flex-col">
+              {/* Tab Navigation */}
+              <div className="flex-shrink-0 bg-card/80 backdrop-blur-sm border-b border-border/50">
+                <div className="flex justify-center p-6 pb-4">
+                  <TabsList className="grid w-full max-w-md grid-cols-2 h-14 bg-muted/60 rounded-2xl shadow-lg border border-border/40 p-1">
+                    <TabsTrigger
+                      value="voice"
+                      className="flex items-center justify-center gap-3 text-base font-medium h-full rounded-xl transition-all duration-300 ease-in-out data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-4 data-[state=active]:ring-primary/20 data-[state=active]:scale-105 data-[state=inactive]:opacity-80"
+                    >
+                      <Mic className="h-5 w-5" />
+                      Voice
+                    </TabsTrigger>
+                    <TabsTrigger
+                      value="text"
+                      className="flex items-center justify-center gap-3 text-base font-medium h-full rounded-xl transition-all duration-300 ease-in-out data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-xl data-[state=active]:ring-4 data-[state=active]:ring-primary/20 data-[state=active]:scale-105 data-[state=inactive]:opacity-80"
+                    >
+                      <MessageSquare className="h-5 w-5" />
+                      Text
+                    </TabsTrigger>
+                  </TabsList>
+                </div>
+              </div>
+
+              {/* Tab Content */}
+              <div className="flex-1 p-6 pt-2 min-h-0">
+                <TabsContent value="voice" className="mt-0 h-full">
+                  <div className={`h-full ${activeTab === 'voice' ? 'block' : 'hidden'}`}>
+                    <VoiceTab />
+                  </div>
+                </TabsContent>
+
+                <TabsContent value="text" className="mt-0 h-full">
+                  <div className={`h-full ${activeTab === 'text' ? 'block' : 'hidden'}`}>
+                    <TextTab />
+                  </div>
+                </TabsContent>
+              </div>
+            </Tabs>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Right Sidebar - Voice Commands Tutorial */}
+      <div className="w-full lg:w-80 flex-shrink-0">
+        <Card className="h-full border-0 shadow-lg bg-gradient-to-br from-primary/5 to-primary/10 sticky top-6">
+          <CardHeader className="pb-4">
+            <CardTitle className="flex items-center gap-2 text-lg">
+              <Lightbulb className="h-5 w-5 text-primary" />
+              Voice Commands Guide
+            </CardTitle>
+            <CardDescription>
+              Natural language examples to get you started
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {/* Email Management */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm text-primary">📧 Email Management</h4>
+              <div className="space-y-2">
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"Show me my unread emails"</p>
+                  <p className="text-xs text-muted-foreground">View and manage your inbox</p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"Archive all newsletters"</p>
+                  <p className="text-xs text-muted-foreground">Organize emails automatically</p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"Delete emails from last week"</p>
+                  <p className="text-xs text-muted-foreground">Bulk email management</p>
+                </div>
               </div>
             </div>
 
-            {/* Tab Content */}
-            <div className="p-6 pt-2">
-              <TabsContent value="voice" className="mt-0">
-                <div className={activeTab === 'voice' ? 'block' : 'hidden'}>
-                  <VoiceTab />
+            {/* Email Composition */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm text-primary">✍️ Email Composition</h4>
+              <div className="space-y-2">
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"Reply to Sarah about the meeting"</p>
+                  <p className="text-xs text-muted-foreground">Compose and send responses</p>
                 </div>
-              </TabsContent>
-
-              <TabsContent value="text" className="mt-0">
-                <div className={activeTab === 'text' ? 'block' : 'hidden'}>
-                  <TextTab />
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"Draft an email to the team"</p>
+                  <p className="text-xs text-muted-foreground">Create new messages</p>
                 </div>
-              </TabsContent>
+              </div>
             </div>
-          </Tabs>
-        </CardContent>
-      </Card>
+
+            {/* Calendar & Scheduling */}
+            <div className="space-y-3">
+              <h4 className="font-medium text-sm text-primary">📅 Calendar & Scheduling</h4>
+              <div className="space-y-2">
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"Schedule a call with the team"</p>
+                  <p className="text-xs text-muted-foreground">Calendar management</p>
+                </div>
+                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-sm font-medium mb-1">"What's on my calendar today?"</p>
+                  <p className="text-xs text-muted-foreground">Check your schedule</p>
+                </div>
+              </div>
+            </div>
+
+            {/* Pro Tips */}
+            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-start gap-3">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+                <div>
+                  <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
+                    Pro Tip
+                  </p>
+                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                    Speak naturally! Aven understands context and can handle complex requests like "Find emails about the project from last month and summarize them."
+                  </p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
