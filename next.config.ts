@@ -6,6 +6,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '1gb',
     },
   },
+  images: {
+    remotePatterns: [new URL('https://lh3.googleusercontent.com/a/**')],
+  },
   async headers() {
     return [
       {
