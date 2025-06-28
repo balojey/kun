@@ -121,8 +121,8 @@ export function TokenIndicator() {
                 </div>
               </CardContent>
             </Card>
-          </TooltipTrigger>
-        </Tooltip>
+          </Link>
+        </TooltipTrigger>
       </Tooltip>
     </TooltipProvider>
   );
