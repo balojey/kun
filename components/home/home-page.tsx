@@ -4,31 +4,16 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceTab } from '@/components/home/voice-tab';
 import { TextTab } from '@/components/home/text-tab';
-import { Mic, MessageSquare, Sparkles, Lightbulb } from 'lucide-react';
+import { Mic, MessageSquare, Lightbulb } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 
 export function HomePage() {
   const [activeTab, setActiveTab] = useState('voice');
 
   return (
-    <div className="h-full flex flex-col lg:flex-row gap-6 p-6 max-w-7xl mx-auto">
+    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
       {/* Main Content Area */}
-      <div className="flex-1 min-w-0 flex flex-col">
-        {/* Welcome Header */}
-        <div className="text-center space-y-4 mb-6">
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20">
-            <Sparkles className="h-4 w-4" />
-            <span className="text-sm font-medium">AI-Powered Email Assistant</span>
-          </div>
-          <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-gradient">
-            Welcome to Aven
-          </h1>
-          <p className="text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Transform your email workflow with natural conversation. 
-            Speak or type your commands and watch Aven handle the rest.
-          </p>
-        </div>
-
+      <div className="flex-1 min-w-0 flex flex-col min-h-0">
         {/* Main Interface Card */}
         <Card className="flex-1 border-0 shadow-2xl bg-card/50 backdrop-blur-sm min-h-0">
           <CardContent className="p-0 h-full flex flex-col">
@@ -75,9 +60,9 @@ export function HomePage() {
       </div>
 
       {/* Right Sidebar - Voice Commands Tutorial */}
-      <div className="w-full lg:w-80 flex-shrink-0">
-        <Card className="h-full border-0 shadow-lg bg-gradient-to-br from-primary/5 to-primary/10 sticky top-6">
-          <CardHeader className="pb-4">
+      <div className="w-full lg:w-80 flex-shrink-0 max-h-full">
+        <Card className="h-full border-0 shadow-lg bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col">
+          <CardHeader className="pb-4 flex-shrink-0">
             <CardTitle className="flex items-center gap-2 text-lg">
               <Lightbulb className="h-5 w-5 text-primary" />
               Voice Commands Guide
@@ -86,7 +71,7 @@ export function HomePage() {
               Natural language examples to get you started
             </CardDescription>
           </CardHeader>
-          <CardContent className="space-y-4">
+          <CardContent className="flex-1 overflow-y-auto space-y-4">
             {/* Email Management */}
             <div className="space-y-3">
               <h4 className="font-medium text-sm text-primary">📧 Email Management</h4>
@@ -137,7 +122,7 @@ export function HomePage() {
             </div>
 
             {/* Pro Tips */}
-            <div className="mt-6 p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+            <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
               <div className="flex items-start gap-3">
                 <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
                 <div>
