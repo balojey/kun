@@ -4,16 +4,22 @@ import { useState } from 'react';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { VoiceTab } from '@/components/home/voice-tab';
 import { TextTab } from '@/components/home/text-tab';
-import { Mic, MessageSquare, Lightbulb } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { Mic, MessageSquare, Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { cn } from '@/lib/utils';
 
 export function HomePage() {
   const [activeTab, setActiveTab] = useState('voice');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto">
+    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto relative">
       {/* Main Content Area */}
-      <div className="flex-1 min-w-0 flex flex-col min-h-0">
+      <div className={cn(
+        "flex-1 min-w-0 flex flex-col min-h-0 transition-all duration-300",
+        sidebarOpen ? "lg:mr-80" : ""
+      )}>
         {/* Main Interface Card */}
         <Card className="flex-1 border-0 shadow-2xl bg-card/50 backdrop-blur-sm min-h-0">
           <CardContent className="p-0 h-full flex flex-col">
@@ -59,19 +65,53 @@ export function HomePage() {
         </Card>
       </div>
 
+      {/* Sidebar Toggle Button - Always Visible */}
+      <Button
+        onClick={() => setSidebarOpen(!sidebarOpen)}
+        variant="outline"
+        size="icon"
+        className={cn(
+          "fixed top-1/2 -translate-y-1/2 z-50 h-12 w-8 rounded-l-lg rounded-r-none shadow-lg bg-background/95 backdrop-blur-sm border-r-0 transition-all duration-300",
+          sidebarOpen 
+            ? "right-80 lg:right-80" 
+            : "right-0"
+        )}
+        aria-label={sidebarOpen ? "Close sidebar" : "Open voice commands guide"}
+      >
+        {sidebarOpen ? (
+          <ChevronRight className="h-4 w-4" />
+        ) : (
+          <ChevronLeft className="h-4 w-4" />
+        )}
+      </Button>
+
       {/* Right Sidebar - Voice Commands Tutorial */}
-      <div className="w-full lg:w-80 flex-shrink-0 max-h-full">
-        <Card className="h-full border-0 shadow-lg bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col">
-          <CardHeader className="pb-4 flex-shrink-0">
-            <CardTitle className="flex items-center gap-2 text-lg">
-              <Lightbulb className="h-5 w-5 text-primary" />
-              Voice Commands Guide
-            </CardTitle>
+      <div className={cn(
+        "fixed right-0 top-0 h-full w-80 bg-background/95 backdrop-blur-sm border-l border-border/50 shadow-2xl transition-transform duration-300 z-40",
+        sidebarOpen ? "translate-x-0" : "translate-x-full"
+      )}>
+        <Card className="h-full border-0 shadow-none bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col rounded-none">
+          <CardHeader className="pb-4 flex-shrink-0 border-b border-border/50">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Lightbulb className="h-5 w-5 text-primary" />
+                <CardTitle className="text-lg">Voice Commands Guide</CardTitle>
+              </div>
+              <Button
+                onClick={() => setSidebarOpen(false)}
+                variant="ghost"
+                size="icon"
+                className="h-8 w-8"
+                aria-label="Close sidebar"
+              >
+                <ChevronRight className="h-4 w-4" />
+              </Button>
+            </div>
             <CardDescription>
               Natural language examples to get you started
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto space-y-4">
+          <CardContent className="flex-1 overflow-y-auto space-y-4 p-6">
             {/* Email Management */}
             <div className="space-y-3">
               <h4 className="font-medium text-sm text-primary">📧 Email Management</h4>
@@ -138,6 +178,15 @@ export function HomePage() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Overlay for mobile when sidebar is open */}
+      {sidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+          onClick={() => setSidebarOpen(false)}
+          aria-label="Close sidebar"
+        />
+      )}
     </div>
   );
 }
