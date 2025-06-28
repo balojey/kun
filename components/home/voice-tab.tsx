@@ -1,12 +1,14 @@
 'use client';
 
 import { useConversation } from '@elevenlabs/react';
-import { Loader2, Mic, PhoneOff } from 'lucide-react';
+import { Loader2, Mic, PhoneOff, Zap, Users, Clock } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
 import { useTokens } from '@/hooks/use-tokens';
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { TokenGuard } from '@/components/tokens/token-guard';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
@@ -154,75 +156,168 @@ export function VoiceTab() {
 
   return (
     <div className="space-y-8">
-      <div className="flex flex-col items-center justify-center min-h-[40vh] space-y-10">
-        {/* Status Indicators */}
-        <div className="flex justify-center gap-6">
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-500'}`} />
-            <span className="text-sm text-muted-foreground">
-              {isConnected ? 'AI Connected' : 'AI Disconnected'}
-            </span>
-          </div>
-          <div className="flex items-center gap-2">
-            <div className={`w-2 h-2 rounded-full ${connections.length > 0 ? 'bg-blue-500' : 'bg-gray-500'}`} />
-            <span className="text-sm text-muted-foreground">
-              {connections.length} Tools Connected
-            </span>
-          </div>
-        </div>
+      {/* Status Cards */}
+      <div className="grid gap-4 md:grid-cols-3">
+        <Card className="border-0 shadow-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
+              <div>
+                <p className="text-sm font-medium">AI Assistant</p>
+                <p className="text-xs text-muted-foreground">
+                  {isConnected ? 'Connected & Ready' : 'Disconnected'}
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
-        {/* Big Circular Connection Button */}
+        <Card className="border-0 shadow-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <Users className="h-5 w-5 text-blue-500" />
+              <div>
+                <p className="text-sm font-medium">{connections.length} Tools</p>
+                <p className="text-xs text-muted-foreground">Connected & Active</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="border-0 shadow-sm">
+          <CardContent className="pt-6">
+            <div className="flex items-center space-x-3">
+              <Clock className="h-5 w-5 text-purple-500" />
+              <div>
+                <p className="text-sm font-medium">Real-time</p>
+                <p className="text-xs text-muted-foreground">Processing Ready</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Main Voice Interface */}
+      <div className="flex flex-col items-center justify-center min-h-[50vh] space-y-12">
         <TokenGuard
           serviceType="conversational_ai"
           estimatedDurationSeconds={30}
           fallback={
-            <div className="text-center space-y-4">
-              <div className="w-48 h-48 rounded-full bg-muted flex items-center justify-center opacity-50">
+            <div className="text-center space-y-6">
+              <div className="w-48 h-48 rounded-full bg-muted/50 flex items-center justify-center opacity-50 border-4 border-dashed border-muted-foreground/30">
                 <Mic className="h-24 w-24 text-muted-foreground" />
               </div>
-              <p className="text-muted-foreground">
-                Insufficient tokens for voice conversation
-              </p>
-              <Link href="/app/pricing">
-                <Button>Buy Tokens</Button>
-              </Link>
+              <div className="space-y-4">
+                <h3 className="text-xl font-semibold">Insufficient Tokens</h3>
+                <p className="text-muted-foreground max-w-md mx-auto">
+                  You need more tokens to start a voice conversation. Purchase tokens to continue.
+                </p>
+                <Link href="/app/pricing">
+                  <Button size="lg" className="flex items-center gap-2">
+                    <Zap className="h-4 w-4" />
+                    Buy Tokens
+                  </Button>
+                </Link>
+              </div>
             </div>
           }
         >
-          <div className="flex justify-center">
-            <Button
-              onClick={isConnected ? stopConversation : startConversation}
-              disabled={isConnecting}
-              variant={isConnected ? 'destructive' : 'default'}
-              size="icon"
-              className={`
-                w-48 h-48 rounded-full flex items-center justify-center
-                shadow-2xl transition-all duration-300 text-5xl
-                ${isConnected ? 'bg-destructive text-destructive-foreground' : 'bg-primary text-primary-foreground'}
-              `}
-            >
-              {isConnecting ? (
-                <Loader2 className="h-24 w-24 animate-spin" />
-              ) : isConnected ? (
-                <PhoneOff className="h-24 w-24" />
-              ) : (
-                <Mic className="h-24 w-24" />
+          <div className="text-center space-y-8">
+            {/* Voice Button */}
+            <div className="relative">
+              <Button
+                onClick={isConnected ? stopConversation : startConversation}
+                disabled={isConnecting}
+                variant={isConnected ? 'destructive' : 'default'}
+                size="icon"
+                className={`
+                  w-48 h-48 rounded-full flex items-center justify-center
+                  shadow-2xl transition-all duration-300 text-6xl
+                  hover:scale-105 active:scale-95
+                  ${isConnected 
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 animate-pulse' 
+                    : 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-3xl'
+                  }
+                  ${isConnecting ? 'animate-pulse' : ''}
+                `}
+              >
+                {isConnecting ? (
+                  <Loader2 className="h-24 w-24 animate-spin" />
+                ) : isConnected ? (
+                  <PhoneOff className="h-24 w-24" />
+                ) : (
+                  <Mic className="h-24 w-24" />
+                )}
+              </Button>
+              
+              {/* Pulse Animation for Connected State */}
+              {isConnected && (
+                <div className="absolute inset-0 rounded-full border-4 border-destructive/30 animate-ping" />
               )}
-            </Button>
+            </div>
+
+            {/* Status Text */}
+            <div className="space-y-3">
+              <h2 className="text-2xl font-bold">
+                {isConnecting ? 'Connecting...' : 
+                 isConnected ? 'Listening...' : 
+                 'Ready to Connect'}
+              </h2>
+              <p className="text-lg text-muted-foreground max-w-md mx-auto">
+                {isConnecting ? 'Setting up your AI assistant connection' :
+                 isConnected ? 'Speak naturally to manage your emails and tools' :
+                 'Click the microphone to start your voice conversation'}
+              </p>
+            </div>
+
+            {/* Connection Instructions */}
+            {!isConnected && !isConnecting && (
+              <div className="space-y-4">
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-green-500" />
+                  <span>Microphone access required</span>
+                </div>
+                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                  <span>Best with headphones or quiet environment</span>
+                </div>
+              </div>
+            )}
           </div>
         </TokenGuard>
-
-        {/* Status Message */}
-        <div className="text-center">
-          <p className="text-muted-foreground text-lg">
-            {isConnected ? (
-              "🎉 Ready! Start speaking to manage your emails and tools."
-            ) : (
-              "Click connect and allow microphone access to begin."
-            )}
-          </p>
-        </div>
       </div>
+
+      {/* Example Commands */}
+      {!isConnected && (
+        <Card className="border-0 shadow-sm bg-gradient-to-br from-primary/5 to-primary/10">
+          <CardHeader>
+            <CardTitle className="text-center">Try These Voice Commands</CardTitle>
+            <CardDescription className="text-center">
+              Natural language examples to get you started
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-2">
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <p className="text-sm font-medium mb-1">"Show me my unread emails"</p>
+                <p className="text-xs text-muted-foreground">View and manage your inbox</p>
+              </div>
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <p className="text-sm font-medium mb-1">"Reply to Sarah about the meeting"</p>
+                <p className="text-xs text-muted-foreground">Compose and send responses</p>
+              </div>
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <p className="text-sm font-medium mb-1">"Archive all newsletters"</p>
+                <p className="text-xs text-muted-foreground">Organize your email automatically</p>
+              </div>
+              <div className="p-4 rounded-lg bg-background/50 border border-border/50">
+                <p className="text-sm font-medium mb-1">"Schedule a call with the team"</p>
+                <p className="text-xs text-muted-foreground">Calendar management and scheduling</p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
     </div>
   );
 }

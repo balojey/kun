@@ -2,10 +2,12 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Volume2, MicOff, VolumeX, Bot, User } from 'lucide-react';
+import { Send, Mic, Volume2, MicOff, VolumeX, Bot, User, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Badge } from '@/components/ui/badge';
 import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
 import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
@@ -56,17 +58,13 @@ export function TextTab() {
     maxSteps: 100,
   });
 
-  // Use execution tracker
-  const {
-    hassufficientTokens
-  } = useTokens();
+  const { hassufficientTokens } = useTokens();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
   const startRecording = async () => {
-    // Check if user has sufficient tokens for at least 10 seconds of conversation
     if (!hassufficientTokens(10)) {
       toast.error('Insufficient tokens for voice input');
       return;
@@ -138,7 +136,6 @@ export function TextTab() {
     e.preventDefault();
     if (!input.trim()) return;
     
-    // Check if user has sufficient tokens for processing
     if (!hassufficientTokens(5)) {
       toast.error('Insufficient tokens to process message');
       return;
@@ -149,138 +146,183 @@ export function TextTab() {
 
   return (
     <div className="space-y-6">
-      {/* Chat Interface */}
-      <div className="">
-        {/* Messages Area */}
-        <div className="h-[500px] p-6 overflow-y-auto">
-          <div className="space-y-6">
-            {messages.length === 0 && (
-              <div className="text-center py-12">
-                <div className="mx-auto w-12 h-12 rounded-full bg-muted flex items-center justify-center mb-4">
-                  <Bot className="h-6 w-6 text-muted-foreground" />
-                </div>
-                <h3 className="text-lg font-medium mb-2">Start a conversation</h3>
-                <p className="text-muted-foreground">
-                  Type a message or use the microphone to get started
-                </p>
-              </div>
-            )}
-            
-            {messages.map((message) => (
-              <div
-                key={message.id}
-                className={`flex gap-3 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-              >
-                {message.role === 'assistant' && (
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Bot className="h-4 w-4 text-primary" />
-                  </div>
-                )}
-                
-                <div
-                  className={`max-w-[80%] rounded-2xl px-4 py-3 ${
-                    message.role === 'user'
-                      ? 'bg-primary text-primary-foreground'
-                      : 'bg-muted text-foreground'
-                  }`}
-                >
-                  <div className="text-sm leading-relaxed whitespace-pre-wrap">
-                    <ReactMarkdown>
-                      {message.content}
-                    </ReactMarkdown>
-                  </div>
-                </div>
-                
-                {message.role === 'user' && (
-                  <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                    <User className="h-4 w-4 text-blue-500" />
-                  </div>
-                )}
-              </div>
-            ))}
-            
-            {isLoading && (
-              <div className="flex gap-3 justify-start items-center">
-                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                  <Bot className="h-4 w-4 text-primary" />
-                </div>
-                <div className="bg-muted rounded-2xl px-4 py-3 flex items-center">
-                  <span className="text-sm text-muted-foreground mr-2">Working</span>
-                  <div className="flex items-center gap-1">
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse" />
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-100" />
-                    <div className="w-2 h-2 bg-muted-foreground rounded-full animate-pulse delay-200" />
-                  </div>
-                </div>
-              </div>
-            )}
-            
-            <div ref={messagesEndRef} />
-          </div>
+      {/* Header */}
+      <div className="text-center space-y-4">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 text-primary border border-primary/20">
+          <Sparkles className="h-4 w-4" />
+          <span className="text-sm font-medium">Text Interface</span>
         </div>
-
-        {/* Input Area - now sticky at the bottom */}
-        <div className="border-t border-border/50 p-4 bg-background sticky bottom-0 left-0 w-full z-20">
-          <form
-            onSubmit={onSubmit}
-            className="flex flex-col sm:flex-row gap-3 items-stretch"
-          >
-            <Input
-              value={input}
-              onChange={handleInputChange}
-              placeholder="Type your message..."
-              disabled={isLoading}
-              className="h-12 text-base border-0 bg-muted/50 focus-visible:ring-1 flex-1"
-            />
-            <div className="flex gap-2 justify-end">
-              {/* Mic button */}
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                onMouseDown={startRecording}
-                onMouseUp={stopRecording}
-                onTouchStart={startRecording}
-                onTouchEnd={stopRecording}
-                disabled={isLoading}
-                aria-label={isRecording ? "Stop recording" : "Start recording"}
-              >
-                {isRecording ? (
-                  <MicOff className="h-5 w-5 text-red-500" />
-                ) : (
-                  <Mic className="h-5 w-5 text-muted-foreground hover:text-foreground" />
-                )}
-              </Button>
-              {/* TTS toggle */}
-              <Button
-                variant="ghost"
-                size="icon"
-                type="button"
-                onClick={() => setIsSpeechEnabled(!isSpeechEnabled)}
-                aria-label={isSpeechEnabled ? "Disable TTS" : "Enable TTS"}
-              >
-                {isSpeechEnabled ? (
-                  <Volume2 className="h-5 w-5 text-blue-500" />
-                ) : (
-                  <VolumeX className="h-5 w-5 text-muted-foreground" />
-                )}
-              </Button>
-            </div>
-            <Button
-              type="submit"
-              disabled={!input.trim() || isLoading}
-              size="lg"
-              className="h-12 px-6"
-              aria-label="Send message"
-            >
-              <Send className="h-4 w-4" />
-            </Button>
-          </form>
-          <p className="text-xs text-muted-foreground mt-2 text-center">
-            Hold the microphone button to record speech, or type your message
-          </p>
-        </div>
+        <p className="text-muted-foreground">
+          Type your commands or use voice input for natural conversation
+        </p>
       </div>
+
+      {/* Chat Interface */}
+      <Card className="border-0 shadow-lg">
+        <CardHeader className="border-b border-border/50">
+          <div className="flex items-center justify-between">
+            <CardTitle className="flex items-center gap-2">
+              <Bot className="h-5 w-5 text-primary" />
+              AI Assistant
+            </CardTitle>
+            <div className="flex items-center gap-2">
+              <Badge variant={isSpeechEnabled ? "default" : "secondary"} className="text-xs">
+                {isSpeechEnabled ? "TTS On" : "TTS Off"}
+              </Badge>
+              <Badge variant={connections.length > 0 ? "default" : "secondary"} className="text-xs">
+                {connections.length} Tools
+              </Badge>
+            </div>
+          </div>
+        </CardHeader>
+
+        {/* Messages Area */}
+        <CardContent className="p-0">
+          <div className="h-[500px] p-6 overflow-y-auto">
+            <div className="space-y-6">
+              {messages.length === 0 && (
+                <div className="text-center py-12">
+                  <div className="mx-auto w-16 h-16 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                    <Bot className="h-8 w-8 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold mb-3">Start a conversation</h3>
+                  <p className="text-muted-foreground mb-6">
+                    Type a message or use the microphone to get started
+                  </p>
+                  <div className="grid gap-2 max-w-md mx-auto text-sm text-muted-foreground">
+                    <p>• "Show me my unread emails"</p>
+                    <p>• "Reply to the latest message from John"</p>
+                    <p>• "Archive all promotional emails"</p>
+                  </div>
+                </div>
+              )}
+              
+              {messages.map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {message.role === 'assistant' && (
+                    <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                      <Bot className="h-5 w-5 text-primary" />
+                    </div>
+                  )}
+                  
+                  <div
+                    className={`max-w-[80%] rounded-2xl px-6 py-4 ${
+                      message.role === 'user'
+                        ? 'bg-primary text-primary-foreground shadow-lg'
+                        : 'bg-muted/50 text-foreground border border-border/50'
+                    }`}
+                  >
+                    <div className="text-sm leading-relaxed whitespace-pre-wrap">
+                      <ReactMarkdown>
+                        {message.content}
+                      </ReactMarkdown>
+                    </div>
+                  </div>
+                  
+                  {message.role === 'user' && (
+                    <div className="w-10 h-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
+                      <User className="h-5 w-5 text-blue-500" />
+                    </div>
+                  )}
+                </div>
+              ))}
+              
+              {isLoading && (
+                <div className="flex gap-4 justify-start items-center">
+                  <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Bot className="h-5 w-5 text-primary" />
+                  </div>
+                  <div className="bg-muted/50 rounded-2xl px-6 py-4 flex items-center border border-border/50">
+                    <span className="text-sm text-muted-foreground mr-3">Thinking</span>
+                    <div className="flex items-center gap-1">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-100" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-200" />
+                    </div>
+                  </div>
+                </div>
+              )}
+              
+              <div ref={messagesEndRef} />
+            </div>
+          </div>
+
+          {/* Input Area */}
+          <div className="border-t border-border/50 p-6 bg-muted/20">
+            <form
+              onSubmit={onSubmit}
+              className="flex gap-3 items-end"
+            >
+              <div className="flex-1 space-y-2">
+                <Input
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Type your message or hold the mic button to speak..."
+                  disabled={isLoading}
+                  className="h-12 text-base border-0 bg-background shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20"
+                />
+              </div>
+              
+              <div className="flex gap-2">
+                {/* Voice Input Button */}
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onMouseDown={startRecording}
+                  onMouseUp={stopRecording}
+                  onTouchStart={startRecording}
+                  onTouchEnd={stopRecording}
+                  disabled={isLoading}
+                  className={`h-12 w-12 ${isRecording ? 'bg-red-500 text-white border-red-500' : ''}`}
+                  aria-label={isRecording ? "Recording..." : "Hold to record"}
+                >
+                  {isRecording ? (
+                    <MicOff className="h-5 w-5" />
+                  ) : (
+                    <Mic className="h-5 w-5" />
+                  )}
+                </Button>
+                
+                {/* TTS Toggle */}
+                <Button
+                  variant="outline"
+                  size="icon"
+                  type="button"
+                  onClick={() => setIsSpeechEnabled(!isSpeechEnabled)}
+                  className="h-12 w-12"
+                  aria-label={isSpeechEnabled ? "Disable TTS" : "Enable TTS"}
+                >
+                  {isSpeechEnabled ? (
+                    <Volume2 className="h-5 w-5 text-blue-500" />
+                  ) : (
+                    <VolumeX className="h-5 w-5" />
+                  )}
+                </Button>
+                
+                {/* Send Button */}
+                <Button
+                  type="submit"
+                  disabled={!input.trim() || isLoading}
+                  size="icon"
+                  className="h-12 w-12"
+                  aria-label="Send message"
+                >
+                  <Send className="h-5 w-5" />
+                </Button>
+              </div>
+            </form>
+            
+            <div className="flex items-center justify-between mt-3 text-xs text-muted-foreground">
+              <span>Hold mic button to record • Click TTS to toggle voice responses</span>
+              <span>{input.length}/1000</span>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 }

@@ -5,7 +5,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { useCheckout } from '@/hooks/use-checkout';
 import { StripeProduct } from '@/src/stripe-config';
-import { Loader2, Check, Zap, Star } from 'lucide-react';
+import { Loader2, Check, Zap, Star, Crown } from 'lucide-react';
 
 interface ProductCardProps {
   product: StripeProduct;
@@ -25,21 +25,20 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
 
   const getCardStyles = () => {
     if (isCurrentPlan) {
-      return 'ring-2 ring-primary border-primary/50 bg-primary/5';
+      return 'ring-2 ring-primary border-primary/50 bg-primary/5 shadow-xl';
     }
     if (featured) {
-      return 'ring-2 ring-blue-500 border-blue-500/50 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 relative scale-105 shadow-xl';
+      return 'ring-2 ring-blue-500 border-blue-500/50 bg-gradient-to-br from-blue-50 to-purple-50 dark:from-blue-950/20 dark:to-purple-950/20 relative scale-105 shadow-2xl';
     }
-    return 'hover:shadow-lg transition-all duration-200 hover:scale-102';
+    return 'hover:shadow-xl transition-all duration-300 hover:scale-102 border-0 shadow-lg';
   };
 
   const getBestValueBadge = () => {
-    // Delta has the best rate per token
     if (product.name === 'Delta') {
       return (
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <Badge className="bg-green-500 text-white">
-            <Star className="h-3 w-3 mr-1" />
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+          <Badge className="bg-gradient-to-r from-green-500 to-emerald-500 text-white shadow-lg">
+            <Crown className="h-3 w-3 mr-1" />
             Best Value
           </Badge>
         </div>
@@ -72,8 +71,8 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
   return (
     <Card className={getCardStyles()}>
       {isCurrentPlan && (
-        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
-          <Badge className="bg-primary text-primary-foreground">
+        <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+          <Badge className="bg-primary text-primary-foreground shadow-lg">
             <Check className="h-3 w-3 mr-1" />
             Current Plan
           </Badge>
@@ -82,18 +81,20 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
       
       {!isCurrentPlan && getBestValueBadge()}
       
-      <CardHeader className="text-center pb-6">
-        <div className="flex items-center justify-center gap-2 mb-4">
-          <div className="w-12 h-12 rounded-full bg-primary/10 flex items-center justify-center">
-            <Zap className="h-6 w-6 text-primary" />
+      <CardHeader className="text-center pb-6 relative">
+        <div className="flex items-center justify-center gap-2 mb-6">
+          <div className={`w-16 h-16 rounded-2xl flex items-center justify-center shadow-lg ${
+            featured ? 'bg-gradient-to-br from-blue-500 to-purple-500' : 'bg-primary/10'
+          }`}>
+            <Zap className={`h-8 w-8 ${featured ? 'text-white' : 'text-primary'}`} />
           </div>
         </div>
-        <CardTitle className="text-2xl font-bold mb-2">{product.name}</CardTitle>
-        <div className="space-y-2">
-          <div className="text-3xl font-bold text-primary">
+        <CardTitle className="text-2xl font-bold mb-3">{product.name}</CardTitle>
+        <div className="space-y-3">
+          <div className="text-4xl font-bold text-primary">
             ${product.price}
           </div>
-          <CardDescription className="text-base">
+          <CardDescription className="text-lg font-medium">
             {formatTokens(product.tokens)} tokens
           </CardDescription>
           <div className="text-sm text-muted-foreground">
@@ -104,56 +105,52 @@ export function ProductCard({ product, isCurrentPlan = false, featured = false }
       
       <CardContent className="space-y-6">
         {/* Usage Estimates */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
             Estimated Usage
           </h4>
-          <div className="space-y-2">
-            <div className="flex items-center justify-between text-sm">
-              <span>Voice Conversations</span>
-              <span className="font-medium">~{usage.conversational} min</span>
+          <div className="space-y-3">
+            <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/50">
+              <span className="text-sm font-medium">Voice Conversations</span>
+              <span className="font-bold text-primary">~{usage.conversational} min</span>
             </div>
-            <div className="flex items-center justify-between text-sm">
-              <span>Tool Automation</span>
-              <span className="font-medium">~{usage.pica} min</span>
+            <div className="flex items-center justify-between p-3 bg-background/50 rounded-lg border border-border/50">
+              <span className="text-sm font-medium">Tool Automation</span>
+              <span className="font-bold text-primary">~{usage.pica} min</span>
             </div>
           </div>
         </div>
 
         {/* Features */}
-        <div className="space-y-3">
+        <div className="space-y-4">
           <h4 className="font-semibold text-sm text-muted-foreground uppercase tracking-wide">
             What's Included
           </h4>
-          <div className="space-y-2">
-            <div className="flex items-center gap-3">
-              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">AI Voice Processing</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">Email Management</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">Tool Integrations</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">Priority Support</span>
-            </div>
-            <div className="flex items-center gap-3">
-              <Check className="h-4 w-4 text-green-500 flex-shrink-0" />
-              <span className="text-sm">Never Expires</span>
-            </div>
+          <div className="space-y-3">
+            {[
+              'AI Voice Processing',
+              'Email Management',
+              'Tool Integrations',
+              'Priority Support',
+              'Never Expires'
+            ].map((feature, index) => (
+              <div key={index} className="flex items-center gap-3">
+                <div className="w-5 h-5 rounded-full bg-green-500/10 flex items-center justify-center">
+                  <Check className="h-3 w-3 text-green-500" />
+                </div>
+                <span className="text-sm font-medium">{feature}</span>
+              </div>
+            ))}
           </div>
         </div>
         
-        <div className="pt-4 border-t">
+        <div className="pt-6 border-t border-border/50">
           <Button 
             onClick={handlePurchase}
             disabled={loading || isCurrentPlan}
-            className="w-full"
+            className={`w-full h-12 text-base font-semibold ${
+              featured ? 'bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600' : ''
+            }`}
             size="lg"
           >
             {loading ? (
