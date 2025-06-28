@@ -2,10 +2,18 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 import { createMiddlewareClient } from '@supabase/auth-helpers-nextjs';
 import { cookies } from 'next/headers';
+import { env } from '@/env.mjs';
 
 export async function middleware(request: NextRequest) {
   const response = NextResponse.next();
-  const supabase = createMiddlewareClient({ cookies: () => cookies() });
+  const cookies = request.cookies;
+  const supabase = createMiddlewareClient(
+    { req: request, res: response },
+    {
+      supabaseUrl: env.NEXT_PUBLIC_SUPABASE_URL,
+      supabaseKey: env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+    }
+  );
   
   // Check if the path is a public route
   const { pathname } = request.nextUrl;
