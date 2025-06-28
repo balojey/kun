@@ -84,9 +84,9 @@ export function useTokens() {
     durationSeconds: number
   ): number => {
     if (serviceType === 'conversational_ai') {
-      return durationSeconds; // 1 token per second
+      return Math.ceil(durationSeconds * 4.5); // 4.5 tokens per second
     } else {
-      return Math.ceil(durationSeconds * 0.5); // 0.5 tokens per second
+      return Math.ceil(durationSeconds * 2); // 2 tokens per second
     }
   };
 

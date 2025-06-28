@@ -96,8 +96,8 @@ export function VoiceTab() {
   });
 
   const startConversation = useCallback(async () => {
-    // Check if user has sufficient tokens for at least 30 seconds of conversation
-    if (!hassufficientTokens(30)) {
+    // Check if user has sufficient tokens for at least 30 seconds of conversation (135 tokens)
+    if (!hassufficientTokens(135)) {
       toast.error('Insufficient tokens for voice conversation');
       return;
     }

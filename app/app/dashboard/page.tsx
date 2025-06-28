@@ -216,15 +216,15 @@ export default function DashboardPage() {
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex justify-between">
                       <span>Voice conversations</span>
-                      <span>1 token/second</span>
+                      <span>4.5 tokens/second</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Speech transcription</span>
-                      <span>~50 tokens/minute</span>
+                      <span>~270 tokens/minute</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Text-to-speech</span>
-                      <span>~100 tokens/minute</span>
+                      <span>~270 tokens/minute</span>
                     </div>
                   </div>
                 </div>
@@ -234,15 +234,15 @@ export default function DashboardPage() {
                   <div className="space-y-2 text-sm text-muted-foreground">
                     <div className="flex justify-between">
                       <span>Tool automation</span>
-                      <span>0.5 tokens/second</span>
+                      <span>2 tokens/second</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Document processing</span>
-                      <span>~25-75 tokens</span>
+                      <span>~120 tokens/minute</span>
                     </div>
                     <div className="flex justify-between">
                       <span>Complex tasks</span>
-                      <span>~100-200 tokens</span>
+                      <span>~240-480 tokens</span>
                     </div>
                   </div>
                 </div>

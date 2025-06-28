@@ -96,15 +96,15 @@ export default function PricingPage() {
               <div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex justify-between">
                   <span>Speech-to-Text (per minute)</span>
-                  <span>~50 tokens</span>
+                  <span>~270 tokens</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Text-to-Speech (per minute)</span>
-                  <span>~100 tokens</span>
+                  <span>~270 tokens</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Voice conversation</span>
-                  <span>~150 tokens/min</span>
+                  <span>~270 tokens/min</span>
                 </div>
               </div>
             </div>
@@ -114,15 +114,15 @@ export default function PricingPage() {
               <div className="space-y-2 text-xs sm:text-sm text-muted-foreground">
                 <div className="flex justify-between">
                   <span>Email analysis</span>
-                  <span>~25 tokens</span>
+                  <span>~120 tokens/min</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Document processing</span>
-                  <span>~75 tokens</span>
+                  <span>~120 tokens/min</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Complex automation</span>
-                  <span>~200 tokens</span>
+                  <span>~240 tokens/min</span>
                 </div>
               </div>
             </div>
@@ -131,7 +131,7 @@ export default function PricingPage() {
           <div className="mt-4 sm:mt-6 p-3 sm:p-4 bg-muted/50 rounded-lg">
             <p className="text-xs sm:text-sm text-muted-foreground">
               <strong>Example:</strong> With the Beta package (50,000 tokens), you could have approximately 
-              330 minutes of voice conversations or process 2,000 emails with AI assistance.
+              185 minutes of voice conversations or 416 minutes of tool automation.
             </p>
           </div>
         </CardContent>

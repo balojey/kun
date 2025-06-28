@@ -241,7 +241,7 @@ export async function getEstimatedUsageTime(userId: string): Promise<{
   if (!balance) return null;
   
   return {
-    conversational_ai_minutes: Math.floor(balance.balance / 60), // 1 token per second = 60 tokens per minute
-    pica_endpoint_minutes: Math.floor(balance.balance / 30), // 0.5 tokens per second = 30 tokens per minute
+    conversational_ai_minutes: Math.floor(balance.balance / (4.5 * 60)), // 4.5 tokens per second = 270 tokens per minute
+    pica_endpoint_minutes: Math.floor(balance.balance / (2 * 60)), // 2 tokens per second = 120 tokens per minute
   };
 }
