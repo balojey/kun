@@ -6,7 +6,6 @@ import { Send, Mic, Volume2, MicOff, VolumeX, Bot, User, Sparkles, ArrowUp } fro
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { createTranscription } from '@/app/actions/create-transcription';
 import { useSpeech } from '@/hooks/use-speech';
@@ -210,19 +209,19 @@ export function TextTab() {
 
         {/* Messages Area - ChatGPT Style */}
         <div className="flex-1 overflow-y-auto">
-          <div className="max-w-3xl mx-auto px-4 py-6">
+          <div className="max-w-3xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
             {messages.length === 0 && (
-              <div className="text-center py-12 sm:py-16">
-                <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+              <div className="text-center py-8 sm:py-12">
+                <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
                   <Bot className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
                 </div>
                 <h3 className="text-xl sm:text-2xl font-semibold mb-3">How can I help you today?</h3>
-                <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-md mx-auto">
+                <p className="text-sm sm:text-base text-muted-foreground mb-6 sm:mb-8 max-w-md mx-auto">
                   I can help you manage emails, schedule meetings, organize documents, and much more.
                 </p>
                 
                 {/* Quick Start Examples */}
-                <div className="grid gap-3 sm:gap-4 max-w-2xl mx-auto">
+                <div className="grid gap-2 sm:gap-3 max-w-2xl mx-auto">
                   {[
                     "Show me my unread emails",
                     "What's on my calendar today?",
@@ -232,13 +231,13 @@ export function TextTab() {
                     <button
                       key={index}
                       onClick={() => handleSuggestionClick(example)}
-                      className="p-3 sm:p-4 text-left border border-border/50 rounded-xl hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group"
+                      className="p-2 sm:p-3 text-left border border-border/50 rounded-xl hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group"
                     >
-                      <div className="flex items-center gap-3">
-                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
-                          <Sparkles className="h-4 w-4 text-primary" />
+                      <div className="flex items-center gap-2 sm:gap-3">
+                        <div className="w-6 h-6 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors flex-shrink-0">
+                          <Sparkles className="h-3 w-3 sm:h-4 sm:w-4 text-primary" />
                         </div>
-                        <span className="text-sm sm:text-base font-medium">{example}</span>
+                        <span className="text-xs sm:text-sm font-medium">{example}</span>
                       </div>
                     </button>
                   ))}
@@ -247,31 +246,31 @@ export function TextTab() {
             )}
             
             {/* Messages */}
-            <div className="space-y-6">
+            <div className="space-y-4 sm:space-y-6">
               {messages.map((message) => (
                 <div key={message.id} className="group">
-                  <div className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                  <div className={`flex gap-3 sm:gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
                     {message.role === 'assistant' && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                        <Bot className="h-4 w-4 text-primary" />
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                        <Bot className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                       </div>
                     )}
                     
-                    <div className={`max-w-[85%] ${message.role === 'user' ? 'order-1' : ''}`}>
+                    <div className={`max-w-[80%] ${message.role === 'user' ? 'order-1' : ''}`}>
                       <div
-                        className={`rounded-2xl px-4 py-3 ${
+                        className={`rounded-2xl px-3 sm:px-4 py-2 sm:py-3 ${
                           message.role === 'user'
                             ? 'bg-primary text-primary-foreground ml-auto'
                             : 'bg-muted/50 border border-border/50'
                         }`}
                       >
-                        <div className="text-sm leading-relaxed">
+                        <div className="text-xs sm:text-sm leading-relaxed">
                           <ReactMarkdown
                             components={{
                               p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
                               ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
                               ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
-                              li: ({ children }) => <li className="text-sm">{children}</li>,
+                              li: ({ children }) => <li className="text-xs sm:text-sm">{children}</li>,
                               code: ({ children }) => <code className="bg-black/10 px-1 py-0.5 rounded text-xs">{children}</code>,
                             }}
                           >
@@ -282,8 +281,8 @@ export function TextTab() {
                     </div>
                     
                     {message.role === 'user' && (
-                      <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-1 order-2">
-                        <User className="h-4 w-4 text-blue-500" />
+                      <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-1 order-2">
+                        <User className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-blue-500" />
                       </div>
                     )}
                   </div>
@@ -291,15 +290,15 @@ export function TextTab() {
               ))}
               
               {isLoading && (
-                <div className="flex gap-4 justify-start">
-                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
-                    <Bot className="h-4 w-4 text-primary" />
+                <div className="flex gap-3 sm:gap-4 justify-start">
+                  <div className="w-7 h-7 sm:w-8 sm:h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-primary" />
                   </div>
-                  <div className="bg-muted/50 border border-border/50 rounded-2xl px-4 py-3 flex items-center">
+                  <div className="bg-muted/50 border border-border/50 rounded-2xl px-3 sm:px-4 py-2 sm:py-3 flex items-center">
                     <div className="flex items-center gap-1">
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-100" />
-                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-200" />
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse" />
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse delay-100" />
+                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse delay-200" />
                     </div>
                   </div>
                 </div>
@@ -310,11 +309,11 @@ export function TextTab() {
           </div>
         </div>
 
-        {/* Input Area - ChatGPT Style */}
+        {/* Input Area - ChatGPT Style - Fixed at bottom */}
         <div className="flex-shrink-0 border-t border-border/50 bg-background">
-          <div className="max-w-3xl mx-auto p-4">
+          <div className="max-w-3xl mx-auto p-3 sm:p-4">
             <form onSubmit={onSubmit} className="relative">
-              <div className="relative flex items-end gap-2 p-3 border border-border/50 rounded-2xl bg-background shadow-sm focus-within:border-primary/50 focus-within:shadow-md transition-all duration-200">
+              <div className="relative flex items-end gap-2 p-2 sm:p-3 border border-border/50 rounded-xl bg-background shadow-sm focus-within:border-primary/50 focus-within:shadow-md transition-all duration-200">
                 {/* Voice Input Button */}
                 <Button
                   type="button"
@@ -343,7 +342,7 @@ export function TextTab() {
                   onKeyDown={handleKeyDown}
                   placeholder="Message Aven..."
                   disabled={isLoading}
-                  className="flex-1 min-h-[20px] max-h-[200px] resize-none border-0 bg-transparent p-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground"
+                  className="flex-1 min-h-[20px] max-h-[200px] resize-none border-0 bg-transparent p-0 text-xs sm:text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground"
                   rows={1}
                 />
 
@@ -376,9 +375,9 @@ export function TextTab() {
               </div>
               
               {/* Footer Text */}
-              <div className="flex items-center justify-between mt-2 px-2 text-xs text-muted-foreground">
-                <span>Press Enter to send, Shift+Enter for new line</span>
-                <span>{input.length}/1000</span>
+              <div className="flex items-center justify-between mt-2 px-1 text-xs text-muted-foreground">
+                <span className="text-[10px] sm:text-xs">Enter to send, Shift+Enter for new line</span>
+                <span className="text-[10px] sm:text-xs">{input.length}/1000</span>
               </div>
             </form>
           </div>
