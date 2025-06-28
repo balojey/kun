@@ -2,12 +2,141 @@
 
 import { useState } from 'react';
 import { VoiceTab } from '@/components/home/voice-tab';
-import { TextTab } from '@/components/home/text-tab';
+import { TextTab, useSuggestionContext } from '@/components/home/text-tab';
 import { useInterfaceMode } from '@/components/app-layout';
 import { Button } from '@/components/ui/button';
 import { Lightbulb, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { cn } from '@/lib/utils';
+
+// Suggestion Item Component
+function SuggestionItem({ 
+  title, 
+  description, 
+  onClick 
+}: { 
+  title: string; 
+  description: string; 
+  onClick: () => void; 
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className="w-full p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50 hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 text-left group"
+    >
+      <p className="text-xs sm:text-sm font-medium mb-1 group-hover:text-primary transition-colors">
+        {title}
+      </p>
+      <p className="text-xs text-muted-foreground">{description}</p>
+    </button>
+  );
+}
+
+// Sidebar Content Component
+function SidebarContent({ onSuggestionClick }: { onSuggestionClick: (suggestion: string) => void }) {
+  const { isTextMode, setIsTextMode } = useInterfaceMode();
+
+  const handleSuggestionClick = (suggestion: string) => {
+    // Switch to text mode if not already
+    if (!isTextMode) {
+      setIsTextMode(true);
+    }
+    // Call the suggestion click handler
+    onSuggestionClick(suggestion);
+  };
+
+  return (
+    <CardContent className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 p-4 sm:p-6">
+      {/* Email Management */}
+      <div className="space-y-2 sm:space-y-3">
+        <h4 className="font-medium text-xs sm:text-sm text-primary">📧 Email Management</h4>
+        <div className="space-y-2">
+          <SuggestionItem
+            title="Show me my unread emails"
+            description="View and manage your inbox"
+            onClick={() => handleSuggestionClick("Show me my unread emails")}
+          />
+          <SuggestionItem
+            title="Archive all newsletters"
+            description="Organize emails automatically"
+            onClick={() => handleSuggestionClick("Archive all newsletters")}
+          />
+          <SuggestionItem
+            title="Delete emails from last week"
+            description="Bulk email management"
+            onClick={() => handleSuggestionClick("Delete emails from last week")}
+          />
+        </div>
+      </div>
+
+      {/* Email Composition */}
+      <div className="space-y-2 sm:space-y-3">
+        <h4 className="font-medium text-xs sm:text-sm text-primary">✍️ Email Composition</h4>
+        <div className="space-y-2">
+          <SuggestionItem
+            title="Reply to Sarah about the meeting"
+            description="Compose and send responses"
+            onClick={() => handleSuggestionClick("Reply to Sarah about the meeting")}
+          />
+          <SuggestionItem
+            title="Draft an email to the team"
+            description="Create new messages"
+            onClick={() => handleSuggestionClick("Draft an email to the team")}
+          />
+        </div>
+      </div>
+
+      {/* Calendar & Scheduling */}
+      <div className="space-y-2 sm:space-y-3">
+        <h4 className="font-medium text-xs sm:text-sm text-primary">📅 Calendar & Scheduling</h4>
+        <div className="space-y-2">
+          <SuggestionItem
+            title="Schedule a call with the team"
+            description="Calendar management"
+            onClick={() => handleSuggestionClick("Schedule a call with the team")}
+          />
+          <SuggestionItem
+            title="What's on my calendar today?"
+            description="Check your schedule"
+            onClick={() => handleSuggestionClick("What's on my calendar today?")}
+          />
+        </div>
+      </div>
+
+      {/* Document Management */}
+      <div className="space-y-2 sm:space-y-3">
+        <h4 className="font-medium text-xs sm:text-sm text-primary">📄 Document Management</h4>
+        <div className="space-y-2">
+          <SuggestionItem
+            title="Create a new document"
+            description="Generate documents and notes"
+            onClick={() => handleSuggestionClick("Create a new document")}
+          />
+          <SuggestionItem
+            title="Find my project files"
+            description="Search and organize files"
+            onClick={() => handleSuggestionClick("Find my project files")}
+          />
+        </div>
+      </div>
+
+      {/* Pro Tips */}
+      <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+        <div className="flex items-start gap-2 sm:gap-3">
+          <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 sm:mt-2 flex-shrink-0" />
+          <div>
+            <p className="font-medium text-blue-800 dark:text-blue-200 text-xs sm:text-sm">
+              Pro Tip
+            </p>
+            <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 mt-1">
+              Speak naturally! Aven understands context and can handle complex requests like "Find emails about the project from last month and summarize them."
+            </p>
+          </div>
+        </div>
+      </div>
+    </CardContent>
+  );
+}
 
 export function HomePage() {
   const { isTextMode } = useInterfaceMode();
@@ -82,90 +211,20 @@ export function HomePage() {
               </Button>
             </div>
             <CardDescription className="text-xs sm:text-sm">
-              Natural language examples to get you started
+              Click any command to try it instantly
             </CardDescription>
           </CardHeader>
           
-          <CardContent className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 p-4 sm:p-6">
-            {/* Email Management */}
-            <div className="space-y-2 sm:space-y-3">
-              <h4 className="font-medium text-xs sm:text-sm text-primary">📧 Email Management</h4>
-              <div className="space-y-2">
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Show me my unread emails"</p>
-                  <p className="text-xs text-muted-foreground">View and manage your inbox</p>
-                </div>
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Archive all newsletters"</p>
-                  <p className="text-xs text-muted-foreground">Organize emails automatically</p>
-                </div>
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Delete emails from last week"</p>
-                  <p className="text-xs text-muted-foreground">Bulk email management</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Email Composition */}
-            <div className="space-y-2 sm:space-y-3">
-              <h4 className="font-medium text-xs sm:text-sm text-primary">✍️ Email Composition</h4>
-              <div className="space-y-2">
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Reply to Sarah about the meeting"</p>
-                  <p className="text-xs text-muted-foreground">Compose and send responses</p>
-                </div>
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Draft an email to the team"</p>
-                  <p className="text-xs text-muted-foreground">Create new messages</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Calendar & Scheduling */}
-            <div className="space-y-2 sm:space-y-3">
-              <h4 className="font-medium text-xs sm:text-sm text-primary">📅 Calendar & Scheduling</h4>
-              <div className="space-y-2">
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Schedule a call with the team"</p>
-                  <p className="text-xs text-muted-foreground">Calendar management</p>
-                </div>
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"What's on my calendar today?"</p>
-                  <p className="text-xs text-muted-foreground">Check your schedule</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Document Management */}
-            <div className="space-y-2 sm:space-y-3">
-              <h4 className="font-medium text-xs sm:text-sm text-primary">📄 Document Management</h4>
-              <div className="space-y-2">
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Create a new document"</p>
-                  <p className="text-xs text-muted-foreground">Generate documents and notes</p>
-                </div>
-                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-xs sm:text-sm font-medium mb-1">"Find my project files"</p>
-                  <p className="text-xs text-muted-foreground">Search and organize files</p>
-                </div>
-              </div>
-            </div>
-
-            {/* Pro Tips */}
-            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <div className="flex items-start gap-2 sm:gap-3">
-                <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 sm:mt-2 flex-shrink-0" />
-                <div>
-                  <p className="font-medium text-blue-800 dark:text-blue-200 text-xs sm:text-sm">
-                    Pro Tip
-                  </p>
-                  <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 mt-1">
-                    Speak naturally! Aven understands context and can handle complex requests like "Find emails about the project from last month and summarize them."
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
+          {/* Render sidebar content with suggestion context */}
+          {isTextMode ? (
+            // When in text mode, use the context from TextTab
+            <TextTabSidebarContent />
+          ) : (
+            // When in voice mode, provide a fallback handler
+            <SidebarContent onSuggestionClick={(suggestion) => {
+              // This will be handled by switching to text mode in SidebarContent
+            }} />
+          )}
         </Card>
       </div>
 
@@ -179,4 +238,15 @@ export function HomePage() {
       )}
     </div>
   );
+}
+
+// Component to use suggestion context when in text mode
+function TextTabSidebarContent() {
+  try {
+    const { handleSuggestionClick } = useSuggestionContext();
+    return <SidebarContent onSuggestionClick={handleSuggestionClick} />;
+  } catch {
+    // Fallback if context is not available
+    return <SidebarContent onSuggestionClick={() => {}} />;
+  }
 }

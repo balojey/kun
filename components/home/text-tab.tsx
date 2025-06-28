@@ -2,10 +2,10 @@
 
 import { useChat } from '@ai-sdk/react';
 import { useState, useRef, useEffect } from 'react';
-import { Send, Mic, Volume2, MicOff, VolumeX, Bot, User, Sparkles } from 'lucide-react';
+import { Send, Mic, Volume2, MicOff, VolumeX, Bot, User, Sparkles, ArrowUp } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { createTranscription } from '@/app/actions/create-transcription';
@@ -14,6 +14,22 @@ import { STT_MODELS, TTS_MODELS } from '@/lib/schemas';
 import { useConnections } from '@/hooks/use-connections';
 import { useTokens } from '@/hooks/use-tokens';
 import ReactMarkdown from 'react-markdown';
+import { createContext, useContext } from 'react';
+
+// Create context for suggestion clicks
+interface SuggestionContextType {
+  handleSuggestionClick: (suggestion: string) => void;
+}
+
+const SuggestionContext = createContext<SuggestionContextType | undefined>(undefined);
+
+export function useSuggestionContext() {
+  const context = useContext(SuggestionContext);
+  if (context === undefined) {
+    throw new Error('useSuggestionContext must be used within a SuggestionProvider');
+  }
+  return context;
+}
 
 export function TextTab() {
   const [isRecording, setIsRecording] = useState(false);
@@ -21,6 +37,7 @@ export function TextTab() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const audioChunksRef = useRef<Blob[]>([]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { speak } = useSpeech();
   const { connections, supabaseToken } = useConnections();
   
@@ -29,7 +46,7 @@ export function TextTab() {
     ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
   ];
 
-  const { messages, input, handleInputChange, handleSubmit, isLoading, append, stop, status } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, isLoading, append, stop, status, setInput } = useChat({
     api: `${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/chat`,
     body: { connectionIds },
     headers: {
@@ -63,6 +80,25 @@ export function TextTab() {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Auto-resize textarea
+  useEffect(() => {
+    if (textareaRef.current) {
+      textareaRef.current.style.height = 'auto';
+      textareaRef.current.style.height = `${Math.min(textareaRef.current.scrollHeight, 200)}px`;
+    }
+  }, [input]);
+
+  const handleSuggestionClick = (suggestion: string) => {
+    // Extract just the command text from the suggestion
+    const commandText = suggestion.replace(/^"(.*)"$/, '$1');
+    setInput(commandText);
+    
+    // Focus the textarea
+    if (textareaRef.current) {
+      textareaRef.current.focus();
+    }
+  };
 
   const startRecording = async () => {
     if (!hassufficientTokens(10)) {
@@ -124,7 +160,7 @@ export function TextTab() {
         throw new Error('No speech detected. Please try again.');
       }
 
-      handleInputChange({ target: { value: transcript } } as any);
+      setInput(transcript);
       toast.success('Speech transcribed successfully');
     } catch (error) {
       console.error('Error processing voice input:', error);
@@ -144,16 +180,23 @@ export function TextTab() {
     handleSubmit(e);
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      onSubmit(e as any);
+    }
+  };
+
   return (
-    <div className="h-full flex flex-col">
-      {/* Chat Interface */}
-      <Card className="flex-1 border-0 shadow-lg min-h-0 flex flex-col">
-        <CardHeader className="border-b border-border/50 flex-shrink-0 p-3 sm:p-6">
+    <SuggestionContext.Provider value={{ handleSuggestionClick }}>
+      <div className="h-full flex flex-col bg-background">
+        {/* Header */}
+        <div className="flex-shrink-0 border-b border-border/50 p-3 sm:p-4 bg-background/80 backdrop-blur-sm">
           <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
+            <div className="flex items-center gap-2">
               <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
-              <span className="text-sm sm:text-base">AI Personal Assistant</span>
-            </CardTitle>
+              <span className="text-sm sm:text-base font-medium">AI Personal Assistant</span>
+            </div>
             <div className="flex items-center gap-1 sm:gap-2">
               <Badge variant={isSpeechEnabled ? "default" : "secondary"} className="text-xs">
                 {isSpeechEnabled ? "TTS On" : "TTS Off"}
@@ -163,156 +206,184 @@ export function TextTab() {
               </Badge>
             </div>
           </div>
-        </CardHeader>
+        </div>
 
-        {/* Messages Area */}
-        <div className="flex-1 min-h-0 flex flex-col">
-          <div className="flex-1 p-3 sm:p-6 overflow-y-auto">
-            <div className="space-y-4 sm:space-y-6">
-              {messages.length === 0 && (
-                <div className="text-center py-8 sm:py-12">
-                  <div className="mx-auto w-12 h-12 sm:w-16 sm:h-16 rounded-full bg-primary/10 flex items-center justify-center mb-4 sm:mb-6">
-                    <Bot className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-                  </div>
-                  <h3 className="text-lg sm:text-xl font-semibold mb-2 sm:mb-3">Start a conversation</h3>
-                  <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6">
-                    Type a message or use the microphone to get started
-                  </p>
-                  <div className="grid gap-1 sm:gap-2 max-w-md mx-auto text-xs sm:text-sm text-muted-foreground">
-                    <p>• "Show me my unread emails"</p>
-                    <p>• "What's on my calendar today?"</p>
-                    <p>• "Create a new document"</p>
-                  </div>
+        {/* Messages Area - ChatGPT Style */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="max-w-3xl mx-auto px-4 py-6">
+            {messages.length === 0 && (
+              <div className="text-center py-12 sm:py-16">
+                <div className="mx-auto w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-primary/10 flex items-center justify-center mb-6">
+                  <Bot className="h-8 w-8 sm:h-10 sm:w-10 text-primary" />
                 </div>
-              )}
-              
+                <h3 className="text-xl sm:text-2xl font-semibold mb-3">How can I help you today?</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-8 max-w-md mx-auto">
+                  I can help you manage emails, schedule meetings, organize documents, and much more.
+                </p>
+                
+                {/* Quick Start Examples */}
+                <div className="grid gap-3 sm:gap-4 max-w-2xl mx-auto">
+                  {[
+                    "Show me my unread emails",
+                    "What's on my calendar today?",
+                    "Create a new document",
+                    "Schedule a meeting with the team"
+                  ].map((example, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleSuggestionClick(example)}
+                      className="p-3 sm:p-4 text-left border border-border/50 rounded-xl hover:border-primary/50 hover:bg-accent/50 transition-all duration-200 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+                          <Sparkles className="h-4 w-4 text-primary" />
+                        </div>
+                        <span className="text-sm sm:text-base font-medium">{example}</span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+            
+            {/* Messages */}
+            <div className="space-y-6">
               {messages.map((message) => (
-                <div
-                  key={message.id}
-                  className={`flex gap-2 sm:gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                >
-                  {message.role === 'assistant' && (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <div key={message.id} className="group">
+                  <div className={`flex gap-4 ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}>
+                    {message.role === 'assistant' && (
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                        <Bot className="h-4 w-4 text-primary" />
+                      </div>
+                    )}
+                    
+                    <div className={`max-w-[85%] ${message.role === 'user' ? 'order-1' : ''}`}>
+                      <div
+                        className={`rounded-2xl px-4 py-3 ${
+                          message.role === 'user'
+                            ? 'bg-primary text-primary-foreground ml-auto'
+                            : 'bg-muted/50 border border-border/50'
+                        }`}
+                      >
+                        <div className="text-sm leading-relaxed">
+                          <ReactMarkdown
+                            components={{
+                              p: ({ children }) => <p className="mb-2 last:mb-0">{children}</p>,
+                              ul: ({ children }) => <ul className="list-disc list-inside mb-2 space-y-1">{children}</ul>,
+                              ol: ({ children }) => <ol className="list-decimal list-inside mb-2 space-y-1">{children}</ol>,
+                              li: ({ children }) => <li className="text-sm">{children}</li>,
+                              code: ({ children }) => <code className="bg-black/10 px-1 py-0.5 rounded text-xs">{children}</code>,
+                            }}
+                          >
+                            {message.content}
+                          </ReactMarkdown>
+                        </div>
+                      </div>
                     </div>
-                  )}
-                  
-                  <div
-                    className={`max-w-[85%] sm:max-w-[80%] rounded-2xl px-3 py-2 sm:px-6 sm:py-4 ${
-                      message.role === 'user'
-                        ? 'bg-primary text-primary-foreground shadow-lg'
-                        : 'bg-muted/50 text-foreground border border-border/50'
-                    }`}
-                  >
-                    <div className="text-xs sm:text-sm leading-relaxed whitespace-pre-wrap">
-                      <ReactMarkdown>
-                        {message.content}
-                      </ReactMarkdown>
-                    </div>
+                    
+                    {message.role === 'user' && (
+                      <div className="w-8 h-8 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0 mt-1 order-2">
+                        <User className="h-4 w-4 text-blue-500" />
+                      </div>
+                    )}
                   </div>
-                  
-                  {message.role === 'user' && (
-                    <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-blue-500/10 flex items-center justify-center flex-shrink-0">
-                      <User className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
-                    </div>
-                  )}
                 </div>
               ))}
               
               {isLoading && (
-                <div className="flex gap-2 sm:gap-4 justify-start items-center">
-                  <div className="w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                    <Bot className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
+                <div className="flex gap-4 justify-start">
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0 mt-1">
+                    <Bot className="h-4 w-4 text-primary" />
                   </div>
-                  <div className="bg-muted/50 rounded-2xl px-3 py-2 sm:px-6 sm:py-4 flex items-center border border-border/50">
-                    <span className="text-xs sm:text-sm text-muted-foreground mr-2 sm:mr-3">Thinking</span>
+                  <div className="bg-muted/50 border border-border/50 rounded-2xl px-4 py-3 flex items-center">
                     <div className="flex items-center gap-1">
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse" />
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse delay-100" />
-                      <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-primary rounded-full animate-pulse delay-200" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-100" />
+                      <div className="w-2 h-2 bg-primary rounded-full animate-pulse delay-200" />
                     </div>
                   </div>
                 </div>
               )}
-              
-              <div ref={messagesEndRef} />
             </div>
+            
+            <div ref={messagesEndRef} />
           </div>
+        </div>
 
-          {/* Input Area - Fixed at bottom with proper mobile constraints */}
-          <div className="border-t border-border/50 p-3 sm:p-6 bg-muted/20 flex-shrink-0">
-            <form
-              onSubmit={onSubmit}
-              className="flex gap-2 sm:gap-3 items-end"
-            >
-              <div className="flex-1 min-w-0 space-y-2">
-                <Input
-                  value={input}
-                  onChange={handleInputChange}
-                  placeholder="Type your message or hold the mic button to speak..."
-                  disabled={isLoading}
-                  className="h-10 sm:h-12 text-sm sm:text-base border-0 bg-background shadow-sm focus-visible:ring-2 focus-visible:ring-primary/20 w-full"
-                />
-              </div>
-              
-              <div className="flex gap-1 sm:gap-2 flex-shrink-0">
+        {/* Input Area - ChatGPT Style */}
+        <div className="flex-shrink-0 border-t border-border/50 bg-background">
+          <div className="max-w-3xl mx-auto p-4">
+            <form onSubmit={onSubmit} className="relative">
+              <div className="relative flex items-end gap-2 p-3 border border-border/50 rounded-2xl bg-background shadow-sm focus-within:border-primary/50 focus-within:shadow-md transition-all duration-200">
                 {/* Voice Input Button */}
                 <Button
                   type="button"
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   onMouseDown={startRecording}
                   onMouseUp={stopRecording}
                   onTouchStart={startRecording}
                   onTouchEnd={stopRecording}
                   disabled={isLoading}
-                  className={`h-10 w-10 sm:h-12 sm:w-12 ${isRecording ? 'bg-red-500 text-white border-red-500' : ''}`}
+                  className={`h-8 w-8 flex-shrink-0 ${isRecording ? 'bg-red-500/10 text-red-500' : 'hover:bg-accent'}`}
                   aria-label={isRecording ? "Recording..." : "Hold to record"}
                 >
                   {isRecording ? (
-                    <MicOff className="h-3 w-3 sm:h-5 sm:w-5" />
+                    <MicOff className="h-4 w-4" />
                   ) : (
-                    <Mic className="h-3 w-3 sm:h-5 sm:w-5" />
+                    <Mic className="h-4 w-4" />
                   )}
                 </Button>
-                
+
+                {/* Textarea */}
+                <Textarea
+                  ref={textareaRef}
+                  value={input}
+                  onChange={handleInputChange}
+                  onKeyDown={handleKeyDown}
+                  placeholder="Message Aven..."
+                  disabled={isLoading}
+                  className="flex-1 min-h-[20px] max-h-[200px] resize-none border-0 bg-transparent p-0 text-sm focus-visible:ring-0 focus-visible:ring-offset-0 placeholder:text-muted-foreground"
+                  rows={1}
+                />
+
                 {/* TTS Toggle */}
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   size="icon"
                   type="button"
                   onClick={() => setIsSpeechEnabled(!isSpeechEnabled)}
-                  className="h-10 w-10 sm:h-12 sm:w-12"
+                  className="h-8 w-8 flex-shrink-0 hover:bg-accent"
                   aria-label={isSpeechEnabled ? "Disable TTS" : "Enable TTS"}
                 >
                   {isSpeechEnabled ? (
-                    <Volume2 className="h-3 w-3 sm:h-5 sm:w-5 text-blue-500" />
+                    <Volume2 className="h-4 w-4 text-blue-500" />
                   ) : (
-                    <VolumeX className="h-3 w-3 sm:h-5 sm:w-5" />
+                    <VolumeX className="h-4 w-4" />
                   )}
                 </Button>
-                
+
                 {/* Send Button */}
                 <Button
                   type="submit"
                   disabled={!input.trim() || isLoading || !hassufficientTokens(10)}
                   size="icon"
-                  className="h-10 w-10 sm:h-12 sm:w-12"
+                  className="h-8 w-8 flex-shrink-0 rounded-lg"
                   aria-label="Send message"
                 >
-                  <Send className="h-3 w-3 sm:h-5 sm:w-5" />
+                  <ArrowUp className="h-4 w-4" />
                 </Button>
               </div>
+              
+              {/* Footer Text */}
+              <div className="flex items-center justify-between mt-2 px-2 text-xs text-muted-foreground">
+                <span>Press Enter to send, Shift+Enter for new line</span>
+                <span>{input.length}/1000</span>
+              </div>
             </form>
-            
-            <div className="flex items-center justify-between mt-2 sm:mt-3 text-xs text-muted-foreground">
-              <span className="hidden sm:inline">Hold mic button to record • Click TTS to toggle voice responses</span>
-              <span className="sm:hidden">Hold mic • Toggle TTS</span>
-              <span>{input.length}/1000</span>
-            </div>
           </div>
         </div>
-      </Card>
-    </div>
+      </div>
+    </SuggestionContext.Provider>
   );
 }
