@@ -295,7 +295,7 @@ export function TextTab() {
                 {/* Send Button */}
                 <Button
                   type="submit"
-                  disabled={!input.trim() || isLoading}
+                  disabled={!input.trim() || isLoading || !hassufficientTokens(10)}
                   size="icon"
                   className="h-12 w-12"
                   aria-label="Send message"
