@@ -24,7 +24,7 @@ const getPageInfo = (pathname: string) => {
     case 'connections':
       return { title: 'Connections', description: 'Connected Tools' };
     case 'pricing':
-      return { title: 'Pricing', description: 'Token Packages' };
+      return { title: 'Buy Tokens', description: 'Token Packages' };
     case 'profile':
       return { title: 'Profile', description: 'Account Settings' };
     case 'usage':
