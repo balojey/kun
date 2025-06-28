@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useAuthContext } from '@/components/auth/auth-provider';
 import { 
   getUserTokenBalance, 
@@ -22,7 +22,7 @@ export function useTokens() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchTokenData = async () => {
+  const fetchTokenData = useCallback(async () => {
     if (!user) {
       setBalance(null);
       setTransactions([]);
@@ -50,7 +50,7 @@ export function useTokens() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user]);
 
   const refreshTokenData = () => {
     fetchTokenData();
@@ -58,22 +58,26 @@ export function useTokens() {
 
   useEffect(() => {
     fetchTokenData();
-  }, [user]);
+  }, [fetchTokenData, user]);
 
   // Subscribe to balance changes using polling instead of realtime
-  // useEffect(() => {
-  //   if (!user) return;
+  useEffect(() => {
+    if (!user) return;
 
-  //   const unsubscribe = subscribeToTokenBalance((newBalance) => {
-  //     setBalance(newBalance);
-  //     // Refresh estimated time when balance changes
-  //     if (newBalance) {
-  //       getEstimatedUsageTime().then(setEstimatedTime).catch(console.error);
-  //     }
-  //   });
+    const unsubscribe = subscribeToTokenBalance((newBalance) => {
+      setBalance(newBalance);
+      // Refresh estimated time when balance changes
+      if (newBalance) {
+        getEstimatedUsageTime().then(setEstimatedTime).catch(console.error);
+      }
+    });
 
-  //   return unsubscribe;
-  // }, [user]);
+    return () => {
+      if (typeof unsubscribe === 'function') {
+        unsubscribe();
+      }
+    };
+  }, [user]);
 
   const hassufficientTokens = (requiredTokens: number): boolean => {
     return balance ? balance.balance >= requiredTokens : false;

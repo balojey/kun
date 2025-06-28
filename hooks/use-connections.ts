@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthContext } from '@/components/auth/auth-provider';
 import { PicaConnection } from '@/lib/pica';
@@ -14,7 +14,7 @@ export function useConnections() {
   const supabase = createClient();
   const [supabaseToken, setSupabaseToken] = useState<string>('');
 
-  const fetchConnections = async () => {
+  const fetchConnections = useCallback(async () => {
     if (!user) {
       setConnections([]);
       setLoading(false);
@@ -43,7 +43,7 @@ export function useConnections() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, supabase]);
 
   const disconnectTool = async (connection: PicaConnection) => {
     try {
@@ -83,7 +83,7 @@ export function useConnections() {
 
   useEffect(() => {
     fetchConnections();
-  }, [user]);
+  }, [fetchConnections, user]);
 
   useEffect(() => {
     const getToken = async () => {

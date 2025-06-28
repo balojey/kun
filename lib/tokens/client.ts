@@ -89,32 +89,38 @@ export async function getEstimatedUsageTime(): Promise<{
 export function subscribeToTokenBalance(
   callback: (balance: TokenBalance | null) => void
 ) {
-  let intervalId: NodeJS.Timeout;
-  let isActive = true;
+  const supabase = createClient();
 
-  const pollBalance = async () => {
-    if (!isActive) return;
-    
-    try {
-      const balance = await getUserTokenBalance();
-      callback(balance);
-    } catch (error) {
-      console.error('Error polling token balance:', error);
-      // Don't call callback on error to avoid infinite loading states
-    }
-  };
+  // Subscribe to changes on the token_balances table for the current user
+  const channel = supabase
+    .channel('realtime:token_balances')
+    .on(
+      'postgres_changes',
+      {
+        event: '*',
+        schema: 'public',
+        table: 'token_balances',
+      },
+      async (payload) => {
+        try {
+          const balance = await getUserTokenBalance();
+          callback(balance);
+        } catch (error) {
+          console.error('Error fetching token balance (realtime):', error);
+        }
+      }
+    )
+    .subscribe();
 
   // Initial fetch
-  pollBalance();
-
-  // Poll every 30 seconds
-  intervalId = setInterval(pollBalance, 30000);
+  getUserTokenBalance()
+    .then(callback)
+    .catch((error) => {
+      console.error('Error fetching initial token balance:', error);
+    });
 
   // Return cleanup function
   return () => {
-    isActive = false;
-    if (intervalId) {
-      clearInterval(intervalId);
-    }
+    supabase.removeChannel(channel);
   };
 }

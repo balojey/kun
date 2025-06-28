@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthContext } from '@/components/auth/auth-provider';
 import { getProductByPriceId } from '@/src/stripe-config';
@@ -24,7 +24,7 @@ export function useSubscription() {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
-  const fetchSubscription = async () => {
+  const fetchSubscription = useCallback(async () => {
     if (!user) {
       setSubscription(null);
       setLoading(false);
@@ -51,11 +51,11 @@ export function useSubscription() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, supabase]);
 
   useEffect(() => {
     fetchSubscription();
-  }, [user]);
+  }, [fetchSubscription, user]);
 
   // Set up real-time subscription for subscription changes
   useEffect(() => {

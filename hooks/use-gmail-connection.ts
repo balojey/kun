@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { createClient } from '@/lib/supabase/client';
 import { useAuthContext } from '@/components/auth/auth-provider';
 
@@ -11,7 +11,7 @@ export function useGmailConnection() {
   const [error, setError] = useState<string | null>(null);
   const supabase = createClient();
 
-  const checkAnyConnection = async () => {
+  const checkAnyConnection = useCallback(async () => {
     if (!user) {
       setHasAnyConnection(false);
       setLoading(false);
@@ -41,11 +41,11 @@ export function useGmailConnection() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [user, supabase]);
 
   useEffect(() => {
     checkAnyConnection();
-  }, [user]);
+  }, [checkAnyConnection, user]);
 
   // Set up real-time subscription for connections changes
   useEffect(() => {
