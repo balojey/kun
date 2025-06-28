@@ -29,10 +29,22 @@ export async function createSoundEffect(
   }
 }
 
-async function streamToBase64(audioStream: NodeJS.ReadableStream): Promise<string> {
-  const chunks: Buffer[] = [];
-  for await (const chunk of audioStream) {
-    chunks.push(Buffer.from(chunk));
+async function streamToBase64(audioStream: ReadableStream<Uint8Array>): Promise<string> {
+  const reader = audioStream.getReader();
+  const chunks: Uint8Array[] = [];
+  while (true) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    if (value) chunks.push(value);
   }
-  return Buffer.concat(chunks).toString('base64');
+  const totalLength = chunks.reduce((acc, chunk) => acc + chunk.length, 0);
+  const merged = new Uint8Array(totalLength);
+  let offset = 0;
+  for (const chunk of chunks) {
+    merged.set(chunk, offset);
+    offset += chunk.length;
+  }
+  // Convert Uint8Array to base64
+  const base64 = Buffer.from(merged).toString('base64');
+  return base64;
 }

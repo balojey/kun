@@ -58,7 +58,7 @@ export function LandingPage() {
             
             {/* Bolt Logo - Subtle placement */}
             <div className="flex items-center">
-              <div className="w-px h-6 bg-border/50 mx-3" />
+              <div className="w-px h-6 bg-border/50 mx-1" />
               <Link 
                 href="https://bolt.new" 
                 target="_blank" 

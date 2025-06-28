@@ -19,10 +19,15 @@ export async function streamSpeech(
 
     const passThrough = new PassThrough();
 
+    // Convert ReadableStream to Node.js stream if necessary
+    const reader = nodeStream.getReader();
+
     (async () => {
       try {
-        for await (const chunk of nodeStream) {
-          const buffer = Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk);
+        while (true) {
+          const { done, value } = await reader.read();
+          if (done) break;
+          const buffer = Buffer.isBuffer(value) ? value : Buffer.from(value);
           passThrough.write(buffer);
         }
         passThrough.end();

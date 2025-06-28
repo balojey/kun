@@ -9,9 +9,74 @@ import { useExecutionTracker } from '@/hooks/use-execution-tracker';
 import { Button } from '@/components/ui/button';
 import { TokenGuard } from '@/components/tokens/token-guard';
 import Link from 'next/link';
+import { createClient } from '@/lib/supabase/client';
+import { useAuthContext } from '../auth/auth-provider';
+import { connected } from 'process';
 
 export function VoiceTab() {
   const { connections } = useConnections();
+  const supabase = createClient();
+  const { user } = useAuthContext();
+
+  const connectionIds = [
+    ...connections.map(c => c.connection_id),
+    ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
+  ];
+  const connectedTools = connections.map(c => c.provider).join(', ');
+  
+  console.log("Connections:", connectionIds);
+  const executeUserCommand = async ({ rowId }: { command: string, rowId: string }) => {
+      const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/pica-execute`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ connectionIds, rowId }),
+      });
+      if (!response.ok) {
+        throw new Error('Failed to call Pica');
+      }
+      const data = await response.text();
+      console.log('Pica response in convo:', data);
+      return data;
+  }
+
+  const createPromptRow = async ({ prompt }: { prompt: string }) => {
+    try {
+      const { data, error } = await supabase
+        .from('aven_calls')
+        .insert({ user_id: user?.id, prompt })
+        .select('id')
+        .single();
+
+      if (error) {
+        console.error('Error creating aven_call:', error);
+        return null;
+      }
+
+      console.log('Created aven_call:', data);
+      return data?.id || null;
+    } catch (err) {
+      console.error('Unexpected error creating aven_call:', err);
+      return null;
+    }
+  }
+
+  const getCallResponse = async ({ id }: { id: string }) => {
+    const { data, error } = await supabase
+      .from('aven_calls')
+      .select('response')
+      .eq('id', id)
+      .single();
+
+    if (error) {
+      console.error('Error fetching aven_calls row:', error);
+      return '';
+    }
+
+    console.log('Fetched aven_calls row:', data);
+    return data?.response || '';
+  }
 
   const conversation = useConversation({
     onConnect: () => {
@@ -45,13 +110,6 @@ export function VoiceTab() {
       toast.error('Insufficient tokens for voice conversation');
       return;
     }
-
-    const connectionIds = [
-      ...connections.map(c => c.connection_id),
-      ...(process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID ? [process.env.NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID] : [])
-    ];
-    
-    console.log("Connections:", connectionIds);
     
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
@@ -61,22 +119,13 @@ export function VoiceTab() {
       }
       await conversation.startSession({
         agentId,
+        dynamicVariables: {
+          connectedTools: connectedTools,
+        },
         clientTools: {
-          callPica: async ({ input }) => {
-            const response = await fetch(`${process.env.NEXT_PUBLIC_SUPABASE_URL}/functions/v1/pica-execute`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify({ messages: [{ role: 'user', content: input }], connectionIds }),
-            });
-            if (!response.ok) {
-              throw new Error('Failed to call Pica');
-            }
-            const data = await response.text();
-            console.log('Pica response in convo:', data);
-            return data;
-          },
+          executeUserCommand,
+          createPromptRow,
+          getCallResponse,
         },
       });
     } catch (error) {
