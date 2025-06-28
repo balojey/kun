@@ -145,7 +145,7 @@ export function TextTab() {
   };
 
   return (
-    <div className="h-full flex flex-col space-y-6">
+    <div className="h-full flex flex-col">
       {/* Chat Interface */}
       <Card className="flex-1 border-0 shadow-lg min-h-0">
         <CardHeader className="border-b border-border/50 flex-shrink-0">
@@ -166,8 +166,8 @@ export function TextTab() {
         </CardHeader>
 
         {/* Messages Area */}
-        <CardContent className="p-0 flex-1 min-h-0">
-          <div className="h-full p-6 overflow-y-auto">
+        <div className="flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 p-6 overflow-y-auto">
             <div className="space-y-6">
               {messages.length === 0 && (
                 <div className="text-center py-12">
@@ -239,7 +239,7 @@ export function TextTab() {
             </div>
           </div>
 
-          {/* Input Area */}
+          {/* Input Area - Fixed at bottom */}
           <div className="border-t border-border/50 p-6 bg-muted/20 flex-shrink-0">
             <form
               onSubmit={onSubmit}
@@ -255,7 +255,7 @@ export function TextTab() {
                 />
               </div>
               
-              <div className="flex gap-2">
+              <div className="flex gap-2 flex-shrink-0">
                 {/* Voice Input Button */}
                 <Button
                   type="button"
@@ -310,7 +310,7 @@ export function TextTab() {
               <span>{input.length}/1000</span>
             </div>
           </div>
-        </CardContent>
+        </div>
       </Card>
     </div>
   );

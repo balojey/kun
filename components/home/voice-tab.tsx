@@ -1,7 +1,7 @@
 'use client';
 
 import { useConversation } from '@elevenlabs/react';
-import { Loader2, Mic, PhoneOff, Zap, Users, Clock, MessageCircle } from 'lucide-react';
+import { Loader2, Mic, PhoneOff, Zap, Users, Clock } from 'lucide-react';
 import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
@@ -155,9 +155,9 @@ export function VoiceTab() {
   const isConnecting = conversation.status === 'connecting';
 
   return (
-    <div className="h-full flex flex-col space-y-6">
+    <div className="h-full flex flex-col">
       {/* Status Cards */}
-      <div className="grid gap-4 md:grid-cols-3 flex-shrink-0">
+      <div className="grid gap-4 md:grid-cols-3 flex-shrink-0 mb-6">
         <Card className="border-0 shadow-sm">
           <CardContent className="pt-6">
             <div className="flex items-center space-x-3">
@@ -197,8 +197,8 @@ export function VoiceTab() {
         </Card>
       </div>
 
-      {/* Main Voice Interface */}
-      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+      {/* Main Voice Interface - Centered */}
+      <div className="flex-1 flex items-center justify-center min-h-0">
         <TokenGuard
           serviceType="conversational_ai"
           estimatedDurationSeconds={30}
