@@ -69,29 +69,29 @@ export function AppLayout({ children }: AppLayoutProps) {
         <AppSidebar />
         <SidebarInset>
           <header className="flex h-16 shrink-0 items-center gap-2 transition-[width,height] ease-linear group-has-[[data-collapsible=icon]]/sidebar-wrapper:h-12 border-b border-border/50 bg-background/80 backdrop-blur-sm">
-            <div className="flex items-center gap-2 px-4 w-full">
+            <div className="flex items-center gap-2 px-3 sm:px-4 w-full">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
-              <Breadcrumb className="flex-1">
+              <Breadcrumb className="flex-1 min-w-0">
                 <BreadcrumbList>
                   <BreadcrumbItem>
-                    <BreadcrumbPage className="flex items-center gap-2">
-                      <span className="font-semibold">{pageInfo.title}</span>
-                      <Badge variant="secondary" className="text-xs">
+                    <BreadcrumbPage className="flex items-center gap-2 min-w-0">
+                      <span className="font-semibold truncate">{pageInfo.title}</span>
+                      <Badge variant="secondary" className="text-xs hidden sm:flex">
                         <Sparkles className="h-3 w-3 mr-1" />
-                        {pageInfo.description}
+                        <span className="hidden md:inline">{pageInfo.description}</span>
                       </Badge>
                     </BreadcrumbPage>
                   </BreadcrumbItem>
                 </BreadcrumbList>
               </Breadcrumb>
               
-              {/* Interface Mode Toggle - Only on Home Page */}
+              {/* Interface Mode Toggle - Only on Home Page - Mobile Optimized */}
               {isHomePage && (
-                <div className="flex items-center gap-3 ml-auto">
-                  <div className="flex items-center gap-2">
-                    <Mic className={`h-4 w-4 transition-colors ${!isTextMode ? 'text-primary' : 'text-muted-foreground'}`} />
-                    <Label htmlFor="interface-mode" className="text-sm font-medium cursor-pointer">
+                <div className="flex items-center gap-2 sm:gap-3 ml-auto">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <Mic className={`h-3 w-3 sm:h-4 sm:w-4 transition-colors ${!isTextMode ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <Label htmlFor="interface-mode" className="text-xs sm:text-sm font-medium cursor-pointer hidden sm:inline">
                       Voice
                     </Label>
                   </div>
@@ -100,20 +100,20 @@ export function AppLayout({ children }: AppLayoutProps) {
                     id="interface-mode"
                     checked={isTextMode}
                     onCheckedChange={setIsTextMode}
-                    className="data-[state=checked]:bg-primary"
+                    className="data-[state=checked]:bg-primary scale-75 sm:scale-100"
                   />
                   
-                  <div className="flex items-center gap-2">
-                    <Label htmlFor="interface-mode" className="text-sm font-medium cursor-pointer">
+                  <div className="flex items-center gap-1 sm:gap-2">
+                    <Label htmlFor="interface-mode" className="text-xs sm:text-sm font-medium cursor-pointer hidden sm:inline">
                       Text
                     </Label>
-                    <MessageSquare className={`h-4 w-4 transition-colors ${isTextMode ? 'text-primary' : 'text-muted-foreground'}`} />
+                    <MessageSquare className={`h-3 w-3 sm:h-4 sm:w-4 transition-colors ${isTextMode ? 'text-primary' : 'text-muted-foreground'}`} />
                   </div>
                 </div>
               )}
             </div>
           </header>
-          <div className="flex flex-1 flex-col gap-4 p-6">
+          <div className="flex flex-1 flex-col gap-3 sm:gap-4 p-3 sm:p-6">
             <div className="min-h-[calc(100vh-8rem)]">
               {children}
             </div>

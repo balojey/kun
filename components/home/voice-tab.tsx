@@ -156,14 +156,14 @@ export function VoiceTab() {
 
   return (
     <div className="h-full flex flex-col">
-      {/* Status Cards */}
-      <div className="grid gap-4 md:grid-cols-3 flex-shrink-0 mb-6">
+      {/* Status Cards - Responsive grid */}
+      <div className="grid gap-3 sm:gap-4 grid-cols-1 sm:grid-cols-3 flex-shrink-0 mb-4 sm:mb-6">
         <Card className="border-0 shadow-sm">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-3">
-              <div className={`w-3 h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <div className={`w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full ${isConnected ? 'bg-green-500' : 'bg-gray-400'}`} />
               <div>
-                <p className="text-sm font-medium">AI Personal Assistant</p>
+                <p className="text-xs sm:text-sm font-medium">AI Personal Assistant</p>
                 <p className="text-xs text-muted-foreground">
                   {isConnected ? 'Connected & Ready' : 'Disconnected'}
                 </p>
@@ -173,11 +173,11 @@ export function VoiceTab() {
         </Card>
 
         <Card className="border-0 shadow-sm">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-3">
-              <Users className="h-5 w-5 text-blue-500" />
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <Users className="h-4 w-4 sm:h-5 sm:w-5 text-blue-500" />
               <div>
-                <p className="text-sm font-medium">{connections.length} Tools</p>
+                <p className="text-xs sm:text-sm font-medium">{connections.length} Tools</p>
                 <p className="text-xs text-muted-foreground">Connected & Active</p>
               </div>
             </div>
@@ -185,11 +185,11 @@ export function VoiceTab() {
         </Card>
 
         <Card className="border-0 shadow-sm">
-          <CardContent className="pt-6">
-            <div className="flex items-center space-x-3">
-              <Clock className="h-5 w-5 text-purple-500" />
+          <CardContent className="pt-4 sm:pt-6">
+            <div className="flex items-center space-x-2 sm:space-x-3">
+              <Clock className="h-4 w-4 sm:h-5 sm:w-5 text-purple-500" />
               <div>
-                <p className="text-sm font-medium">Real-time</p>
+                <p className="text-xs sm:text-sm font-medium">Real-time</p>
                 <p className="text-xs text-muted-foreground">Processing Ready</p>
               </div>
             </div>
@@ -197,19 +197,19 @@ export function VoiceTab() {
         </Card>
       </div>
 
-      {/* Main Voice Interface - Properly Centered */}
-      <div className="flex-1 flex flex-col items-center justify-center min-h-0">
+      {/* Main Voice Interface - Properly Centered and Responsive */}
+      <div className="flex-1 flex flex-col items-center justify-center min-h-0 px-4">
         <TokenGuard
           serviceType="conversational_ai"
           estimatedDurationSeconds={30}
           fallback={
-            <div className="text-center space-y-6">
-              <div className="w-48 h-48 rounded-full bg-muted/50 flex items-center justify-center opacity-50 border-4 border-dashed border-muted-foreground/30 mx-auto">
-                <Mic className="h-24 w-24 text-muted-foreground" />
+            <div className="text-center space-y-4 sm:space-y-6 max-w-sm mx-auto">
+              <div className="w-32 h-32 sm:w-48 sm:h-48 rounded-full bg-muted/50 flex items-center justify-center opacity-50 border-4 border-dashed border-muted-foreground/30 mx-auto">
+                <Mic className="h-16 w-16 sm:h-24 sm:w-24 text-muted-foreground" />
               </div>
-              <div className="space-y-4">
-                <h3 className="text-xl font-semibold">Insufficient Tokens</h3>
-                <p className="text-muted-foreground max-w-md mx-auto">
+              <div className="space-y-3 sm:space-y-4">
+                <h3 className="text-lg sm:text-xl font-semibold">Insufficient Tokens</h3>
+                <p className="text-sm sm:text-base text-muted-foreground">
                   You need more tokens to start a voice conversation. Purchase tokens to continue.
                 </p>
                 <Link href="/app/pricing">
@@ -222,8 +222,8 @@ export function VoiceTab() {
             </div>
           }
         >
-          <div className="text-center space-y-8 w-full max-w-md mx-auto">
-            {/* Voice Button */}
+          <div className="text-center space-y-6 sm:space-y-8 w-full max-w-md mx-auto">
+            {/* Voice Button - Responsive sizing */}
             <div className="relative flex justify-center">
               <Button
                 onClick={isConnected ? stopConversation : startConversation}
@@ -231,8 +231,8 @@ export function VoiceTab() {
                 variant={isConnected ? 'destructive' : 'default'}
                 size="icon"
                 className={`
-                  w-48 h-48 rounded-full flex items-center justify-center
-                  shadow-2xl transition-all duration-300 text-6xl
+                  w-32 h-32 sm:w-48 sm:h-48 rounded-full flex items-center justify-center
+                  shadow-2xl transition-all duration-300 text-4xl sm:text-6xl
                   hover:scale-105 active:scale-95
                   ${isConnected 
                     ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 animate-pulse' 
@@ -242,11 +242,11 @@ export function VoiceTab() {
                 `}
               >
                 {isConnecting ? (
-                  <Loader2 className="h-24 w-24 animate-spin" />
+                  <Loader2 className="h-16 w-16 sm:h-24 sm:w-24 animate-spin" />
                 ) : isConnected ? (
-                  <PhoneOff className="h-24 w-24" />
+                  <PhoneOff className="h-16 w-16 sm:h-24 sm:w-24" />
                 ) : (
-                  <Mic className="h-24 w-24" />
+                  <Mic className="h-16 w-16 sm:h-24 sm:w-24" />
                 )}
               </Button>
               
@@ -256,29 +256,29 @@ export function VoiceTab() {
               )}
             </div>
 
-            {/* Status Text */}
-            <div className="space-y-3">
-              <h2 className="text-2xl font-bold">
+            {/* Status Text - Responsive typography */}
+            <div className="space-y-2 sm:space-y-3">
+              <h2 className="text-xl sm:text-2xl font-bold">
                 {isConnecting ? 'Connecting...' : 
                  isConnected ? 'Listening...' : 
                  'Ready to Connect'}
               </h2>
-              <p className="text-lg text-muted-foreground max-w-md mx-auto">
+              <p className="text-sm sm:text-lg text-muted-foreground max-w-sm mx-auto leading-relaxed">
                 {isConnecting ? 'Setting up your AI personal assistant connection' :
                  isConnected ? 'Speak naturally to manage your digital workspace and tools' :
                  'Click the microphone to start your voice conversation'}
               </p>
             </div>
 
-            {/* Connection Instructions */}
+            {/* Connection Instructions - Mobile optimized */}
             {!isConnected && !isConnecting && (
-              <div className="space-y-4">
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <div className="w-2 h-2 rounded-full bg-green-500" />
+              <div className="space-y-3 sm:space-y-4">
+                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500" />
                   <span>Microphone access required</span>
                 </div>
-                <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-                  <div className="w-2 h-2 rounded-full bg-blue-500" />
+                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
+                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500" />
                   <span>Best with headphones or quiet environment</span>
                 </div>
               </div>

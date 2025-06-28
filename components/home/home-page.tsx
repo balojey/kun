@@ -14,17 +14,14 @@ export function HomePage() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col lg:flex-row gap-6 max-w-7xl mx-auto relative">
+    <div className="h-full w-full flex flex-col relative">
       {/* Main Content Area */}
-      <div className={cn(
-        "flex-1 min-w-0 flex flex-col min-h-0 transition-all duration-300",
-        sidebarOpen ? "lg:mr-80" : ""
-      )}>
+      <div className="flex-1 min-h-0 w-full">
         {/* Main Interface Card */}
-        <Card className="flex-1 border-0 shadow-2xl bg-card/50 backdrop-blur-sm min-h-0">
+        <Card className="h-full border-0 shadow-2xl bg-card/50 backdrop-blur-sm">
           <CardContent className="p-0 h-full flex flex-col">
-            {/* Interface Content - No Tab Navigation */}
-            <div className="flex-1 p-6 min-h-0">
+            {/* Interface Content */}
+            <div className="flex-1 p-3 sm:p-4 md:p-6 min-h-0">
               {isTextMode ? (
                 <div className="h-full">
                   <TextTab />
@@ -39,111 +36,130 @@ export function HomePage() {
         </Card>
       </div>
 
-      {/* Sidebar Toggle Button - Always Visible */}
+      {/* Sidebar Toggle Button - Responsive positioning */}
       <Button
         onClick={() => setSidebarOpen(!sidebarOpen)}
         variant="outline"
         size="icon"
         className={cn(
-          "fixed top-1/2 -translate-y-1/2 z-50 h-12 w-8 rounded-l-lg rounded-r-none shadow-lg bg-background/95 backdrop-blur-sm border-r-0 transition-all duration-300",
+          "fixed z-50 h-10 w-8 rounded-l-lg rounded-r-none shadow-lg bg-background/95 backdrop-blur-sm border-r-0 transition-all duration-300",
+          "top-1/2 -translate-y-1/2",
+          // Mobile positioning
+          "sm:h-12",
           sidebarOpen 
-            ? "right-80 lg:right-80" 
+            ? "right-80 sm:right-80 md:right-80 lg:right-80" 
             : "right-0"
         )}
         aria-label={sidebarOpen ? "Close sidebar" : "Open voice commands guide"}
       >
         {sidebarOpen ? (
-          <ChevronRight className="h-4 w-4" />
+          <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
         ) : (
-          <ChevronLeft className="h-4 w-4" />
+          <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
         )}
       </Button>
 
       {/* Right Sidebar - Voice Commands Tutorial */}
       <div className={cn(
-        "fixed right-0 top-0 h-full w-80 bg-background/95 backdrop-blur-sm border-l border-border/50 shadow-2xl transition-transform duration-300 z-40",
+        "fixed right-0 top-0 h-full w-80 max-w-[90vw] bg-background/95 backdrop-blur-sm border-l border-border/50 shadow-2xl transition-transform duration-300 z-40",
         sidebarOpen ? "translate-x-0" : "translate-x-full"
       )}>
         <Card className="h-full border-0 shadow-none bg-gradient-to-br from-primary/5 to-primary/10 flex flex-col rounded-none">
-          <CardHeader className="pb-4 flex-shrink-0 border-b border-border/50">
+          <CardHeader className="pb-3 sm:pb-4 flex-shrink-0 border-b border-border/50 p-4 sm:p-6">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Lightbulb className="h-5 w-5 text-primary" />
-                <CardTitle className="text-lg">Voice Commands Guide</CardTitle>
+              <div className="flex items-center gap-2 min-w-0">
+                <Lightbulb className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                <CardTitle className="text-base sm:text-lg truncate">Voice Commands</CardTitle>
               </div>
               <Button
                 onClick={() => setSidebarOpen(false)}
                 variant="ghost"
                 size="icon"
-                className="h-8 w-8"
+                className="h-7 w-7 sm:h-8 sm:w-8 flex-shrink-0"
                 aria-label="Close sidebar"
               >
-                <ChevronRight className="h-4 w-4" />
+                <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
               </Button>
             </div>
-            <CardDescription>
+            <CardDescription className="text-xs sm:text-sm">
               Natural language examples to get you started
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto space-y-4 p-6">
+          
+          <CardContent className="flex-1 overflow-y-auto space-y-3 sm:space-y-4 p-4 sm:p-6">
             {/* Email Management */}
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm text-primary">📧 Email Management</h4>
+            <div className="space-y-2 sm:space-y-3">
+              <h4 className="font-medium text-xs sm:text-sm text-primary">📧 Email Management</h4>
               <div className="space-y-2">
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"Show me my unread emails"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Show me my unread emails"</p>
                   <p className="text-xs text-muted-foreground">View and manage your inbox</p>
                 </div>
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"Archive all newsletters"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Archive all newsletters"</p>
                   <p className="text-xs text-muted-foreground">Organize emails automatically</p>
                 </div>
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"Delete emails from last week"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Delete emails from last week"</p>
                   <p className="text-xs text-muted-foreground">Bulk email management</p>
                 </div>
               </div>
             </div>
 
             {/* Email Composition */}
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm text-primary">✍️ Email Composition</h4>
+            <div className="space-y-2 sm:space-y-3">
+              <h4 className="font-medium text-xs sm:text-sm text-primary">✍️ Email Composition</h4>
               <div className="space-y-2">
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"Reply to Sarah about the meeting"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Reply to Sarah about the meeting"</p>
                   <p className="text-xs text-muted-foreground">Compose and send responses</p>
                 </div>
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"Draft an email to the team"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Draft an email to the team"</p>
                   <p className="text-xs text-muted-foreground">Create new messages</p>
                 </div>
               </div>
             </div>
 
             {/* Calendar & Scheduling */}
-            <div className="space-y-3">
-              <h4 className="font-medium text-sm text-primary">📅 Calendar & Scheduling</h4>
+            <div className="space-y-2 sm:space-y-3">
+              <h4 className="font-medium text-xs sm:text-sm text-primary">📅 Calendar & Scheduling</h4>
               <div className="space-y-2">
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"Schedule a call with the team"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Schedule a call with the team"</p>
                   <p className="text-xs text-muted-foreground">Calendar management</p>
                 </div>
-                <div className="p-3 rounded-lg bg-background/50 border border-border/50">
-                  <p className="text-sm font-medium mb-1">"What's on my calendar today?"</p>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"What's on my calendar today?"</p>
                   <p className="text-xs text-muted-foreground">Check your schedule</p>
                 </div>
               </div>
             </div>
 
+            {/* Document Management */}
+            <div className="space-y-2 sm:space-y-3">
+              <h4 className="font-medium text-xs sm:text-sm text-primary">📄 Document Management</h4>
+              <div className="space-y-2">
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Create a new document"</p>
+                  <p className="text-xs text-muted-foreground">Generate documents and notes</p>
+                </div>
+                <div className="p-2 sm:p-3 rounded-lg bg-background/50 border border-border/50">
+                  <p className="text-xs sm:text-sm font-medium mb-1">"Find my project files"</p>
+                  <p className="text-xs text-muted-foreground">Search and organize files</p>
+                </div>
+              </div>
+            </div>
+
             {/* Pro Tips */}
-            <div className="p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
-              <div className="flex items-start gap-3">
-                <div className="w-2 h-2 rounded-full bg-blue-500 mt-2 flex-shrink-0" />
+            <div className="p-3 sm:p-4 bg-blue-50 dark:bg-blue-950/20 rounded-lg border border-blue-200 dark:border-blue-800">
+              <div className="flex items-start gap-2 sm:gap-3">
+                <div className="w-2 h-2 rounded-full bg-blue-500 mt-1.5 sm:mt-2 flex-shrink-0" />
                 <div>
-                  <p className="font-medium text-blue-800 dark:text-blue-200 text-sm">
+                  <p className="font-medium text-blue-800 dark:text-blue-200 text-xs sm:text-sm">
                     Pro Tip
                   </p>
-                  <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+                  <p className="text-xs sm:text-sm text-blue-700 dark:text-blue-300 mt-1">
                     Speak naturally! Aven understands context and can handle complex requests like "Find emails about the project from last month and summarize them."
                   </p>
                 </div>
@@ -156,7 +172,7 @@ export function HomePage() {
       {/* Overlay for mobile when sidebar is open */}
       {sidebarOpen && (
         <div 
-          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30 lg:hidden"
+          className="fixed inset-0 bg-black/20 backdrop-blur-sm z-30"
           onClick={() => setSidebarOpen(false)}
           aria-label="Close sidebar"
         />
