@@ -2,8 +2,9 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Mic, Mail, Zap, Shield, Clock, Brain, CheckCircle, Star, Users, Calendar, FileText } from 'lucide-react';
+import { ArrowRight, Mic, Mail, Zap, Shield, Clock, Brain, CheckCircle, Star, Users, Calendar, FileText, Menu, X } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -30,6 +31,7 @@ const staggerContainer = {
 
 export function LandingPage() {
   const { user } = useAuthContext();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
     <div className="min-h-screen bg-background w-full relative overflow-hidden">
@@ -43,7 +45,7 @@ export function LandingPage() {
         transition={{ duration: 0.6 }}
         className="sticky top-0 z-50 w-full border-b border-border/40 bg-background/80 backdrop-blur-xl supports-[backdrop-filter]:bg-background/60"
       >
-        <div className="flex h-16 items-center justify-between px-6 w-full max-w-none mx-auto">
+        <div className="flex h-16 items-center justify-between px-6 w-full max-w-7xl mx-auto">
           <div className="flex items-center gap-4">
             <motion.div 
               className="flex items-center space-x-2"
@@ -80,31 +82,87 @@ export function LandingPage() {
             </div>
           </div>
           
-          <div className="flex items-center space-x-4">
-            <ThemeToggle />
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center space-x-6">
             <Link href="/pricing">
-              <AnimatedButton className='' variant="ghost">Pricing</AnimatedButton>
+              <AnimatedButton variant="ghost">Pricing</AnimatedButton>
             </Link>
+            <ThemeToggle />
             {user ? (
               <Link href="/app">
-                <AnimatedButton className=''>Open App</AnimatedButton>
+                <AnimatedButton>Open App</AnimatedButton>
               </Link>
             ) : (
-              <>
+              <div className="flex items-center space-x-3">
                 <Link href="/login">
-                  <AnimatedButton className='' variant="ghost">Sign In</AnimatedButton>
+                  <AnimatedButton variant="ghost">Sign In</AnimatedButton>
                 </Link>
                 <Link href="/signup">
-                  <AnimatedButton className=''>Get Started Free</AnimatedButton>
+                  <AnimatedButton>Get Started Free</AnimatedButton>
                 </Link>
-              </>
+              </div>
             )}
           </div>
+
+          {/* Mobile Menu Button */}
+          <div className="md:hidden flex items-center space-x-2">
+            <ThemeToggle />
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="h-9 w-9"
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </Button>
+          </div>
         </div>
+
+        {/* Mobile Menu */}
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            exit={{ opacity: 0, height: 0 }}
+            className="md:hidden border-t border-border/40 bg-background/95 backdrop-blur-xl"
+          >
+            <div className="px-6 py-4 space-y-3">
+              <Link href="/pricing" onClick={() => setMobileMenuOpen(false)}>
+                <Button variant="ghost" className="w-full justify-start">
+                  Pricing
+                </Button>
+              </Link>
+              {user ? (
+                <Link href="/app" onClick={() => setMobileMenuOpen(false)}>
+                  <Button className="w-full">
+                    Open App
+                  </Button>
+                </Link>
+              ) : (
+                <div className="space-y-2">
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="ghost" className="w-full">
+                      Sign In
+                    </Button>
+                  </Link>
+                  <Link href="/signup" onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full">
+                      Get Started Free
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </motion.div>
+        )}
       </motion.nav>
 
       {/* Hero Section */}
-      <section className="relative overflow-hidden py-32 lg:py-40 w-full">
+      <section className="relative overflow-hidden py-20 lg:py-32 w-full">
         <div className="px-6 w-full max-w-7xl mx-auto">
           <motion.div 
             className="mx-auto max-w-4xl text-center"
@@ -120,7 +178,7 @@ export function LandingPage() {
             </motion.div>
             
             <motion.div variants={fadeInUp} className="mb-8">
-              <h1 className="text-6xl font-bold tracking-tight sm:text-7xl lg:text-8xl mb-6">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight mb-6">
                 <TypingAnimation 
                   phrases={[
                     "Turn Conversations Into Actions.",
@@ -138,7 +196,7 @@ export function LandingPage() {
             
             <motion.p 
               variants={fadeInUp}
-              className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12"
+              className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12"
             >
               Stop drowning in emails. Aven transforms how busy professionals manage their inbox through natural conversation. 
               Simply speak your commands—reply to clients, schedule meetings, organize messages—and watch your productivity soar.
@@ -146,25 +204,25 @@ export function LandingPage() {
             
             <motion.div 
               variants={fadeInUp}
-              className="flex flex-col sm:flex-row gap-6 justify-center mb-16"
+              className="flex flex-col sm:flex-row gap-4 justify-center mb-16"
             >
               {user ? (
                 <Link href="/app">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
+                  <AnimatedButton size="lg" className="h-14 px-8 text-base font-semibold hover:opacity-90">
                     Open Your Dashboard
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
               ) : (
                 <Link href="/signup">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
+                  <AnimatedButton size="lg" className="h-14 px-8 text-base font-semibold hover:opacity-90">
                     Claim 10,000 Free Tokens
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
                 </Link>
               )}
               <Link href="/pricing">
-                <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg border-primary/30 hover:border-primary">
+                <AnimatedButton variant="outline" size="lg" className="h-14 px-8 text-base border-primary/30 hover:border-primary">
                   <Mic className="mr-3 h-5 w-5" />
                   See Token Packages
                 </AnimatedButton>
@@ -174,7 +232,7 @@ export function LandingPage() {
             {/* Trust Indicators */}
             <motion.div 
               variants={fadeInUp}
-              className="flex items-center justify-center gap-8 text-sm text-muted-foreground"
+              className="flex flex-wrap items-center justify-center gap-6 text-sm text-muted-foreground"
             >
               <div className="flex items-center gap-2">
                 <CheckCircle className="h-4 w-4 text-primary" />
@@ -194,7 +252,7 @@ export function LandingPage() {
       </section>
 
       {/* Features Section */}
-      <section className="py-32 w-full relative">
+      <section className="py-20 lg:py-32 w-full relative">
         <div className="px-6 w-full max-w-7xl mx-auto">
           <motion.div 
             className="mx-auto max-w-3xl text-center mb-20"
@@ -203,10 +261,10 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
               Why Executives Choose Aven
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg md:text-xl text-muted-foreground">
               Built for C-suite leaders, entrepreneurs, and high-performing professionals who value their time. 
               Connect your tools once, then control everything with your voice.
             </p>
@@ -245,7 +303,7 @@ export function LandingPage() {
                     <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 shadow-lg">
                       <feature.icon className="h-7 w-7 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl mb-3">{feature.title}</CardTitle>
+                    <CardTitle className="text-xl md:text-2xl mb-3">{feature.title}</CardTitle>
                     <CardDescription className="text-base leading-relaxed text-muted-foreground">
                       {feature.description}
                     </CardDescription>
@@ -258,7 +316,7 @@ export function LandingPage() {
       </section>
 
       {/* Use Cases Section */}
-      <section className="py-32 w-full relative">
+      <section className="py-20 lg:py-32 w-full relative">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-logo-blue/5" />
         <div className="px-6 w-full max-w-7xl mx-auto relative">
           <motion.div 
@@ -268,10 +326,10 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
               Perfect For Busy Professionals
             </h2>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-lg md:text-xl text-muted-foreground">
               Whether you're a CEO managing hundreds of emails daily or a consultant juggling multiple clients, 
               Aven adapts to your workflow and amplifies your productivity.
             </p>
@@ -310,7 +368,7 @@ export function LandingPage() {
                     <div className="w-14 h-14 rounded-xl bg-primary/10 flex items-center justify-center mb-6 shadow-lg">
                       <useCase.icon className="h-7 w-7 text-primary" />
                     </div>
-                    <CardTitle className="text-2xl mb-3">{useCase.title}</CardTitle>
+                    <CardTitle className="text-xl md:text-2xl mb-3">{useCase.title}</CardTitle>
                     <CardDescription className="text-base leading-relaxed text-muted-foreground">
                       {useCase.description}
                     </CardDescription>
@@ -323,7 +381,7 @@ export function LandingPage() {
       </section>
 
       {/* Token System Explanation */}
-      <section className="py-32 w-full relative">
+      <section className="py-20 lg:py-32 w-full relative">
         <div className="px-6 w-full max-w-7xl mx-auto">
           <motion.div 
             className="mx-auto max-w-4xl text-center"
@@ -337,25 +395,25 @@ export function LandingPage() {
               Fair, Transparent Pricing
             </Badge>
             
-            <h2 className="text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
               Pay Only for What You Use
             </h2>
-            <p className="text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
+            <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
               No monthly subscriptions or hidden fees. Purchase tokens once and use them whenever you need AI assistance. 
               Your tokens never expire, and you get 10,000 free tokens to start—enough for weeks of email management.
             </p>
             
             <div className="grid gap-6 md:grid-cols-3 mb-12">
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">10,000</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-2">10,000</div>
                 <div className="text-sm text-muted-foreground">Free tokens on signup</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">~150</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-2">~150</div>
                 <div className="text-sm text-muted-foreground">Emails processed per 1,000 tokens</div>
               </div>
               <div className="text-center">
-                <div className="text-3xl font-bold text-primary mb-2">∞</div>
+                <div className="text-2xl md:text-3xl font-bold text-primary mb-2">∞</div>
                 <div className="text-sm text-muted-foreground">Tokens never expire</div>
               </div>
             </div>
@@ -364,7 +422,7 @@ export function LandingPage() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-32 w-full relative">
+      <section className="py-20 lg:py-32 w-full relative">
         <div className="absolute inset-0 bg-gradient-to-r from-primary/5 to-logo-blue/5" />
         <div className="px-6 w-full max-w-7xl mx-auto relative">
           <motion.div 
@@ -374,17 +432,17 @@ export function LandingPage() {
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
           >
-            <h2 className="text-5xl font-bold tracking-tight mb-6">
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
               Ready to Reclaim Your Time?
             </h2>
-            <p className="text-xl text-muted-foreground mb-12">
+            <p className="text-lg md:text-xl text-muted-foreground mb-12">
               Join 10,000+ professionals who've eliminated email overwhelm. Start with 10,000 free tokens—no credit card required. 
               Experience the future of email management in under 60 seconds.
             </p>
-            <div className="flex flex-col sm:flex-row gap-6 justify-center">
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {user ? (
                 <Link href="/app">
-                  <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
+                  <AnimatedButton size="lg" className="h-14 px-8 text-base font-semibold hover:opacity-90">
                     Access Your Dashboard
                     <ArrowRight className="ml-3 h-5 w-5" />
                   </AnimatedButton>
@@ -392,13 +450,13 @@ export function LandingPage() {
               ) : (
                 <>
                   <Link href="/signup">
-                    <AnimatedButton size="lg" className="h-16 px-12 text-lg font-semibold hover:opacity-90">
+                    <AnimatedButton size="lg" className="h-14 px-8 text-base font-semibold hover:opacity-90">
                       Start Free with 10,000 Tokens
                       <ArrowRight className="ml-3 h-5 w-5" />
                     </AnimatedButton>
                   </Link>
                   <Link href="/login">
-                    <AnimatedButton variant="outline" size="lg" className="h-16 px-12 text-lg border-primary/30 hover:border-primary">
+                    <AnimatedButton variant="outline" size="lg" className="h-14 px-8 text-base border-primary/30 hover:border-primary">
                       Sign In to Existing Account
                     </AnimatedButton>
                   </Link>
@@ -411,7 +469,7 @@ export function LandingPage() {
               <p className="text-sm text-muted-foreground mb-4">
                 Trusted by executives at leading companies
               </p>
-              <div className="flex items-center justify-center gap-8 text-xs text-muted-foreground">
+              <div className="flex flex-wrap items-center justify-center gap-6 text-xs text-muted-foreground">
                 <span>✓ SOC 2 Type II Certified</span>
                 <span>✓ GDPR Compliant</span>
                 <span>✓ 99.9% Uptime SLA</span>
@@ -432,7 +490,7 @@ export function LandingPage() {
                 Aven
               </span>
             </div>
-            <div className="text-sm text-muted-foreground">
+            <div className="text-sm text-muted-foreground text-center md:text-right">
               © 2025 Aven. All rights reserved. • Built for professionals who value their time.
             </div>
           </div>
