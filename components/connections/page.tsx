@@ -22,7 +22,6 @@ import {
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
 import { Skeleton } from '@/components/ui/skeleton';
-import { AppHeader } from '@/components/app-header';
 
 export default function ConnectionsPage() {
   const { connections, loading, disconnectTool, refreshConnections } = useConnections();
