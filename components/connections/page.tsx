@@ -54,7 +54,6 @@ export default function ConnectionsPage() {
 
   return (
     <div className="min-h-screen bg-background">
-      <AppHeader />
       <main className="container mx-auto px-6 py-8">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-in">
           {/* Header */}
