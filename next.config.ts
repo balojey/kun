@@ -6,20 +6,9 @@ const nextConfig: NextConfig = {
       bodySizeLimit: '1gb',
     },
   },
-  eslint: {
-    ignoreDuringBuilds: true,
-    dirs: ['supabase']
-  },
   images: {
     remotePatterns: [new URL('https://lh3.googleusercontent.com/a/**')],
   },
-  // webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
-  //   config.module.rules.push({
-  //     test: /\\lib\\/,
-  //     loader: 'ignore-loader',
-  //   });
-  //   return config;
-  // },
   async headers() {
     return [
       {
