@@ -252,7 +252,7 @@ export function LandingPage() {
                     height={24}
                     className="opacity-70"
                   />
-                  <span className="font-semibold text-lg text-muted-foreground">Bolt</span>
+                  {/* <span className="font-semibold text-lg text-muted-foreground">Bolt</span> */}
                 </motion.div>
 
                 {/* Tavily */}
@@ -262,7 +262,7 @@ export function LandingPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Image
-                    src="/tavily-logo.svg"
+                    src="/tavily.svg"
                     alt="Tavily"
                     width={80}
                     height={24}
@@ -277,7 +277,7 @@ export function LandingPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Image
-                    src="/pica-logo.svg"
+                    src="/pica.svg"
                     alt="Pica"
                     width={80}
                     height={24}
@@ -292,7 +292,7 @@ export function LandingPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Image
-                    src="/elevenlabs-logo.svg"
+                    src="/elevenlabs.svg"
                     alt="ElevenLabs"
                     width={100}
                     height={24}
@@ -307,7 +307,7 @@ export function LandingPage() {
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
                   <Image
-                    src="/supabase-logo.svg"
+                    src="/supabase.svg"
                     alt="Supabase"
                     width={100}
                     height={24}
