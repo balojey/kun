@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { ArrowRight, Mic, Mail, Zap, Shield, Clock, Brain, CheckCircle, Star, Users, Calendar, FileText, Menu, X } from 'lucide-react';
+import { ArrowRight, Mic, Mail, Zap, Shield, Clock, Brain, CheckCircle, Star, Users, Calendar, FileText, Menu, X, Globe, Search, TrendingUp } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
@@ -172,8 +172,8 @@ export function LandingPage() {
           >
             <motion.div variants={fadeInUp}>
               <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium shadow-lg bg-primary/10 text-primary border-primary/20">
-                <Zap className="mr-2 h-4 w-4" />
-                10,000 Free Tokens • No Credit Card Required
+                <Globe className="mr-2 h-4 w-4" />
+                10,000 Free Tokens • Native Web Browsing • No Credit Card Required
               </Badge>
             </motion.div>
             
@@ -184,7 +184,8 @@ export function LandingPage() {
                     "Your AI Personal Assistant.",
                     "Speak. Aven Handles Everything.",
                     "From Chaos to Organized.",
-                    "Voice-Powered Productivity."
+                    "Voice-Powered Productivity.",
+                    "Browse the Web with Voice."
                   ]}
                   className="text-gradient"
                   speed={150}
@@ -199,7 +200,7 @@ export function LandingPage() {
               className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed mb-12"
             >
               Stop juggling multiple apps and tools. Aven transforms how busy professionals manage their digital workspace through natural conversation. 
-              Simply speak your commands—manage emails, schedule meetings, organize documents—and watch your productivity soar.
+              Simply speak your commands—manage emails, schedule meetings, organize documents, <strong>browse the web for real-time information</strong>—and watch your productivity soar.
             </motion.p>
             
             <motion.div 
@@ -246,7 +247,117 @@ export function LandingPage() {
                 <Star className="h-4 w-4 text-primary" />
                 <span>4.9/5 User Rating</span>
               </div>
+              <div className="flex items-center gap-2">
+                <Globe className="h-4 w-4 text-primary" />
+                <span>Real-time Web Access</span>
+              </div>
             </motion.div>
+          </motion.div>
+        </div>
+      </section>
+
+      {/* Web Browsing Feature Highlight */}
+      <section className="py-20 lg:py-32 w-full relative">
+        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-cyan-50 dark:from-blue-950/20 dark:to-cyan-950/20" />
+        <div className="px-6 w-full max-w-7xl mx-auto relative">
+          <motion.div 
+            className="mx-auto max-w-4xl text-center mb-20"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Badge variant="secondary" className="mb-8 px-6 py-3 text-sm font-medium shadow-lg bg-blue-500/10 text-blue-600 border-blue-500/20">
+              <Globe className="mr-2 h-4 w-4" />
+              Revolutionary Web Browsing
+            </Badge>
+            <h2 className="text-3xl md:text-5xl font-bold tracking-tight mb-6">
+              The First AI Assistant with <span className="text-gradient">Native Web Browsing</span>
+            </h2>
+            <p className="text-lg md:text-xl text-muted-foreground">
+              Unlike other AI assistants limited to training data, Aven accesses the live web in real-time. 
+              Get current information, latest news, stock prices, weather updates, and research—all through natural conversation.
+            </p>
+          </motion.div>
+          
+          <motion.div 
+            className="grid gap-8 md:grid-cols-2 lg:grid-cols-3"
+            variants={staggerContainer}
+            initial="initial"
+            whileInView="animate"
+            viewport={{ once: true }}
+          >
+            {[
+              {
+                icon: Search,
+                title: 'Real-Time Research',
+                description: 'Ask "What\'s the latest news about AI?" or "Find me information about sustainable energy trends" and get current, accurate results.',
+                color: 'blue'
+              },
+              {
+                icon: TrendingUp,
+                title: 'Live Market Data',
+                description: 'Get real-time stock prices, market analysis, and financial news. "What\'s Tesla\'s current stock price?" delivers instant results.',
+                color: 'green'
+              },
+              {
+                icon: Globe,
+                title: 'Current Events & News',
+                description: 'Stay informed with the latest breaking news, weather updates, and global events. Always current, never outdated.',
+                color: 'purple'
+              }
+            ].map((feature, index) => (
+              <motion.div key={index} variants={fadeInUp}>
+                <Card className="border-0 shadow-xl hover:shadow-2xl transition-all duration-300 h-full bg-card/50 backdrop-blur-sm hover-lift border-primary/10">
+                  <CardHeader className="pb-4">
+                    <div className={`w-14 h-14 rounded-xl bg-${feature.color}-500/10 flex items-center justify-center mb-6 shadow-lg`}>
+                      <feature.icon className={`h-7 w-7 text-${feature.color}-500`} />
+                    </div>
+                    <CardTitle className="text-xl md:text-2xl mb-3">{feature.title}</CardTitle>
+                    <CardDescription className="text-base leading-relaxed text-muted-foreground">
+                      {feature.description}
+                    </CardDescription>
+                  </CardHeader>
+                </Card>
+              </motion.div>
+            ))}
+          </motion.div>
+
+          {/* Web Browsing Examples */}
+          <motion.div 
+            className="mt-20 max-w-4xl mx-auto"
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+            viewport={{ once: true }}
+          >
+            <Card className="border-0 shadow-2xl bg-gradient-to-br from-background/80 to-background/60 backdrop-blur-sm">
+              <CardHeader className="text-center pb-6">
+                <CardTitle className="text-2xl md:text-3xl mb-4">Try These Voice Commands</CardTitle>
+                <CardDescription className="text-lg">
+                  Experience the power of real-time web browsing through natural conversation
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="grid gap-4 md:grid-cols-2">
+                  {[
+                    "What's the weather like in New York today?",
+                    "Find me the latest news about renewable energy",
+                    "What's Apple's current stock price?",
+                    "Research the best restaurants in San Francisco",
+                    "Get me information about the latest iPhone release",
+                    "What are the trending topics on social media today?"
+                  ].map((command, index) => (
+                    <div key={index} className="flex items-center gap-3 p-4 rounded-lg bg-background/50 border border-border/50">
+                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                        <Mic className="h-4 w-4 text-primary" />
+                      </div>
+                      <span className="text-sm font-medium">"{command}"</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
           </motion.div>
         </div>
       </section>
@@ -266,7 +377,7 @@ export function LandingPage() {
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground">
               Built for C-suite leaders, entrepreneurs, and high-performing professionals who value their time. 
-              Connect your tools once, then control everything with your voice.
+              Connect your tools once, then control everything with your voice—including the entire web.
             </p>
           </motion.div>
           
@@ -285,6 +396,12 @@ export function LandingPage() {
                 color: 'primary'
               },
               {
+                icon: Globe,
+                title: 'Live Web Intelligence',
+                description: 'Access real-time information from across the web. Get current news, market data, research, and insights—all through conversation.',
+                color: 'primary'
+              },
+              {
                 icon: Brain,
                 title: 'Contextual AI Intelligence',
                 description: 'Aven understands your communication style, priorities, and relationships. It learns from your patterns to make smarter suggestions.',
@@ -294,6 +411,18 @@ export function LandingPage() {
                 icon: Zap,
                 title: 'Universal Tool Integration',
                 description: 'Connect Gmail, Calendar, Docs, Sheets, Notion, Slack, and more. One voice command controls your entire productivity stack.',
+                color: 'primary'
+              },
+              {
+                icon: Search,
+                title: 'Intelligent Research Assistant',
+                description: 'Ask complex questions and get comprehensive answers with sources. "Research our competitors\' latest product launches" delivers detailed insights.',
+                color: 'primary'
+              },
+              {
+                icon: Shield,
+                title: 'Enterprise-Grade Security',
+                description: 'Bank-level encryption, SOC 2 compliance, and complete data privacy. Your conversations and web searches remain confidential.',
                 color: 'primary'
               }
             ].map((feature, index) => (
@@ -331,7 +460,7 @@ export function LandingPage() {
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground">
               Whether you're a CEO managing hundreds of emails daily or a consultant juggling multiple clients, 
-              Aven adapts to your workflow and amplifies your productivity.
+              Aven adapts to your workflow and amplifies your productivity with real-time web intelligence.
             </p>
           </motion.div>
           
@@ -346,19 +475,19 @@ export function LandingPage() {
               {
                 icon: Users,
                 title: 'C-Suite Executives',
-                description: 'Manage board communications, investor updates, and strategic decisions without getting lost in email threads.',
+                description: 'Manage board communications, investor updates, and strategic decisions. Get real-time market intelligence and industry insights without leaving your workflow.',
                 color: 'primary'
               },
               {
                 icon: Calendar,
                 title: 'Consultants & Freelancers',
-                description: 'Juggle multiple clients effortlessly. Schedule calls, send proposals, and track project updates with voice commands.',
+                description: 'Juggle multiple clients effortlessly. Research industry trends, schedule calls, send proposals, and track project updates with voice commands.',
                 color: 'primary'
               },
               {
                 icon: FileText,
                 title: 'Sales & Business Development',
-                description: 'Follow up with prospects, schedule demos, and manage your pipeline while staying focused on closing deals.',
+                description: 'Follow up with prospects, research companies, schedule demos, and manage your pipeline while staying informed about market conditions.',
                 color: 'primary'
               }
             ].map((useCase, index) => (
@@ -400,7 +529,7 @@ export function LandingPage() {
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground mb-12 max-w-3xl mx-auto">
               No monthly subscriptions or hidden fees. Purchase tokens once and use them whenever you need AI assistance. 
-              Your tokens never expire, and you get 10,000 free tokens to start—enough for weeks of productivity management.
+              Your tokens never expire, and you get 10,000 free tokens to start—enough for weeks of productivity management and web research.
             </p>
             
             <div className="grid gap-6 md:grid-cols-3 mb-12">
@@ -437,7 +566,7 @@ export function LandingPage() {
             </h2>
             <p className="text-lg md:text-xl text-muted-foreground mb-12">
               Join 10,000+ professionals who've eliminated digital overwhelm. Start with 10,000 free tokens—no credit card required. 
-              Experience the future of productivity management in under 60 seconds.
+              Experience the future of productivity management with real-time web intelligence in under 60 seconds.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               {user ? (
@@ -474,6 +603,7 @@ export function LandingPage() {
                 <span>✓ GDPR Compliant</span>
                 <span>✓ 99.9% Uptime SLA</span>
                 <span>✓ 30-Day Money Back</span>
+                <span>✓ Real-time Web Access</span>
               </div>
             </div>
           </motion.div>
