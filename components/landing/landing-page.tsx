@@ -248,8 +248,8 @@ export function LandingPage() {
                   <Image
                     src="/bolt.png"
                     alt="Bolt"
-                    width={24}
-                    height={24}
+                    width={32}
+                    height={32}
                     className="opacity-70"
                   />
                   {/* <span className="font-semibold text-lg text-muted-foreground">Bolt</span> */}
@@ -294,7 +294,7 @@ export function LandingPage() {
                   <Image
                     src="/elevenlabs.svg"
                     alt="ElevenLabs"
-                    width={100}
+                    width={80}
                     height={24}
                     className="opacity-70 hover:opacity-100 transition-opacity"
                   />
@@ -309,7 +309,7 @@ export function LandingPage() {
                   <Image
                     src="/supabase.svg"
                     alt="Supabase"
-                    width={100}
+                    width={30}
                     height={24}
                     className="opacity-70 hover:opacity-100 transition-opacity"
                   />
