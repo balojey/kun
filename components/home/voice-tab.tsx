@@ -2,7 +2,7 @@
 
 import { useConversation } from '@elevenlabs/react';
 import { Loader2, Mic, PhoneOff, Zap, Users, Clock } from 'lucide-react';
-import { useCallback, useState, useEffect } from 'react';
+import { useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import { useConnections } from '@/hooks/use-connections';
 import { useTokens } from '@/hooks/use-tokens';
@@ -19,8 +19,6 @@ export function VoiceTab() {
   const { hassufficientTokens } = useTokens();
   const supabase = createClient();
   const { user } = useAuthContext();
-  const [isConnecting, setIsConnecting] = useState(false);
-  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   const connectionIds = [
     ...connections.map(c => c.connection_id),
@@ -86,19 +84,13 @@ export function VoiceTab() {
 
   const conversation = useConversation({
     onConnect: async () => {
-      setIsConnecting(false);
-      setConnectionError(null);
       toast.success('Connected to AI personal assistant');
     },
     onDisconnect: () => {
-      setIsConnecting(false);
-      setConnectionError(null);
       toast.info('Disconnected from AI personal assistant');
     },
     onMessage: (message) => console.log('Message:', message.message),
     onError: (error) => {
-      setIsConnecting(false);
-      setConnectionError(error);
       toast.error(`Connection error: ${error}`);
     },
   });
@@ -110,16 +102,12 @@ export function VoiceTab() {
       return;
     }
     
-    setIsConnecting(true);
-    setConnectionError(null);
-    
     try {
       await navigator.mediaDevices.getUserMedia({ audio: true });
       const agentId = process.env.NEXT_PUBLIC_ELEVENLABS_AGENT_ID;
       if (!agentId) {
         throw new Error('Agent ID is not configured');
       }
-      
       await conversation.startSession({
         agentId,
         dynamicVariables: {
@@ -155,28 +143,16 @@ export function VoiceTab() {
       }
     } catch (error) {
       console.error('Failed to start conversation:', error);
-      setIsConnecting(false);
-      setConnectionError(error instanceof Error ? error.message : 'Unknown error');
       toast.error('Failed to start conversation. Please check microphone permissions.');
     }
-  }, [conversation, connections, hassufficientTokens, connectedTools, supabase, user]);
+  }, [conversation, connections, hassufficientTokens]);
 
   const stopConversation = useCallback(async () => {
-    setIsConnecting(false);
-    setConnectionError(null);
     await conversation.endSession();
   }, [conversation]);
 
-  // Reset states when conversation status changes
-  useEffect(() => {
-    if (conversation.status === 'disconnected') {
-      setIsConnecting(false);
-      setConnectionError(null);
-    }
-  }, [conversation.status]);
-
   const isConnected = conversation.status === 'connected';
-  const isActuallyConnecting = isConnecting || conversation.status === 'connecting';
+  const isConnecting = conversation.status === 'connecting';
 
   return (
     <div className="h-full flex flex-col">
@@ -251,21 +227,21 @@ export function VoiceTab() {
             <div className="relative flex justify-center">
               <Button
                 onClick={isConnected ? stopConversation : startConversation}
-                disabled={isActuallyConnecting}
+                disabled={isConnecting}
                 variant={isConnected ? 'destructive' : 'default'}
                 size="icon"
                 className={`
                   w-32 h-32 sm:w-48 sm:h-48 rounded-full flex items-center justify-center
                   shadow-2xl transition-all duration-300 text-4xl sm:text-6xl
-                  hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed
+                  hover:scale-105 active:scale-95
                   ${isConnected 
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' 
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 animate-pulse' 
                     : 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-3xl'
                   }
-                  ${isActuallyConnecting ? 'animate-pulse' : ''}
+                  ${isConnecting ? 'animate-pulse' : ''}
                 `}
               >
-                {isActuallyConnecting ? (
+                {isConnecting ? (
                   <Loader2 className="h-16 w-16 sm:h-24 sm:w-24 animate-spin" />
                 ) : isConnected ? (
                   <PhoneOff className="h-16 w-16 sm:h-24 sm:w-24" />
@@ -274,8 +250,8 @@ export function VoiceTab() {
                 )}
               </Button>
               
-              {/* Pulse Animation for Connected State - Only when actually connected */}
-              {isConnected && !isActuallyConnecting && (
+              {/* Pulse Animation for Connected State */}
+              {isConnected && (
                 <div className="absolute inset-0 rounded-full border-4 border-destructive/30 animate-ping" />
               )}
             </div>
@@ -283,21 +259,19 @@ export function VoiceTab() {
             {/* Status Text - Responsive typography */}
             <div className="space-y-2 sm:space-y-3">
               <h2 className="text-xl sm:text-2xl font-bold">
-                {isActuallyConnecting ? 'Connecting...' : 
+                {isConnecting ? 'Connecting...' : 
                  isConnected ? 'Listening...' : 
-                 connectionError ? 'Connection Failed' :
                  'Ready to Connect'}
               </h2>
               <p className="text-sm sm:text-lg text-muted-foreground max-w-sm mx-auto leading-relaxed">
-                {isActuallyConnecting ? 'Setting up your AI personal assistant connection' :
+                {isConnecting ? 'Setting up your AI personal assistant connection' :
                  isConnected ? 'Speak naturally to manage your digital workspace and tools' :
-                 connectionError ? `Error: ${connectionError}. Click to retry.` :
                  'Click the microphone to start your voice conversation'}
               </p>
             </div>
 
             {/* Connection Instructions - Mobile optimized */}
-            {!isConnected && !isActuallyConnecting && !connectionError && (
+            {!isConnected && !isConnecting && (
               <div className="space-y-3 sm:space-y-4">
                 <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-green-500" />
@@ -306,16 +280,6 @@ export function VoiceTab() {
                 <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-muted-foreground">
                   <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-blue-500" />
                   <span>Best with headphones or quiet environment</span>
-                </div>
-              </div>
-            )}
-
-            {/* Error Recovery Instructions */}
-            {connectionError && (
-              <div className="space-y-3 sm:space-y-4">
-                <div className="flex items-center justify-center gap-2 text-xs sm:text-sm text-destructive">
-                  <div className="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-destructive" />
-                  <span>Check microphone permissions and try again</span>
                 </div>
               </div>
             )}
