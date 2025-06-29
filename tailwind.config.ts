@@ -12,6 +12,7 @@ const config: Config = {
       fontFamily: {
         ubuntu: ['Ubuntu', 'system-ui', 'sans-serif'],
         sans: ['Ubuntu', 'system-ui', 'sans-serif'],
+        bitter: ['Bitter', 'serif'],
       },
       colors: {
         // Logo-inspired color palette

@@ -230,6 +230,69 @@ export function LandingPage() {
               </Link>
             </motion.div>
 
+            {/* Powered By Section */}
+            <motion.div 
+              variants={fadeInUp}
+              className="mb-12"
+            >
+              <p className="powered-by-text text-sm text-muted-foreground mb-6 tracking-wide">
+                Powered by industry leaders
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-8 sm:gap-12">
+                {/* Bolt */}
+                <motion.div 
+                  className="powered-by-logos flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Image
+                    src="/bolt.png"
+                    alt="Bolt"
+                    width={24}
+                    height={24}
+                    className="opacity-70"
+                  />
+                  <span className="font-semibold text-lg text-muted-foreground">Bolt</span>
+                </motion.div>
+
+                {/* Tavily */}
+                <motion.div 
+                  className="powered-by-logos flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <div className="w-6 h-6 rounded bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
+                    <Search className="h-3 w-3 text-white" />
+                  </div>
+                  <span className="font-semibold text-lg text-muted-foreground">Tavily</span>
+                </motion.div>
+
+                {/* Pica */}
+                <motion.div 
+                  className="powered-by-logos flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
+                    <Zap className="h-3 w-3 text-white" />
+                  </div>
+                  <span className="font-semibold text-lg text-muted-foreground">Pica</span>
+                </motion.div>
+
+                {/* ElevenLabs */}
+                <motion.div 
+                  className="powered-by-logos flex items-center gap-2"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <div className="w-6 h-6 rounded bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
+                    <Mic className="h-3 w-3 text-white" />
+                  </div>
+                  <span className="font-semibold text-lg text-muted-foreground">ElevenLabs</span>
+                </motion.div>
+              </div>
+            </motion.div>
+
             {/* Trust Indicators */}
             <motion.div 
               variants={fadeInUp}
