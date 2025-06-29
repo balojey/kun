@@ -235,7 +235,7 @@ export function VoiceTab() {
                   shadow-2xl transition-all duration-300 text-4xl sm:text-6xl
                   hover:scale-105 active:scale-95
                   ${isConnected 
-                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90 animate-pulse' 
+                    ? 'bg-destructive text-destructive-foreground hover:bg-destructive/90' 
                     : 'bg-primary text-primary-foreground hover:bg-primary/90 hover:shadow-3xl'
                   }
                   ${isConnecting ? 'animate-pulse' : ''}
@@ -251,9 +251,9 @@ export function VoiceTab() {
               </Button>
               
               {/* Pulse Animation for Connected State */}
-              {isConnected && (
+              {/* {isConnected && (
                 <div className="absolute inset-0 rounded-full border-4 border-destructive/30 animate-ping" />
-              )}
+              )} */}
             </div>
 
             {/* Status Text - Responsive typography */}
