@@ -5,8 +5,8 @@ import { GmailGuard } from '@/components/auth/gmail-guard';
 
 export default function AppHomePage() {
   return (
-    <GmailGuard>
+    // <GmailGuard>
       <HomePage />
-    </GmailGuard>
+    // </GmailGuard>
   );
 }
