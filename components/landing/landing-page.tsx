@@ -257,38 +257,62 @@ export function LandingPage() {
 
                 {/* Tavily */}
                 <motion.div 
-                  className="powered-by-logos flex items-center gap-2"
+                  className="powered-by-logos"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <div className="w-6 h-6 rounded bg-gradient-to-br from-green-500 to-emerald-600 flex items-center justify-center">
-                    <Search className="h-3 w-3 text-white" />
-                  </div>
-                  <span className="font-semibold text-lg text-muted-foreground">Tavily</span>
+                  <Image
+                    src="/tavily-logo.svg"
+                    alt="Tavily"
+                    width={80}
+                    height={24}
+                    className="opacity-70 hover:opacity-100 transition-opacity"
+                  />
                 </motion.div>
 
                 {/* Pica */}
                 <motion.div 
-                  className="powered-by-logos flex items-center gap-2"
+                  className="powered-by-logos"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <div className="w-6 h-6 rounded bg-gradient-to-br from-purple-500 to-violet-600 flex items-center justify-center">
-                    <Zap className="h-3 w-3 text-white" />
-                  </div>
-                  <span className="font-semibold text-lg text-muted-foreground">Pica</span>
+                  <Image
+                    src="/pica-logo.svg"
+                    alt="Pica"
+                    width={80}
+                    height={24}
+                    className="opacity-70 hover:opacity-100 transition-opacity"
+                  />
                 </motion.div>
 
                 {/* ElevenLabs */}
                 <motion.div 
-                  className="powered-by-logos flex items-center gap-2"
+                  className="powered-by-logos"
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <div className="w-6 h-6 rounded bg-gradient-to-br from-orange-500 to-red-600 flex items-center justify-center">
-                    <Mic className="h-3 w-3 text-white" />
-                  </div>
-                  <span className="font-semibold text-lg text-muted-foreground">ElevenLabs</span>
+                  <Image
+                    src="/elevenlabs-logo.svg"
+                    alt="ElevenLabs"
+                    width={100}
+                    height={24}
+                    className="opacity-70 hover:opacity-100 transition-opacity"
+                  />
+                </motion.div>
+
+                {/* Supabase */}
+                <motion.div 
+                  className="powered-by-logos"
+                  whileHover={{ scale: 1.05 }}
+                  transition={{ type: "spring", stiffness: 400, damping: 17 }}
+                >
+                  <Image
+                    src="/supabase-logo.svg"
+                    alt="Supabase"
+                    width={100}
+                    height={24}
+                    className="opacity-70 hover:opacity-100 transition-opacity"
+                  />
                 </motion.div>
               </div>
             </motion.div>
