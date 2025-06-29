@@ -96,6 +96,9 @@ function PerspectiveGrid() {
               array={new Float32Array(pts.flat())}
               count={2}
               itemSize={3}
+              args={[
+                new Float32Array(pts.flat()), 2, true
+              ]}
             />
           </bufferGeometry>
           <lineBasicMaterial color={color} transparent opacity={0.1} />
