@@ -10,6 +10,8 @@
 
 Aven is an innovative AI-powered personal assistant designed for busy professionals. It streamlines your digital workspace by allowing you to manage emails, schedule meetings, organize documents, and even browse the web in real-time using natural voice or text commands. Say goodbye to juggling multiple apps and tools – Aven brings everything under one conversational interface.
 
+[Live Demo](https://silver-bavarois-7adff0.netlify.app/)
+
 ## ✨ Key Features
 
 *   **Voice-First & Text Input**: Interact with Aven using natural voice commands or text input, offering flexibility for any situation.
