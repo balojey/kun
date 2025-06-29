@@ -252,7 +252,6 @@ export function LandingPage() {
                     height={32}
                     className="opacity-70"
                   />
-                  {/* <span className="font-semibold text-lg text-muted-foreground">Bolt</span> */}
                 </motion.div>
 
                 {/* Tavily */}
@@ -276,13 +275,14 @@ export function LandingPage() {
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <Image
+                  {/* <Image
                     src="/pica.svg"
                     alt="Pica"
                     width={80}
                     height={24}
-                    className="opacity-70 hover:opacity-100 transition-opacity"
-                  />
+                    className="opacity-70 hover:opacity-100 transition-opacity dark:block hidden"
+                  /> */}
+                  <span className="font-semibold text-lg text-muted-foreground">Pica</span>
                 </motion.div>
 
                 {/* ElevenLabs */}
@@ -291,13 +291,14 @@ export function LandingPage() {
                   whileHover={{ scale: 1.05 }}
                   transition={{ type: "spring", stiffness: 400, damping: 17 }}
                 >
-                  <Image
+                  {/* <Image
                     src="/elevenlabs.svg"
                     alt="ElevenLabs"
                     width={80}
                     height={24}
                     className="opacity-70 hover:opacity-100 transition-opacity"
-                  />
+                  /> */}
+                  <span className="font-semibold text-lg text-muted-foreground">ElevenLabs</span>
                 </motion.div>
 
                 {/* Supabase */}
