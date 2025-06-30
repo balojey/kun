@@ -19,6 +19,7 @@ export function VoiceTab() {
   const { hassufficientTokens } = useTokens();
   const supabase = createClient();
   const { user } = useAuthContext();
+  const firstName = user?.user_metadata?.full_name?.split(' ')[0] || '';
 
   const connectionIds = [
     ...connections.map(c => c.connection_id),
@@ -112,6 +113,7 @@ export function VoiceTab() {
         agentId,
         dynamicVariables: {
           connectedTools: connectedTools,
+          firstName: firstName
         },
         clientTools: {
           executeUserCommand,
