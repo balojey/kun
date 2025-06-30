@@ -37,7 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
       <body className="font-ubuntu antialiased">
         <ThemeProvider
           attribute="class"
-          defaultTheme="light"
+          defaultTheme="system"
           enableSystem={true}
           disableTransitionOnChange={false}
         >
