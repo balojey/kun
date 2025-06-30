@@ -1,6 +1,6 @@
 # Aven - Your AI Personal Assistant
 
-![Aven Logo](public/aven-logo.png)
+![Aven Logo](public/aven.png)
 
 <p align="center">
   Transform your productivity with Aven, the AI personal assistant that helps you manage emails, calendar, documents, and more through natural conversation.
