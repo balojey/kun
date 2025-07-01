@@ -70,8 +70,8 @@ Follow these steps to set up and run Aven locally.
 ### 1. Clone the Repository
 
 ```bash
-git clone https://github.com/elevenlabs/elevenlabs-docs.git
-cd examples/elevenlabs-nextjs # Or the specific path to your project
+git clone https://github.com/balojey/kun.git
+cd kun # Or the specific path to your project
 ```
 
 ### 2. Environment Variables
