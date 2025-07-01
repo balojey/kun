@@ -46,7 +46,7 @@ Aven leverages cutting-edge AI technologies to deliver its powerful features:
     *   [ElevenLabs SDK](https://elevenlabs.io/docs)
     *   [`@elevenlabs/react`](https://www.npmjs.com/package/@elevenlabs/react)
 *   **Automation & Integrations**:
-    *   [PicaOS AI](https://pica.ai/) (`@picahq/ai`, `@picahq/authkit`, `@picahq/authkit-node`)
+    *   [PicaOS](https://picaos.com/) (`@picahq/ai`, `@picahq/authkit`, `@picahq/authkit-node`)
 *   **Database & Authentication**:
     *   [Supabase](https://supabase.com/) (PostgreSQL, Auth, Edge Functions)
     *   [Iron Session](https://iron-session.vercel.app/) for secure session management
