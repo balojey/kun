@@ -84,13 +84,13 @@ cp .env.example .env
 
 Then, populate the `.env` file with your credentials:
 
-`ELEVENLABS_API_KEY`: Obtain your API key from ElevenLabs.
-`IRON_SESSION_SECRET_KEY`: Generate a strong, random key (e.g., openssl rand -base64 32).
-`PICA_SECRET_KEY`: Get your secret key from PicaOS.
-`DEEPSEEK_API_KEY`: Your API key for DeepSeek AI.
-`NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL.
-`NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous public key.
-`NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID`: (Optional) The connection ID for Tavily if you have it configured in PicaOS.
+* `ELEVENLABS_API_KEY`: Obtain your API key from ElevenLabs.
+* `IRON_SESSION_SECRET_KEY`: Generate a strong, random key (e.g., openssl rand -base64 32).
+* `PICA_SECRET_KEY`: Get your secret key from PicaOS.
+* `DEEPSEEK_API_KEY`: Your API key for DeepSeek AI.
+* `NEXT_PUBLIC_SUPABASE_URL`: Your Supabase project URL.
+* `NEXT_PUBLIC_SUPABASE_ANON_KEY`: Your Supabase anonymous public key.
+* `NEXT_PUBLIC_PICA_TAVILY_CONNECTION_ID`: (Optional) The connection ID for Tavily if you have it configured in PicaOS.
 
 ### 3. Install Dependencies
 
