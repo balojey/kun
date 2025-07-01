@@ -107,11 +107,9 @@ pnpm dev
 Open your browser and navigate to `http://localhost:3000` to see Aven in action.
 
 ## 🤝 Contributing
----
 
 Contributions are welcome! Please refer to the `LICENSE` file for details on how you can contribute to this project.
 
 ## 📄 License
----
 
 This project is licensed under the MIT License. See the `LICENSE` file for more details.
